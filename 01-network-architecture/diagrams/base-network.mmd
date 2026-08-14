@@ -1,0 +1,26 @@
+flowchart TB
+    Internet((Internet))
+    R53[Route 53 Public DNS<br/>soclab.abdul4rehman215.tech]
+
+    subgraph ATTACK[ATTACK-LAB-VPC · 10.60.0.0/16]
+        AS[ATTACK-PUBLIC-SUBNET<br/>10.60.10.0/24]
+        A[Attack Host]
+        AS --> A
+    end
+
+    subgraph SOC[SOC-LAB-VPC · 10.50.0.0/16]
+        TS[SOC-TARGET-SUBNET<br/>10.50.10.0/24]
+        SS[SOC-SIEM-SUBNET<br/>10.50.20.0/24]
+        MS[SOC-MONITORING-SUBNET<br/>10.50.30.0/24]
+        W[Web Target]
+        S[Splunk Enterprise]
+        TS --> W
+        SS --> S
+        MS -.-> M[Later scenarios:<br/>DNS / Victim / Defense Components]
+    end
+
+    A --> Internet
+    Internet --> R53
+    R53 --> W
+    W --> S
+    X{{No VPC peering / no private route between VPCs}}

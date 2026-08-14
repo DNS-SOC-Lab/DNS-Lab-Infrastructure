@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant A as Project Lead / Attack Host
+    participant R as Route 53 Public DNS
+    participant W as Public Web Target
+    participant S as Splunk Enterprise
+    participant L as LLM Bridge
+    participant SOC as SOC Analyst
+    participant IR as IR / Defender
+
+    A->>R: Authorized A/AAAA/MX/NS/TXT enumeration
+    R-->>A: DNS responses
+    A->>W: Optional HTTPS follow-up
+    W-->>S: Nginx/server telemetry
+    S->>S: SPL detection / alert
+    S->>L: Webhook alert context
+    L-->>S: AI-assisted summary via HEC
+    SOC->>S: Validate raw evidence
+    SOC->>IR: Escalate if confirmed
+    IR->>IR: Contain / reduce exposure / verify

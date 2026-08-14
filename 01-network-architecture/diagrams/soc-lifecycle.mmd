@@ -1,0 +1,11 @@
+flowchart LR
+    A[Controlled Simulation] --> B[DNS / Network / Server Telemetry]
+    B --> C[Splunk Ingestion]
+    C --> D[SPL Detection]
+    D --> E[Alert]
+    E --> F[AI-Assisted Summary]
+    F --> G[Human SOC Investigation]
+    G --> H[Incident Response]
+    H --> I[Containment]
+    I --> J[Verification]
+    J --> K[Tuning & Lessons Learned]
