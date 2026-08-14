@@ -1,0 +1,45 @@
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials
+credentials.*
+secrets/
+secret/
+.aws/
+
+# API / token files
+*token*
+*secret*
+*apikey*
+*api-key*
+
+# Terraform / IaC local state if introduced later
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local evidence that may contain sensitive data
+private-evidence/
+raw-evidence/
