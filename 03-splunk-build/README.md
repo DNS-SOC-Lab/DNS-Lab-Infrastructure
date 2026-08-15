@@ -2,7 +2,7 @@
 
 **Status:** Planned — implementation has not started yet.
 
-This folder will become the technical record for the Splunk Enterprise deployment after the EC2 foundation is ready. It will contain only work that has actually been implemented and validated, including:
+The EC2 foundation is now complete. This folder will become the technical record when the Splunk Enterprise deployment begins. It will contain only work that has actually been implemented and validated, including:
 
 - Splunk Enterprise Docker deployment;
 - indexes and sourcetypes used by the lab;
