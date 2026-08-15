@@ -6,54 +6,51 @@
 
 ## Objective
 
-Give each team member accountable AWS access without using the root user for daily work, require stronger authentication, and add basic cost protection before launching lab infrastructure.
+Give each team member accountable AWS access without using the root user for daily work, require stronger authentication, and add basic cost protection before deploying lab infrastructure.
 
-## Implemented controls
+## Team IAM access
 
-- Separate IAM identities for the four project members.
-- `DNS-SOC-Admins` group with the AWS-managed `AdministratorAccess` policy for the lab team.
-- Custom IAM password policy.
-- MFA configured for project access; MFA setup secrets are intentionally not stored in the repository.
-- Root / user access keys are not part of the lab workflow.
-- Monthly AWS budget created for cost visibility.
-- EC2 Systems Manager role prepared for SSM-based instance administration.
+Four separate IAM identities were created for the project team instead of sharing one daily-use account. Individual identities preserve accountability and will later allow CloudTrail activity to be traced back to the AWS identity that performed a change.
 
-## Why we used separate identities
+![IAM project users](screenshots/account-security/iam-project-users.png)
 
-Individual IAM identities preserve accountability. Later, CloudTrail can show which AWS identity performed a change instead of attributing every action to one shared root login.
+*The IAM user inventory confirms that the project uses separate identities for team access.*
 
-## Evidence
+## Administrative permission model
 
-<details>
-<summary>IAM project users</summary>
+The project administrators are managed through the `DNS-SOC-Admins` group. The group carries the AWS-managed `AdministratorAccess` policy for the lab environment so permissions can be managed centrally instead of attaching the same policy separately to each user.
 
-![IAM users](screenshots/account-security/iam-project-users.png)
+![DNS-SOC-Admins permissions](screenshots/account-security/dns-soc-admins.png)
 
-</details>
+*The shared administrator group provides one controlled place to manage the team's lab permissions.*
 
-<details>
-<summary>IAM password policy</summary>
+## Password policy and MFA
+
+A custom IAM password policy was configured for console access. MFA is also part of the project access baseline. MFA QR codes, authentication seeds, temporary passwords, recovery information and other credential material are deliberately excluded from the repository.
 
 ![IAM password policy](screenshots/account-security/iam-password-policy.png)
 
-</details>
+*The account-level password policy establishes the minimum credential requirements used by IAM users.*
 
-<details>
-<summary>DNS-SOC-Admins permissions</summary>
+## Cost control
 
-![DNS-SOC-Admins](screenshots/account-security/dns-soc-admins.png)
+A monthly AWS budget was created before compute deployment so the team has an early warning if lab usage starts moving beyond the planned spend.
 
-</details>
+![AWS monthly budget](screenshots/account-security/monthly-budget.png)
 
-<details>
-<summary>AWS monthly budget</summary>
+*The budget provides cost visibility while the lab grows through later build and scenario phases.*
 
-![AWS budget](screenshots/account-security/monthly-budget.png)
+## EC2 administration preparation
 
-</details>
-
-MFA QR codes, authentication secrets and credential material are deliberately excluded from public evidence.
+The `DNS-SOC-EC2-SSM-Role` instance role was created for Systems Manager-based administration. Its implementation and runtime validation are documented in [`03-security-groups-and-ssm.md`](03-security-groups-and-ssm.md) and [`04-ec2-deployment.md`](04-ec2-deployment.md).
 
 ## Result
 
-The AWS account is ready for team-based lab administration with individual identities, MFA, cost monitoring and an SSM role available for the EC2 phase.
+The AWS account now has individual team identities, centralized administrator permissions, MFA-backed access, password controls, cost monitoring and the IAM foundation required for SSM-managed EC2 administration.
+
+## Evidence index
+
+- [IAM project users](screenshots/account-security/iam-project-users.png)
+- [IAM password policy](screenshots/account-security/iam-password-policy.png)
+- [DNS-SOC-Admins permissions](screenshots/account-security/dns-soc-admins.png)
+- [AWS monthly budget](screenshots/account-security/monthly-budget.png)
