@@ -1,6 +1,6 @@
 # Security Groups and Systems Manager
 
-**Status:** Implemented and validated  
+**Status:** Implemented and validated
 **Implementation owner:** Abdul-Rehman
 
 ## Objective
