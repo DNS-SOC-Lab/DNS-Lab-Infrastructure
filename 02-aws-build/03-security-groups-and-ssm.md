@@ -1,42 +1,50 @@
 # Security Groups and Systems Manager
 
-**Status:** Baseline implemented  
+**Status:** Implemented and validated  
 **Implementation owner:** Abdul-Rehman
 
 ## Objective
 
-Control service exposure with Security Groups and prepare EC2 administration through AWS Systems Manager so SSH does not need to be opened broadly.
+Control service exposure with Security Groups and administer EC2 through AWS Systems Manager so general-purpose SSH does not need to be opened to the Internet.
 
-## Security groups created
+## Security group baseline
+
+The current build uses three project security groups:
 
 - `SG-WEB`
 - `SG-SPLUNK`
 - `SG-ATTACKER`
 
-The rule design is documented in [`../01-network-architecture/security-groups.md`](../01-network-architecture/security-groups.md). Rules are kept service-specific: the public web target is the intentionally exposed service, Splunk Web is restricted to the team, and the attack host does not require a public inbound management port.
+![Project security groups](screenshots/network-foundation/security-groups.png)
 
-## SSM role
+*The security-group inventory confirms that separate controls exist for the public web target, Splunk/SIEM host and attacker environment.*
 
-`DNS-SOC-EC2-SSM-Role` was created with the permissions required for Systems Manager-managed EC2 access. It will be attached to instances during the EC2 deployment phase.
+The rule design is documented in [`../01-network-architecture/security-groups.md`](../01-network-architecture/security-groups.md). The implementation keeps exposure service-specific: the web target is the intentionally public service, Splunk Web is restricted to approved team access, and the attacker host does not require a public inbound management port.
 
-## Evidence
+## Systems Manager role
 
-<details>
-<summary>EC2 Systems Manager role</summary>
+`DNS-SOC-EC2-SSM-Role` was created for Systems Manager-managed EC2 access.
 
-![SSM role](screenshots/account-security/ec2-ssm-role.png)
+![EC2 Systems Manager role](screenshots/account-security/ec2-ssm-role.png)
 
-</details>
+*The instance role provides the AWS-side identity used by the project EC2 systems for SSM administration.*
 
-<details>
-<summary>Security groups created</summary>
+## Runtime validation
 
-![Security groups](screenshots/network-foundation/security-groups.png)
+The role is now attached to the Scenario 01 EC2 instances and Session Manager access has been successfully used during host validation. This confirms that normal administration can be performed without opening SSH as the default management path.
 
-</details>
+Runtime screenshots for the three hosts are kept with the EC2 deployment record:
 
-The current evidence pack confirms the security groups themselves. Rule-level console screenshots can be added when the first EC2 instances are attached and end-to-end access is validated.
+- [Web SSM validation](screenshots/ec2-deployment/web-ssm-validation.png)
+- [Splunk SSM validation](screenshots/ec2-deployment/splunk-ssm-validation.png)
+- [Attacker SSM validation](screenshots/ec2-deployment/attacker-ssm-validation.png)
 
 ## Result
 
-The account has the baseline SG objects and SSM role required to move into EC2 deployment without opening general-purpose SSH access to the Internet.
+The security-group baseline and SSM management path are both active. Scenario 01 hosts can be administered through Systems Manager while public service exposure remains controlled by role-specific security groups.
+
+## Evidence index
+
+- [Security groups](screenshots/network-foundation/security-groups.png)
+- [EC2 SSM role](screenshots/account-security/ec2-ssm-role.png)
+- [EC2 deployment and SSM validation](04-ec2-deployment.md)
