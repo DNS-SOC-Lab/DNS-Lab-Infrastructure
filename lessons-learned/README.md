@@ -6,7 +6,7 @@ This folder records decisions and mistakes that are worth carrying into the next
 
 ### Separate design from implementation
 
-The project architecture is documented before EC2 deployment, while the AWS build folder contains only resources that have actually been created. This prevents planned components from being mistaken for completed work.
+The project architecture was documented before EC2 deployment, while the AWS build folder continues to contain only resources that have actually been created. This prevents planned components from being mistaken for completed work.
 
 ### Keep the attacker and SOC networks independent
 
