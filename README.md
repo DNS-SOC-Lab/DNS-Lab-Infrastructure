@@ -72,8 +72,8 @@ The Project Lead also operates the authorized simulation for that scenario and r
 | AWS identity, MFA, budget and SSM role | Completed |
 | VPCs, subnets, IGWs and route tables | Completed |
 | Baseline security groups | Completed |
-| EC2 deployment | **Next** |
-| Route 53 lab subdomain | Planned |
+| EC2 deployment | Completed |
+| Route 53 lab subdomain | **Next** |
 | Splunk Enterprise deployment | Planned |
 | AWS log onboarding | Planned |
 | Scenario 01 execution | Planned |
