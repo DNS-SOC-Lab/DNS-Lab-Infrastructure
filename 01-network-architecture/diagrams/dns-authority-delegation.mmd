@@ -1,0 +1,17 @@
+flowchart TB
+    Registrar[Hostinger<br/>Registrar]
+    TLD[.tech registry / DNS hierarchy]
+    Parent[Route 53 Parent Zone<br/>abdul4rehman215.tech]
+    ParentSite[Parent A<br/>2.57.91.91]
+    ParentMail[Parent mail / TXT / CNAME records]
+    ChildNS[NS delegation<br/>soclab.abdul4rehman215.tech]
+    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech]
+    Web[A<br/>100.49.192.164<br/>dns-soc-web01]
+
+    Registrar -. registered nameservers .-> TLD
+    TLD --> Parent
+    Parent --> ParentSite
+    Parent --> ParentMail
+    Parent --> ChildNS
+    ChildNS --> Child
+    Child --> Web

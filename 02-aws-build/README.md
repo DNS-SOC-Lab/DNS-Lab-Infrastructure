@@ -18,16 +18,19 @@ This folder records what has actually been built in AWS. It is intentionally sep
 | Attack public route table | Complete |
 | Baseline security groups | Complete |
 | Scenario 01 EC2 deployment | Complete |
-| Route 53 lab zone / delegation | **Next** |
+| Route 53 parent DNS migration | Complete |
+| Route 53 child zone / parent-to-child delegation | Complete |
+| Public DNS validation | Complete |
+| Nginx / HTTPS | **Next** |
 | AWS security/log telemetry | Not built yet |
 
 ## Current AWS environment
 
-The Scenario 01 compute layer is now running across the separated SOC and attacker VPCs.
+The Scenario 01 compute layer and the public DNS authority chain are now active. The parent domain stays on its existing website target while `soclab.abdul4rehman215.tech` is delegated to a separate Route 53 child zone and resolves to the web EC2 Elastic IP.
 
-![Scenario 01 EC2 inventory](screenshots/ec2-deployment/scenario01-ec2-inventory.png)
+![Parent and child final DNS validation](screenshots/route53-domain/parent-child-final-validation.png)
 
-*The active inventory contains the web target, Splunk/SIEM host and separate attacker host, all passing EC2 status checks at the time of capture.*
+*The current DNS state keeps `abdul4rehman215.tech` on its parent Route 53 authority and existing website address while the delegated `soclab` child zone resolves to `100.49.192.164`.*
 
 ## Documents
 
@@ -35,6 +38,7 @@ The Scenario 01 compute layer is now running across the separated SOC and attack
 - [`02-vpc-subnets-and-routing.md`](02-vpc-subnets-and-routing.md)
 - [`03-security-groups-and-ssm.md`](03-security-groups-and-ssm.md)
 - [`04-ec2-deployment.md`](04-ec2-deployment.md)
-- [`screenshots/`](screenshots/) — implementation evidence captured from the AWS console and SSM sessions
+- [`05-route53-and-domain.md`](05-route53-and-domain.md)
+- [`screenshots/`](screenshots/) - implementation evidence captured from the AWS console and validation sessions
 
 New build files are added only when that AWS component is actually implemented.

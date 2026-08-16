@@ -21,7 +21,7 @@ All three instances use the project SSM administration model. Termination protec
 
 ## Web target — `dns-soc-web01`
 
-The web target is deployed in the SOC target subnet and will become the public application endpoint used by the lab domain in the next build phase.
+The web target is deployed in the SOC target subnet and is now the public application endpoint for `soclab.abdul4rehman215.tech`.
 
 Key deployment values:
 
@@ -41,11 +41,11 @@ Key deployment values:
 
 ### Elastic IP
 
-A dedicated Elastic IP was allocated and associated with the web instance so the public DNS record can later point to a stable address.
+A dedicated Elastic IP was allocated and associated with the web instance so the public DNS record has a stable destination. The delegated lab hostname now resolves to `100.49.192.164`.
 
 ![Web Elastic IP](screenshots/ec2-deployment/web-elastic-ip.png)
 
-*The Elastic IP inventory shows the `web-elastic-ip` allocation associated with the web EC2 instance. Public address values are intentionally not repeated in the documentation text.*
+*The Elastic IP inventory shows the `web-elastic-ip` allocation associated with the web EC2 instance. The same public address is now published by the delegated Route 53 child zone.*
 
 ### Runtime validation
 
@@ -154,7 +154,7 @@ All three Scenario 01 instances reached the `Running` state and the captured EC2
 
 Scenario 01 now has its required compute foundation: a public-facing web target, a dedicated Splunk/SIEM host and a separate Kali attack host. The instances are running on the planned VPC/subnet layout, use the SSM administration path, and passed the network/DNS/time checks captured during deployment.
 
-The next AWS build step is Route 53 and delegation of `soclab.abdul4rehman215.tech`, followed by the web-service/HTTPS configuration.
+Route 53 parent/child delegation is now complete and documented in [`05-route53-and-domain.md`](05-route53-and-domain.md). The next build step is Nginx and HTTPS validation for `soclab.abdul4rehman215.tech`.
 
 ## Evidence index
 

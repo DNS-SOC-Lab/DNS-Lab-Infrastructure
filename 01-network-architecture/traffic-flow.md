@@ -1,6 +1,24 @@
 # Traffic Flow
 
-The lab has separate traffic paths for public scenario activity, SOC access, log ingestion and later defensive DNS work.
+The lab has separate traffic paths for public DNS resolution, public scenario activity, SOC access, log ingestion and later defensive DNS work.
+
+## Public DNS resolution path
+
+```mermaid
+sequenceDiagram
+    participant C as Public Client / Resolver
+    participant P as Route 53 Parent Zone
+    participant D as Route 53 Child Zone
+    participant W as dns-soc-web01
+
+    C->>P: Query / delegation lookup for soclab.abdul4rehman215.tech
+    P-->>C: NS referral to child Route 53 nameservers
+    C->>D: Query soclab.abdul4rehman215.tech A
+    D-->>C: 100.49.192.164
+    C->>W: HTTP / HTTPS to public web target
+```
+
+The parent zone owns the delegation. The child zone owns the lab A record.
 
 ## Scenario 01 public path
 
@@ -8,15 +26,18 @@ The lab has separate traffic paths for public scenario activity, SOC access, log
 sequenceDiagram
     participant A as Attack Host
     participant I as Internet
-    participant R as Route 53 Public DNS
+    participant P as Route 53 Parent DNS
+    participant C as Route 53 Child DNS
     participant W as Web Target
     participant S as Splunk
 
-    A->>I: DNS enumeration requests
-    I->>R: Query lab namespace
-    R-->>A: DNS responses
-    A->>I: Optional HTTPS follow-up
-    I->>W: TCP 443
+    A->>I: Authorized DNS enumeration
+    I->>P: Resolve lab namespace authority
+    P-->>I: Refer soclab to child nameservers
+    I->>C: Query child DNS records
+    C-->>A: DNS responses
+    A->>I: Optional HTTP / HTTPS follow-up
+    I->>W: Public web traffic
     W-->>S: Web/server logs via approved ingestion path
 ```
 
@@ -39,7 +60,7 @@ flowchart LR
     W[Web / Linux Logs] --> UF[Splunk Universal Forwarder]
     UF -->|TCP 9997| S[Splunk Enterprise]
     AWS[AWS Telemetry] -. later onboarding .-> S
-    DNS[DNS Telemetry] -. later scenarios .-> S
+    DNS[DNS Telemetry] -. later onboarding .-> S
     S --> D[Search / Dashboard / Detection]
 ```
 
