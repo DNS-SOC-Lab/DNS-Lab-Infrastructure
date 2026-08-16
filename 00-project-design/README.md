@@ -9,4 +9,6 @@ This folder is the source of truth for the lab's purpose and working model. It e
 | [`scenario-matrix.md`](scenario-matrix.md) | Side-by-side view of all four DNS scenarios |
 | [`project-roadmap.md`](project-roadmap.md) | Build sequence and current progress |
 
-Detailed VPC, subnet, routing and traffic decisions are kept in [`../01-network-architecture/`](../01-network-architecture/) so the project scope does not become a duplicate network manual.
+Detailed VPC, subnet, routing, DNS authority and traffic decisions are kept in [`../01-network-architecture/`](../01-network-architecture/) so the project scope does not become a duplicate architecture manual.
+
+The scenario model remains part of the shared project design, while the implementation and evidence for each scenario are maintained in separate scenario repositories by the team.

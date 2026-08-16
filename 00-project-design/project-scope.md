@@ -13,8 +13,12 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | Area | Decision |
 |---|---|
 | Cloud | One AWS account, `us-east-1` |
+| Domain registrar | Hostinger for `abdul4rehman215.tech` |
+| Parent authoritative DNS | Route 53 public hosted zone for `abdul4rehman215.tech` |
 | Public lab namespace | `soclab.abdul4rehman215.tech` |
-| DNS hosting | Route 53 public hosted zone for the lab subdomain |
+| Child authoritative DNS | Separate Route 53 public hosted zone delegated from the parent zone |
+| Public web target | `soclab.abdul4rehman215.tech` → `100.49.192.164` (`dns-soc-web01`) |
+| Existing parent services | Preserved through the Route 53 parent zone, including website and mail-related DNS |
 | SOC network | `SOC-LAB-VPC` |
 | Attacker network | `ATTACK-LAB-VPC` |
 | Private connection between VPCs | None |
@@ -24,6 +28,28 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | AI | Flask/LLM bridge used for alert summarization, with analyst validation |
 | DNS defense | Team-controlled DNS defense and sinkhole work in later scenarios |
 
+## DNS authority boundary
+
+Hostinger is used as the registrar, but the authoritative DNS path is now handled by Route 53:
+
+```text
+.tech registry
+    |
+    v
+Route 53 parent zone: abdul4rehman215.tech
+    |
+    +-- existing parent website and mail records
+    |
+    +-- NS delegation for soclab
+            |
+            v
+Route 53 child zone: soclab.abdul4rehman215.tech
+            |
+            +-- A -> 100.49.192.164
+```
+
+This keeps the existing parent domain services intact while giving the lab namespace its own authoritative child zone.
+
 ## Scope boundaries
 
 The project focuses on DNS behavior and the network evidence around it. It may use endpoint, cloud or web telemetry when those sources help prove the DNS story, but the lab does not try to become a general-purpose attack range.
@@ -32,9 +58,10 @@ Attack simulations are limited to infrastructure and domains the team owns or is
 
 ## What the team should be able to demonstrate
 
-By the end of the four scenarios, the repository should show that the team can:
+By the end of the four scenarios, the project should show that the team can:
 
 - design segmented AWS networking and reason about traffic paths;
+- design and validate parent/child DNS authority and delegation;
 - onboard useful DNS, network, server and cloud telemetry into Splunk;
 - baseline normal behavior before writing detections;
 - build and tune SPL detections around defined threat behavior;
