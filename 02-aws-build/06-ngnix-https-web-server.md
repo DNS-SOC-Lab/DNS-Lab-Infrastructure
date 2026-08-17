@@ -130,3 +130,313 @@ UFW was inactive.
 The instance was ready for Nginx deployment.
 
 Evidence: [`screenshots/nginx-https/39-web-server-preflight.png`](39-web-server-preflight.png)
+
+5. Nginx Installation
+
+Nginx was installed using the Ubuntu package manager
+```
+sudo apt update
+sudo apt install -y nginx
+```
+The service was enabled and started:
+```
+sudo systemctl enable --now nginx
+```
+Configuration syntax was validated:
+```
+sudo nginx -t
+```
+Service status was checked:
+```
+sudo systemctl status nginx --no-pager
+```
+Port 80 was verified:
+```
+sudo ss -lntp | grep ':80'
+```
+Result
+
+Nginx was successfully installed and running.
+
+Evidence:
+[`screenshots/nginx-https/40-nginx-installed-running.png`](40-nginx-installed-running.png)
+
+6. Custom SOC Landing Page
+
+A dedicated document root was created:
+```
+sudo mkdir -p /var/www/dns-soc-lab
+```
+The website content was deployed as:
+```
+/var/www/dns-soc-lab/index.html
+```
+The source version of the page is maintained in:
+```
+configs/nginx/index.html
+```
+The page identifies the environment as:
+
+DNS SOC Security Lab
+
+The page is intentionally a controlled training landing page and does not expose credentials, private keys, AWS secrets, or other sensitive information.
+
+7. Nginx Virtual Host
+
+A dedicated Nginx site configuration was created for the SOC lab domain.
+
+The configuration source is maintained in:
+```
+configs/nginx/soclab.conf
+```
+The server names are:
+```
+server_name soclab.abdul4rehman215.tech www.soclab.abdul4rehman215.tech;
+```
+The document root is:
+```
+root /var/www/dns-soc-lab;
+```
+Site-specific logs are configured as:
+```
+/var/log/nginx/soclab_access.log
+/var/log/nginx/soclab_error.log
+```
+Nginx configuration was validated with:
+```
+sudo nginx -t
+```
+Evidence
+[`screenshots/nginx-https/42-nginx-site-configuration-validation.png`](42-nginx-site-configuration-validation.png)
+
+8. DNS Validation
+
+The public DNS records were validated before HTTPS deployment.
+
+Primary hostname
+```
+dig +short A soclab.abdul4rehman215.tech
+```
+Expected result:
+```
+100.49.192.164
+```
+WWW hostname
+```
+dig +short CNAME www.soclab.abdul4rehman215.tech
+```
+Expected result:
+```
+soclab.abdul4rehman215.tech.
+```
+The www hostname was also resolved to the public web-server address.
+
+Result
+
+Both public hostnames correctly resolved to the web server.
+
+9. Public HTTP Validation
+
+Before enabling HTTPS, the public web server was tested over HTTP.
+```
+curl -I http://soclab.abdul4rehman215.tech
+curl -I http://www.soclab.abdul4rehman215.tech
+```
+The website content was also checked:
+```
+curl -s http://soclab.abdul4rehman215.tech | grep -i "DNS SOC Security Lab"
+Result
+```
+Both hostnames successfully reached the Nginx web server and returned the DNS SOC Security Lab page.
+
+Evidence:
+[`screenshots/nginx-https/41-custom-soclab-http-page.png`](41-custom-soclab-http-page.png)
+
+10. Let's Encrypt HTTPS
+
+Certbot was installed to obtain and configure a publicly trusted TLS certificate.
+```
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+```
+Certificate issuance was performed for both public hostnames:
+```
+sudo certbot --nginx \
+-d soclab.abdul4rehman215.tech \
+-d www.soclab.abdul4rehman215.tech
+```
+The certificate was successfully issued.
+
+Certificate Scope
+
+The certificate covers:
+```
+soclab.abdul4rehman215.tech
+www.soclab.abdul4rehman215.tech
+```
+The certificate is associated with the DNS hostnames rather than the Elastic IP.
+
+Evidence
+[`screenshots/nginx-https/43-letsencrypt-certificate-issued.png`](43-letsencrypt-certificate-issued.png)
+
+11. HTTPS Validation
+
+Nginx was tested after HTTPS configuration:
+```
+sudo nginx -t
+```
+Port 443 was verified:
+```
+sudo ss -lntp | grep ':443'
+```
+The HTTPS endpoint was tested:
+```
+curl -I https://soclab.abdul4rehman215.tech
+curl -I https://www.soclab.abdul4rehman215.tech
+```
+The website was also opened through a browser using HTTPS.
+
+Result
+
+Both hostnames successfully served the SOC landing page over HTTPS.
+
+Evidence
+[`screenshots/nginx-https/44-https-browser-validation.png`](44-https-browser-validation.png)
+
+12. HTTP to HTTPS Redirect
+
+HTTP requests were tested:
+```
+curl -I http://soclab.abdul4rehman215.tech
+curl -I http://www.soclab.abdul4rehman215.tech
+```
+The HTTP endpoints returned a redirect to HTTPS.
+
+Expected behavior:
+```
+HTTP
+  |
+  | 301 Redirect
+  v
+HTTPS
+```
+Evidence
+[`screenshots/nginx-https/45-http-to-https-redirect.png`](45-http-to-https-redirect.png)
+
+13. TLS Certificate and SAN Validation
+
+Certificate details were inspected using OpenSSL:
+```
+echo | openssl s_client \
+-connect soclab.abdul4rehman215.tech:443 \
+-servername soclab.abdul4rehman215.tech 2>/dev/null \
+| openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+```
+The certificate SANs were verified for:
+```
+soclab.abdul4rehman215.tech
+www.soclab.abdul4rehman215.tech
+```
+Certificate information can also be listed with:
+```
+sudo certbot certificates
+```
+Evidence
+[`screenshots/nginx-https/46-tls-certificate-validation.png`](46-tls-certificate-validation.png)
+
+14. Certificate Renewal Validation
+
+Automatic renewal was tested using Certbot's dry-run mode:
+```
+sudo certbot renew --dry-run
+```
+The renewal simulation completed successfully.
+
+The certificate renewal timer/service can also be checked with:
+```
+systemctl list-timers | grep -i certbot || true
+```
+Evidence
+[`screenshots/nginx-https/47-certificate-renewal-test.png`](47-certificate-renewal-test.png)
+
+15. Nginx Access Logging
+
+The site-specific access log is:
+```
+/var/log/nginx/soclab_access.log
+```
+A successful HTTPS request was generated:
+```
+curl -sS https://soclab.abdul4rehman215.tech/ -o /dev/null
+```
+The log was then checked:
+```
+sudo tail -n 10 /var/log/nginx/soclab_access.log
+```
+The successful request was recorded with HTTP status 200.
+
+Evidence
+[`screenshots/nginx-https/48-nginx-access-log-validation.png`](48-nginx-access-log-validation.png)
+
+16. Controlled 404 Validation
+
+A harmless non-existent URL was requested:
+```
+curl -sS -o /dev/null \
+https://soclab.abdul4rehman215.tech/nonexistent-test-page
+```
+The access log was checked:
+```
+sudo tail -n 10 /var/log/nginx/soclab_access.log
+```
+The request was recorded with HTTP status 404.
+
+This validates that both successful and failed web requests are available for future SOC monitoring and Splunk ingestion.
+
+Evidence
+[`screenshots/nginx-https/49-nginx-404-log-validation.png`](49-nginx-404-log-validation.png)
+17. Final Validation
+
+The final web-server validation included:
+```
+sudo nginx -t
+sudo systemctl status nginx --no-pager
+sudo ss -lntp | grep -E ':80\b|:443\b'
+curl -I https://soclab.abdul4rehman215.tech
+curl -I http://soclab.abdul4rehman215.tech
+sudo certbot certificates
+sudo tail -n 5 /var/log/nginx/soclab_access.log
+sudo tail -n 5 /var/log/nginx/soclab_error.log
+```
+Final State
+
+The web server successfully provides:
+
+Public DNS resolution
+Nginx web service
+Custom SOC landing page
+HTTPS
+Let's Encrypt certificate
+HTTP to HTTPS redirect
+Certificate renewal
+Site-specific access logging
+Controlled 404 logging
+Evidence
+[`screenshots/nginx-https/50-final-web-server-validation.png`](50-final-web-server-validation.png)
+
+18. Security Notes
+
+The web server is intended to be administered through AWS Systems Manager Session Manager rather than public SSH.
+
+Public web access is limited to:
+```
+TCP/80
+TCP/443
+```
+The web server does not publish private keys, credentials, AWS access keys, or Splunk credentials.
+
+Let's Encrypt private-key material under:
+```
+/etc/letsencrypt/
+```
+must never be committed to GitHub.
