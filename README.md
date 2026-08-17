@@ -16,6 +16,7 @@ flowchart TB
     Parent[Route 53 Parent Hosted Zone<br/>abdul4rehman215.tech]
     Existing[Existing parent services<br/>A: 2.57.91.91<br/>Mail and TXT/CNAME records]
     Child[Route 53 Child Hosted Zone<br/>soclab.abdul4rehman215.tech]
+    ChildStatic[Permanent child records<br/>A + NS + SOA + TXT + www CNAME]
 
     subgraph ATTACK[ATTACK-LAB-VPC · 10.60.0.0/16]
         AS[ATTACK-PUBLIC-SUBNET<br/>10.60.10.0/24]
@@ -38,14 +39,15 @@ flowchart TB
     Internet --> Parent
     Parent --> Existing
     Parent -->|NS delegation: soclab| Child
-    Child -->|A: 100.49.192.164| W
+    Child --> ChildStatic
+    ChildStatic -->|soclab / www to 100.49.192.164| W
     A --> Internet
     W --> S
 
     X{{No VPC peering / no private route between VPCs}}
 ```
 
-Hostinger remains the registrar. The parent domain is authoritative in Route 53, and the parent zone delegates `soclab.abdul4rehman215.tech` to a separate Route 53 child zone. The attacker still reaches the public lab through the Internet rather than through a private route into the SOC VPC.
+Hostinger remains the registrar. The parent domain is authoritative in Route 53, and the parent zone delegates `soclab.abdul4rehman215.tech` to a separate Route 53 child zone. The child zone now has a stable five-record baseline: A, NS, SOA, a training TXT fixture and `www` CNAME. Both web hostnames resolve to the same public web target. The attacker still reaches the public lab through the Internet rather than through a private route into the SOC VPC.
 
 ## Four scenarios
 
@@ -85,14 +87,15 @@ The Project Lead also operates the authorized simulation for that scenario and r
 | Route 53 parent migration | Completed |
 | Route 53 child zone and parent-to-child delegation | Completed |
 | Public DNS validation | Completed |
-| Nginx / HTTPS | **Next** |
+| Static child DNS / Scenario 01 fixtures | Completed |
+| Nginx / HTTPS for main + `www` hostnames | **Next** |
 | Splunk Enterprise deployment | Planned |
 | AWS log onboarding | Planned |
 | Scenario execution | Maintained in separate scenario repositories |
 
 ## Repository map
 
-- [`00-project-design/`](00-project-design/) - scope, roles, scenario model and roadmap
+- [`00-project-design/`](00-project-design/) - scope, roles, scenario model, DNS scenario plan and roadmap
 - [`01-network-architecture/`](01-network-architecture/) - VPC blueprint, CIDRs, DNS authority design, controls and traffic flows
 - [`02-aws-build/`](02-aws-build/) - implemented AWS configuration and validation evidence
 - [`03-splunk-build/`](03-splunk-build/) - Splunk deployment and data onboarding as it is implemented
