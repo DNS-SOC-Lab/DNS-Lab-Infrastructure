@@ -89,4 +89,44 @@ The objectives of this phase are:
                        index.html
 
 ```
+HTTP traffic is redirected to HTTPS.
 
+4. Pre-Deployment Validation
+
+The EC2 instance was accessed through AWS Systems Manager Session Manager.
+
+The following checks were performed:
+```
+hostnamectl
+cat /etc/os-release
+ip -br addr
+ip route
+timedatectl
+df -h /
+free -h
+sudo ss -lntp
+sudo ufw status
+systemctl status amazon-ssm-agent --no-pager
+curl -s https://checkip.amazonaws.com
+```
+The checks were used to confirm:
+
+Correct hostname
+Operating system
+Private IP configuration
+Routing
+System time
+Disk and memory availability
+Existing listening ports
+UFW status
+SSM agent health
+Public IP address
+Result
+
+The EC2 instance was healthy and reachable through SSM.
+
+UFW was inactive.
+
+The instance was ready for Nginx deployment.
+
+Evidence: [`screenshots/nginx-https/39-web-server-preflight.png`]
