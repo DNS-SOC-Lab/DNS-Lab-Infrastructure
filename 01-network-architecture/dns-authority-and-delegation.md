@@ -12,7 +12,7 @@ The final design separates registration, parent authority and child authority in
 |---|---|---|
 | Registrar | Hostinger | Holds the domain registration and publishes the parent Route 53 nameservers at the registry |
 | Parent authoritative DNS | Route 53 | Serves `abdul4rehman215.tech`, including existing website/mail records and the `soclab` delegation |
-| Child authoritative DNS | Route 53 | Serves `soclab.abdul4rehman215.tech` and the lab web target record |
+| Child authoritative DNS | Route 53 | Serves the permanent SOC lab DNS baseline, including the main web target, `www` alias and reconnaissance TXT fixture |
 | Public web target | EC2 Elastic IP | `100.49.192.164` associated with `dns-soc-web01` |
 
 ## Delegation design
@@ -26,7 +26,10 @@ flowchart TB
     ParentMail[Parent mail / TXT / CNAME records]
     ChildNS[NS delegation<br/>soclab.abdul4rehman215.tech]
     Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech]
-    Web[A<br/>100.49.192.164<br/>dns-soc-web01]
+    Apex[A<br/>soclab -> 100.49.192.164]
+    WWW[CNAME<br/>www CNAME to soclab]
+    TXT[TXT<br/>DNS SOC Training Lab]
+    Web[dns-soc-web01<br/>EIP 100.49.192.164]
 
     Registrar -. registered nameservers .-> TLD
     TLD --> Parent
@@ -34,7 +37,11 @@ flowchart TB
     Parent --> ParentMail
     Parent --> ChildNS
     ChildNS --> Child
-    Child --> Web
+    Child --> Apex
+    Child --> WWW
+    Child --> TXT
+    Apex --> Web
+    WWW --> Apex
 ```
 
 The registrar is part of domain administration, but normal DNS resolution follows the registry and authoritative nameserver chain.
@@ -77,10 +84,21 @@ ns-645.awsdns-16.net.
 ns-117.awsdns-14.com.
 ```
 
-The child apex record maps the lab hostname to the web Elastic IP:
+The child zone now keeps a five-record permanent baseline:
+
+| Name | Type | Value | TTL |
+|---|---|---|---:|
+| `soclab.abdul4rehman215.tech` | A | `100.49.192.164` | 300 |
+| `soclab.abdul4rehman215.tech` | NS | Four Route 53 child nameservers | 172800 |
+| `soclab.abdul4rehman215.tech` | SOA | Route 53-managed SOA | 900 |
+| `soclab.abdul4rehman215.tech` | TXT | `"DNS SOC Training Lab"` | 300 |
+| `www.soclab.abdul4rehman215.tech` | CNAME | `soclab.abdul4rehman215.tech.` | 300 |
+
+Both public web names ultimately reach the same Elastic IP:
 
 ```text
-soclab.abdul4rehman215.tech -> 100.49.192.164
+soclab.abdul4rehman215.tech     -> 100.49.192.164
+www.soclab.abdul4rehman215.tech -> soclab.abdul4rehman215.tech -> 100.49.192.164
 ```
 
 ## Parent-to-child boundary
@@ -125,8 +143,21 @@ The DNS design is considered valid only when all of these layers agree:
 1. the registrar points the parent domain to the Route 53 parent nameservers;
 2. the parent authoritative server returns the child NS referral;
 3. a child authoritative server returns the child SOA, NS and A records;
-4. public recursive resolvers return the same child nameservers and A record;
+4. public recursive resolvers return the same child nameservers, A record, `www` CNAME path and training TXT fixture;
 5. `dig +trace` shows the parent-to-child handoff;
 6. the existing parent website and mail-related DNS still resolve correctly.
 
 The implementation evidence for these checks is recorded in [`../02-aws-build/05-route53-and-domain.md`](../02-aws-build/05-route53-and-domain.md).
+
+
+## Scenario-specific DNS boundary
+
+The five-record child baseline above is permanent infrastructure. Later scenarios do not require the team to redesign the parent/child delegation.
+
+- Scenario 01 uses the existing records for reconnaissance and DNS-to-web follow-up.
+- Scenario 02 intentionally generates nonexistent names to produce NXDOMAIN telemetry.
+- Scenario 03 later adds a temporary controlled `flux.soclab...` record set and short TTL when controlled endpoints exist.
+- Scenario 04 uses the future controlled resolver/DNS path for tunneling telemetry rather than a fake permanent public record.
+- Sinkhole behavior is implemented later inside the defender-controlled resolver path.
+
+The detailed change-control plan is maintained in [`../00-project-design/scenario-dns-plan.md`](../00-project-design/scenario-dns-plan.md).
