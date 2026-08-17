@@ -40,7 +40,7 @@ The Scenario 01 compute layer and the public DNS authority chain are now active.
 - [`03-security-groups-and-ssm.md`](03-security-groups-and-ssm.md)
 - [`04-ec2-deployment.md`](04-ec2-deployment.md)
 - [`05-route53-and-domain.md`](05-route53-and-domain.md)
-- [`/06-ngnix-https-web-server.md`](06-nginx-https-web-server.md)
+- [`06-ngnix-https-web-server.md`](06-nginx-https-web-server.md)
 - [`screenshots/`](screenshots/) - implementation evidence captured from the AWS console and validation sessions
 
 New build files are added only when that AWS component is actually implemented.
