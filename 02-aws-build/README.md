@@ -21,12 +21,13 @@ This folder records what has actually been built in AWS. It is intentionally sep
 | Route 53 parent DNS migration | Complete |
 | Route 53 child zone / parent-to-child delegation | Complete |
 | Public DNS validation | Complete |
-| Nginx / HTTPS | **Next** |
+| Child `www` CNAME + training TXT fixture | Complete |
+| Nginx / HTTPS for main + `www` hostnames | **Next** |
 | AWS security/log telemetry | Not built yet |
 
 ## Current AWS environment
 
-The Scenario 01 compute layer and the public DNS authority chain are now active. The parent domain stays on its existing website target while `soclab.abdul4rehman215.tech` is delegated to a separate Route 53 child zone and resolves to the web EC2 Elastic IP.
+The Scenario 01 compute layer and the public DNS authority chain are now active. The parent domain stays on its existing website target while `soclab.abdul4rehman215.tech` is delegated to a separate Route 53 child zone. The child zone now has its final static baseline: main A record, Route 53 NS/SOA, the `"DNS SOC Training Lab"` TXT fixture and `www` CNAME. Both web names lead to the same web EC2 Elastic IP.
 
 ![Parent and child final DNS validation](screenshots/route53-domain/parent-child-final-validation.png)
 
