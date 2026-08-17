@@ -129,4 +129,4 @@ UFW was inactive.
 
 The instance was ready for Nginx deployment.
 
-Evidence: [`screenshots/nginx-https/39-web-server-preflight.png`]
+Evidence: [`screenshots/nginx-https/39-web-server-preflight.png`](39-web-server-preflight.png)
