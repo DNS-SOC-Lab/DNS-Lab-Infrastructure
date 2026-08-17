@@ -13,12 +13,12 @@ sequenceDiagram
 
     C->>P: Query / delegation lookup for soclab.abdul4rehman215.tech
     P-->>C: NS referral to child Route 53 nameservers
-    C->>D: Query soclab.abdul4rehman215.tech A
-    D-->>C: 100.49.192.164
+    C->>D: Query soclab A or www CNAME
+    D-->>C: A 100.49.192.164 / CNAME -> soclab
     C->>W: HTTP / HTTPS to public web target
 ```
 
-The parent zone owns the delegation. The child zone owns the lab A record.
+The parent zone owns the delegation. The child zone owns the lab A record, the `www` CNAME and the training TXT fixture. Both web hostnames ultimately reach `dns-soc-web01`.
 
 ## Scenario 01 public path
 
@@ -41,7 +41,7 @@ sequenceDiagram
     W-->>S: Web/server logs via approved ingestion path
 ```
 
-The attack host reaches the public namespace and web target without a private route to the SOC VPC.
+The attack host reaches the public namespace and either supported web hostname without a private route to the SOC VPC. The permanent DNS baseline is reused for Scenario 01; later scenario-specific DNS changes are documented in [`../00-project-design/scenario-dns-plan.md`](../00-project-design/scenario-dns-plan.md).
 
 ## Team management path
 
