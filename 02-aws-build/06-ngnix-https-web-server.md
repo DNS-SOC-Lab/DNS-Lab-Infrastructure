@@ -545,9 +545,9 @@ The web server successfully provides:
 
 **Evidence**
 
-![Final web server validation](screenshots/nginx-https/50-final-web-server-validation(a).png)
-![Final web server validation](screenshots/nginx-https/50-final-web-server-validation(b).png)
-![Final web server validation](screenshots/nginx-https/50-final-web-server-validation(c).png)
+![Final web server validation](screenshots/nginx-https/50-final-web-server-validation-a.png)
+![Final web server validation](screenshots/nginx-https/50-final-web-server-validation-b.png)
+![Final web server validation](screenshots/nginx-https/50-final-web-server-validation-c.png)
 
 
 ---
