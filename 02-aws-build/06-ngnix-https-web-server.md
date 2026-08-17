@@ -131,7 +131,7 @@ The instance was ready for Nginx deployment.
 
 Evidence:
 ### Evidence
-![Web Server Pre-Deployment Validation](screenshots/nginx-https/39-web-server-preflight.png)
+![Web Server Pre-Deployment Validation](02-aws-build/screenshots/nginx-https/39-web-server-preflight.png)
 
 ## 5. Nginx Installation
 
