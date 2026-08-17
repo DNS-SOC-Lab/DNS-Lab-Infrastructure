@@ -10,7 +10,7 @@ sequenceDiagram
 
     A->>P: Resolve / enumerate lab namespace
     P-->>A: Child NS referral where applicable
-    A->>C: Authorized A/AAAA/MX/NS/TXT queries
+    A->>C: Authorized A/AAAA/MX/NS/TXT/CNAME-related queries
     C-->>A: DNS responses
     A->>W: Optional HTTP / HTTPS follow-up
     W-->>S: Nginx/server telemetry

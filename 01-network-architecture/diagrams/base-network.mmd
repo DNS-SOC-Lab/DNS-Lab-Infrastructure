@@ -2,7 +2,7 @@ flowchart TB
     Registrar[Hostinger<br/>Registrar]
     Internet((Internet / .tech))
     Parent[Route 53 Parent Zone<br/>abdul4rehman215.tech]
-    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech]
+    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech<br/>A + NS + SOA + TXT + www CNAME]
     Existing[Existing parent services<br/>A: 2.57.91.91<br/>mail DNS preserved]
 
     subgraph ATTACK[ATTACK-LAB-VPC · 10.60.0.0/16]
@@ -26,7 +26,7 @@ flowchart TB
     Internet --> Parent
     Parent --> Existing
     Parent -->|NS delegation for soclab| Child
-    Child -->|A 100.49.192.164| W
+    Child -->|soclab A / www CNAME to 100.49.192.164| W
     A --> Internet
     W --> S
     X{{No VPC peering / no private route between VPCs}}

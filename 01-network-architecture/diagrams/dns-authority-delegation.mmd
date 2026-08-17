@@ -6,7 +6,10 @@ flowchart TB
     ParentMail[Parent mail / TXT / CNAME records]
     ChildNS[NS delegation<br/>soclab.abdul4rehman215.tech]
     Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech]
-    Web[A<br/>100.49.192.164<br/>dns-soc-web01]
+    Apex[A<br/>soclab -> 100.49.192.164]
+    WWW[CNAME<br/>www CNAME to soclab]
+    TXT[TXT<br/>DNS SOC Training Lab]
+    Web[dns-soc-web01<br/>EIP 100.49.192.164]
 
     Registrar -. registered nameservers .-> TLD
     TLD --> Parent
@@ -14,4 +17,8 @@ flowchart TB
     Parent --> ParentMail
     Parent --> ChildNS
     ChildNS --> Child
-    Child --> Web
+    Child --> Apex
+    Child --> WWW
+    Child --> TXT
+    Apex --> Web
+    WWW --> Apex
