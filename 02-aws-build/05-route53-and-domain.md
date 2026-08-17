@@ -1,17 +1,11 @@
 # Route 53 Parent and Child DNS Delegation
 
-**Status:** Implemented and validated
-
-**Implementation owner:** Abdul-Rehman
-
-**AWS service:** Amazon Route 53
-
-**Registrar:** Hostinger
-
-**Parent domain:** `abdul4rehman215.tech`
-
-**Lab namespace:** `soclab.abdul4rehman215.tech`
-
+**Status:** Implemented and validated  
+**Implementation owner:** Abdul-Rehman  
+**AWS service:** Amazon Route 53  
+**Registrar:** Hostinger  
+**Parent domain:** `abdul4rehman215.tech`  
+**Lab namespace:** `soclab.abdul4rehman215.tech`  
 **Web target:** `dns-soc-web01` / `100.49.192.164`
 
 ## Objective
@@ -32,7 +26,7 @@ abdul4rehman215.tech
 Route 53 child zone
 soclab.abdul4rehman215.tech
         |
-        | A
+        | A / www CNAME
         v
 100.49.192.164
  dns-soc-web01
@@ -49,6 +43,8 @@ The architecture design is documented separately in [`../01-network-architecture
 | Parent website A record | `2.57.91.91` |
 | Child authoritative zone | `soclab.abdul4rehman215.tech` in Route 53 |
 | Child web A record | `100.49.192.164` |
+| Child web alias | `www.soclab.abdul4rehman215.tech` CNAME -> `soclab.abdul4rehman215.tech.` |
+| Child training TXT | `"DNS SOC Training Lab"` |
 | Parent NS TTL | `172800` seconds |
 | Parent-to-child delegation TTL | `300` seconds |
 
@@ -138,7 +134,7 @@ The parent NS TTL was then restored from the temporary migration value of `300` 
 
 ## Child hosted zone
 
-The existing child Route 53 zone contains the records needed before public delegation:
+Before public delegation, the existing child Route 53 zone contained the three core records needed to prove authority:
 
 - `A` -> `100.49.192.164`;
 - Route 53-generated `NS` RRset;
@@ -222,6 +218,41 @@ Because the parent DNS authority moved to Route 53, the existing mail-related DN
 
 The existing parent website was also opened in a browser after the DNS work and continued to load normally. The DNS migration changed authority, not the existing website destination.
 
+## Final static child-zone preparation
+
+After the parent/child authority chain was fully validated, two permanent records were added to make the public web target and Scenario 01 reconnaissance baseline more useful without changing the delegation design:
+
+| Name | Type | Value | TTL | Purpose |
+|---|---|---|---:|---|
+| `soclab.abdul4rehman215.tech` | A | `100.49.192.164` | 300 | Existing main web target |
+| `soclab.abdul4rehman215.tech` | NS | Four child Route 53 nameservers | 172800 | Existing child authority |
+| `soclab.abdul4rehman215.tech` | SOA | Route 53-managed SOA | 900 | Existing child authority metadata |
+| `soclab.abdul4rehman215.tech` | TXT | `"DNS SOC Training Lab"` | 300 | Controlled DNS-reconnaissance fixture |
+| `www.soclab.abdul4rehman215.tech` | CNAME | `soclab.abdul4rehman215.tech.` | 300 | Secondary public web hostname |
+
+![Final child-zone static records](screenshots/route53-domain/child-zone-final-static-records.png)
+
+*The child hosted zone now has five stable record sets. The new `www` CNAME reuses the same web target, while the TXT record gives Scenario 01 a harmless record that can be discovered during authorized enumeration.*
+
+The new records were validated through Cloudflare together with the existing A and NS data.
+
+![Final child static-record validation](screenshots/route53-domain/child-static-records-validation.png)
+
+*The validation confirms the main A record, the `www` CNAME chain, the final `www` address, the training TXT record and the four child nameservers through public recursive DNS.*
+
+These additions do not change the parent-to-child delegation. They extend only the child zone's permanent application/scenario baseline. The Nginx and TLS phase must therefore support both `soclab.abdul4rehman215.tech` and `www.soclab.abdul4rehman215.tech`.
+
+### Later scenario DNS work
+
+No other permanent Route 53 records are required now. Later scenario changes are intentionally deferred:
+
+- Scenario 02 generates nonexistent DGA-style names so NXDOMAIN behavior can be measured.
+- Scenario 03 later creates a temporary controlled `flux.soclab...` A RRset with short TTLs when team-controlled endpoints exist.
+- Scenario 04 uses the future controlled resolver/DNS path for tunneling telemetry instead of a fake static public record.
+- Sinkhole behavior remains an internal resolver/incident-response control.
+
+The shared design for those changes is documented in [`../00-project-design/scenario-dns-plan.md`](../00-project-design/scenario-dns-plan.md).
+
 ## Validation summary
 
 | Check | Result |
@@ -233,7 +264,9 @@ The existing parent website was also opened in a browser after the DNS work and 
 | Parent `www` CNAME | Passed |
 | Parent DNS trace | Passed |
 | Parent NS TTL restored | Passed |
-| Child A / NS / SOA | Passed |
+| Child core A / NS / SOA | Passed |
+| Child training TXT | Passed |
+| Child `www` CNAME -> main A | Passed |
 | Parent-to-child NS delegation | Passed |
 | Direct parent referral | Passed |
 | Cloudflare child NS / A | Passed |
@@ -247,9 +280,9 @@ The existing parent website was also opened in a browser after the DNS work and 
 
 The Route 53 DNS phase is complete. `abdul4rehman215.tech` is authoritative in the Route 53 parent hosted zone, the existing parent website and mail DNS remain intact, and the parent delegates `soclab.abdul4rehman215.tech` to a separate Route 53 child hosted zone.
 
-The delegated lab hostname now resolves publicly to `100.49.192.164`, the Elastic IP associated with `dns-soc-web01`.
+The delegated lab hostname resolves publicly to `100.49.192.164`, and `www.soclab.abdul4rehman215.tech` follows a CNAME to the same target. The child zone also contains the permanent `"DNS SOC Training Lab"` TXT fixture for controlled reconnaissance.
 
-The next build step is Nginx and HTTPS configuration for `soclab.abdul4rehman215.tech`.
+The stable public DNS baseline is now complete. The next build step is Nginx and HTTPS configuration for **both** `soclab.abdul4rehman215.tech` and `www.soclab.abdul4rehman215.tech`. Scenario-specific DGA, Fast Flux, tunneling and sinkhole DNS behavior is deferred to the scenario stages that actually need it.
 
 ## Evidence index
 
@@ -267,3 +300,5 @@ The next build step is Nginx and HTTPS configuration for `soclab.abdul4rehman215
 - [Full `soclab` delegation trace](screenshots/route53-domain/soclab-delegation-trace.png)
 - [Parent/child final validation](screenshots/route53-domain/parent-child-final-validation.png)
 - [Parent mail DNS sanity](screenshots/route53-domain/parent-mail-dns-sanity.png)
+- [Final child-zone static records](screenshots/route53-domain/child-zone-final-static-records.png)
+- [Final child static-record validation](screenshots/route53-domain/child-static-records-validation.png)

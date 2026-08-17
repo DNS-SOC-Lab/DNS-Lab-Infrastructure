@@ -8,7 +8,8 @@ This folder is the source of truth for the lab's purpose and working model. It e
 | [`team-roles.md`](team-roles.md) | Four rotating roles and shared responsibilities |
 | [`scenario-matrix.md`](scenario-matrix.md) | Side-by-side view of all four DNS scenarios |
 | [`project-roadmap.md`](project-roadmap.md) | Build sequence and current progress |
+| [`scenario-dns-plan.md`](scenario-dns-plan.md) | Permanent child-zone baseline and later scenario-specific DNS changes |
 
 Detailed VPC, subnet, routing, DNS authority and traffic decisions are kept in [`../01-network-architecture/`](../01-network-architecture/) so the project scope does not become a duplicate architecture manual.
 
-The scenario model remains part of the shared project design, while the implementation and evidence for each scenario are maintained in separate scenario repositories by the team.
+The scenario model remains part of the shared project design, while the implementation and evidence for each scenario are maintained in separate scenario repositories by the team. The shared [`scenario-dns-plan.md`](scenario-dns-plan.md) records which DNS records are permanent and which DNS changes must wait for a later scenario.

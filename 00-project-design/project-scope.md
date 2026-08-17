@@ -17,7 +17,7 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | Parent authoritative DNS | Route 53 public hosted zone for `abdul4rehman215.tech` |
 | Public lab namespace | `soclab.abdul4rehman215.tech` |
 | Child authoritative DNS | Separate Route 53 public hosted zone delegated from the parent zone |
-| Public web target | `soclab.abdul4rehman215.tech` → `100.49.192.164` (`dns-soc-web01`) |
+| Public web targets | `soclab.abdul4rehman215.tech` → `100.49.192.164`; `www.soclab.abdul4rehman215.tech` → CNAME to the main hostname |
 | Existing parent services | Preserved through the Route 53 parent zone, including website and mail-related DNS |
 | SOC network | `SOC-LAB-VPC` |
 | Attacker network | `ATTACK-LAB-VPC` |
@@ -26,6 +26,7 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | Endpoint/server collection | Splunk Universal Forwarder where required |
 | AWS telemetry | Route 53 / Resolver logs, VPC Flow Logs and CloudTrail as the project reaches those stages |
 | AI | Flask/LLM bridge used for alert summarization, with analyst validation |
+| Static child-zone fixtures | Permanent `A`, `NS`, `SOA`, training `TXT` and `www` CNAME records |
 | DNS defense | Team-controlled DNS defense and sinkhole work in later scenarios |
 
 ## DNS authority boundary
@@ -46,9 +47,11 @@ Route 53 parent zone: abdul4rehman215.tech
 Route 53 child zone: soclab.abdul4rehman215.tech
             |
             +-- A -> 100.49.192.164
+            +-- www CNAME -> soclab.abdul4rehman215.tech
+            +-- TXT -> "DNS SOC Training Lab"
 ```
 
-This keeps the existing parent domain services intact while giving the lab namespace its own authoritative child zone.
+This keeps the existing parent domain services intact while giving the lab namespace its own authoritative child zone. The five-record child baseline is kept stable; later DGA, Fast Flux, tunneling and sinkhole behavior is introduced only when the relevant scenario needs it. See [`scenario-dns-plan.md`](scenario-dns-plan.md).
 
 ## Scope boundaries
 
