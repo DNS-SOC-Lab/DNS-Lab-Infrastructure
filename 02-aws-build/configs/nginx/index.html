@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DNS SOC Security Lab</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0b1220;
+            color: #ffffff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            padding: 50px;
+            text-align: center;
+            background: #111c2c;
+            border: 1px solid #29415e;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .status {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #12351f;
+            color: #7ee787;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            font-size: 38px;
+        }
+
+        .subtitle {
+            margin-bottom: 30px;
+            color: #c7d2e1;
+            font-size: 18px;
+        }
+
+        .description {
+            margin-bottom: 30px;
+            line-height: 1.7;
+            color: #aebdce;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .service {
+            padding: 20px;
+            background: #16263a;
+            border: 1px solid #29415e;
+            border-radius: 10px;
+            color: #dce7f3;
+            font-weight: bold;
+        }
+
+        .hostnames {
+            margin-top: 25px;
+            padding: 20px;
+            background: #0d1726;
+            border-radius: 10px;
+            color: #aebdce;
+            line-height: 1.8;
+        }
+
+        .hostname {
+            color: #7ee787;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #29415e;
+            color: #71849a;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .services {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="status">
+            ● SERVICE ONLINE
+        </div>
+
+        <h1>DNS SOC Security Lab</h1>
+
+        <p class="subtitle">
+            Authorized Cybersecurity Training Environment
+        </p>
+
+        <p class="description">
+            This web server is part of a controlled DNS Security Operations
+            Center (SOC) laboratory environment used for monitoring,
+            detection, threat hunting, and incident response exercises.
+        </p>
+
+        <section class="services">
+
+            <div class="service">
+                DNS Security
+            </div>
+
+            <div class="service">
+                Network Monitoring
+            </div>
+
+            <div class="service">
+                Incident Response
+            </div>
+
+        </section>
+
+        <section class="hostnames">
+
+            <div>
+                Primary Host:
+                <span class="hostname">
+                    soclab.abdul4rehman215.tech
+                </span>
+            </div>
+
+            <div>
+                WWW Host:
+                <span class="hostname">
+                    www.soclab.abdul4rehman215.tech
+                </span>
+            </div>
+
+        </section>
+
+        <footer>
+            AWS EC2 &nbsp;|&nbsp; Nginx &nbsp;|&nbsp; HTTPS
+            <br>
+            DNS SOC Security Lab
+        </footer>
+
+    </main>
+
+</body>
+</html>
