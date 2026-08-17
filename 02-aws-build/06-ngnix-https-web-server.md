@@ -91,7 +91,7 @@ The objectives of this phase are:
 ```
 HTTP traffic is redirected to HTTPS.
 
-4. Pre-Deployment Validation
+## 4. Pre-Deployment Validation
 
 The EC2 instance was accessed through AWS Systems Manager Session Manager.
 
@@ -131,7 +131,7 @@ The instance was ready for Nginx deployment.
 
 Evidence: [`screenshots/nginx-https/39-web-server-preflight.png`](39-web-server-preflight.png)
 
-5. Nginx Installation
+## 5. Nginx Installation
 
 Nginx was installed using the Ubuntu package manager
 ```
@@ -161,7 +161,7 @@ Nginx was successfully installed and running.
 Evidence:
 [`screenshots/nginx-https/40-nginx-installed-running.png`](40-nginx-installed-running.png)
 
-6. Custom SOC Landing Page
+## 6. Custom SOC Landing Page
 
 A dedicated document root was created:
 ```
@@ -181,7 +181,7 @@ DNS SOC Security Lab
 
 The page is intentionally a controlled training landing page and does not expose credentials, private keys, AWS secrets, or other sensitive information.
 
-7. Nginx Virtual Host
+## 7. Nginx Virtual Host
 
 A dedicated Nginx site configuration was created for the SOC lab domain.
 
@@ -209,7 +209,7 @@ sudo nginx -t
 Evidence
 [`screenshots/nginx-https/42-nginx-site-configuration-validation.png`](42-nginx-site-configuration-validation.png)
 
-8. DNS Validation
+## 8. DNS Validation
 
 The public DNS records were validated before HTTPS deployment.
 
@@ -235,7 +235,7 @@ Result
 
 Both public hostnames correctly resolved to the web server.
 
-9. Public HTTP Validation
+## 9. Public HTTP Validation
 
 Before enabling HTTPS, the public web server was tested over HTTP.
 ```
@@ -252,7 +252,7 @@ Both hostnames successfully reached the Nginx web server and returned the DNS SO
 Evidence:
 [`screenshots/nginx-https/41-custom-soclab-http-page.png`](41-custom-soclab-http-page.png)
 
-10. Let's Encrypt HTTPS
+## 10. Let's Encrypt HTTPS
 
 Certbot was installed to obtain and configure a publicly trusted TLS certificate.
 ```
@@ -279,7 +279,7 @@ The certificate is associated with the DNS hostnames rather than the Elastic IP.
 Evidence
 [`screenshots/nginx-https/43-letsencrypt-certificate-issued.png`](43-letsencrypt-certificate-issued.png)
 
-11. HTTPS Validation
+## 11. HTTPS Validation
 
 Nginx was tested after HTTPS configuration:
 ```
@@ -303,7 +303,7 @@ Both hostnames successfully served the SOC landing page over HTTPS.
 Evidence
 [`screenshots/nginx-https/44-https-browser-validation.png`](44-https-browser-validation.png)
 
-12. HTTP to HTTPS Redirect
+## 12. HTTP to HTTPS Redirect
 
 HTTP requests were tested:
 ```
@@ -323,7 +323,7 @@ HTTPS
 Evidence
 [`screenshots/nginx-https/45-http-to-https-redirect.png`](45-http-to-https-redirect.png)
 
-13. TLS Certificate and SAN Validation
+## 13. TLS Certificate and SAN Validation
 
 Certificate details were inspected using OpenSSL:
 ```
@@ -344,7 +344,7 @@ sudo certbot certificates
 Evidence
 [`screenshots/nginx-https/46-tls-certificate-validation.png`](46-tls-certificate-validation.png)
 
-14. Certificate Renewal Validation
+## 14. Certificate Renewal Validation
 
 Automatic renewal was tested using Certbot's dry-run mode:
 ```
@@ -359,7 +359,7 @@ systemctl list-timers | grep -i certbot || true
 Evidence
 [`screenshots/nginx-https/47-certificate-renewal-test.png`](47-certificate-renewal-test.png)
 
-15. Nginx Access Logging
+## 15. Nginx Access Logging
 
 The site-specific access log is:
 ```
@@ -378,7 +378,7 @@ The successful request was recorded with HTTP status 200.
 Evidence
 [`screenshots/nginx-https/48-nginx-access-log-validation.png`](48-nginx-access-log-validation.png)
 
-16. Controlled 404 Validation
+## 16. Controlled 404 Validation
 
 A harmless non-existent URL was requested:
 ```
@@ -395,7 +395,7 @@ This validates that both successful and failed web requests are available for fu
 
 Evidence
 [`screenshots/nginx-https/49-nginx-404-log-validation.png`](49-nginx-404-log-validation.png)
-17. Final Validation
+## 17. Final Validation
 
 The final web-server validation included:
 ```
@@ -424,7 +424,7 @@ Controlled 404 logging
 Evidence
 [`screenshots/nginx-https/50-final-web-server-validation.png`](50-final-web-server-validation.png)
 
-18. Security Notes
+## 18. Security Notes
 
 The web server is intended to be administered through AWS Systems Manager Session Manager rather than public SSH.
 
