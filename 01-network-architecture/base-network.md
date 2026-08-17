@@ -13,7 +13,7 @@ flowchart TB
     Registrar[Hostinger<br/>Registrar]
     Internet((Internet / .tech))
     Parent[Route 53 Parent Zone<br/>abdul4rehman215.tech]
-    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech]
+    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech<br/>A + NS + SOA + TXT + www CNAME]
     Existing[Existing parent services<br/>A: 2.57.91.91<br/>mail DNS preserved]
 
     subgraph AVPC[ATTACK-LAB-VPC · 10.60.0.0/16]
@@ -37,7 +37,7 @@ flowchart TB
     Internet --> Parent
     Parent --> Existing
     Parent -->|NS delegation for soclab| Child
-    Child -->|A 100.49.192.164| Web
+    Child -->|soclab A / www CNAME to 100.49.192.164| Web
     Attack --> Internet
     Web --> Splunk
 
@@ -58,7 +58,7 @@ The parent and child Route 53 zones have separate authoritative nameserver sets.
 
 ### Public target boundary
 
-`SOC-TARGET-SUBNET` is where intentionally public lab services are placed. `soclab.abdul4rehman215.tech` resolves to the Elastic IP associated with `dns-soc-web01`. Exposure is controlled by service-specific security groups rather than opening the entire VPC.
+`SOC-TARGET-SUBNET` is where intentionally public lab services are placed. `soclab.abdul4rehman215.tech` resolves to the Elastic IP associated with `dns-soc-web01`, and `www.soclab.abdul4rehman215.tech` is a CNAME to the same hostname. Exposure is controlled by service-specific security groups rather than opening the entire VPC.
 
 ### SIEM boundary
 
