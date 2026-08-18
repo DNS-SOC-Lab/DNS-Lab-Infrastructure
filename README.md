@@ -88,8 +88,8 @@ The Project Lead also operates the authorized simulation for that scenario and r
 | Route 53 child zone and parent-to-child delegation | Completed |
 | Public DNS validation | Completed |
 | Static child DNS / Scenario 01 fixtures | Completed |
-| Nginx / HTTPS for main + `www` hostnames | **Next** |
-| Splunk Enterprise deployment | Planned |
+| Nginx / HTTPS for main + `www` hostnames | Completed |
+| Splunk Enterprise deployment | **Next** |
 | AWS log onboarding | Planned |
 | Scenario execution | Maintained in separate scenario repositories |
 
