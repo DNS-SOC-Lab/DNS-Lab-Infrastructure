@@ -1,0 +1,42 @@
+services:
+  splunk:
+    image: splunk/splunk:10.4.2
+    container_name: dns-soc-splunk
+    hostname: dns-soc-splunk01
+    restart: unless-stopped
+
+    env_file:
+      - /etc/dns-soc-splunk/splunk.env
+
+    ports:
+      - "10.50.20.10:8000:8000"
+      - "10.50.20.10:9997:9997"
+
+    volumes:
+      - splunk_etc:/opt/splunk/etc
+      - splunk_var:/opt/splunk/var
+
+    networks:
+      - dns-soc-internal
+
+    stop_grace_period: 2m
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  dns-soc-internal:
+    name: dns-soc-internal
+    driver: bridge
+
+volumes:
+  splunk_etc:
+    external: true
+    name: dns-soc-splunk-etc
+
+  splunk_var:
+    external: true
+    name: dns-soc-splunk-var
