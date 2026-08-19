@@ -1,0 +1,137 @@
+# Splunk Backup, Recovery & Operations
+
+## Persistence model
+
+The container is replaceable; the Splunk state is not.
+
+```text
+dns-soc-splunk
+    |
+    +-- /opt/splunk/etc -> dns-soc-splunk-etc
+    |
+    +-- /opt/splunk/var -> dns-soc-splunk-var
+```
+
+Both named volumes are external to the Compose service definition so normal container recreation does not delete them.
+
+## Routine health checks
+
+From `/opt/dns-soc-splunk`:
+
+```bash
+docker compose ps
+
+docker inspect --format \
+'Status={{.State.Status}} Health={{if .State.Health}}{{.State.Health.Status}}{{else}}n/a{{end}} Restart={{.HostConfig.RestartPolicy.Name}}' \
+dns-soc-splunk
+
+docker exec -u splunk dns-soc-splunk \
+  /opt/splunk/bin/splunk status
+
+docker system df
+df -h /
+```
+
+The expected steady state is `running`, `healthy` and `Restart=unless-stopped`.
+
+## Normal restart validation
+
+A normal Compose restart was tested and Splunk returned healthy with its receiver/configuration intact.
+
+```bash
+docker compose restart splunk
+```
+
+![Normal restart validation](screenshots/platform/66-splunk-restart-validation.png)
+
+The Docker service itself was also restarted to prove the container returns automatically through the restart policy.
+
+![Docker daemon restart recovery](screenshots/platform/66b-docker-daemon-restart-recovery.png)
+
+## Container recreation test
+
+The stronger persistence test recreates the container while keeping the named volumes:
+
+```bash
+docker compose up -d --force-recreate
+```
+
+After recreation, the team verified the five custom index stanzas and the TCP `9997` receiver configuration were still present.
+
+![Persistence after container recreation](screenshots/platform/67-splunk-persistence-recreate.png)
+
+This test is the main proof that the Splunk configuration/data lifecycle is separated from the container lifecycle.
+
+## Baseline backup
+
+Backups are stored outside the repository under a timestamped host path such as:
+
+```text
+/var/backups/dns-soc-splunk/YYYY-MM-DD-HHMM/
+```
+
+A consistent point-in-time backup stops Splunk briefly, archives both named volumes and then starts the service again.
+
+```bash
+BACKUP_DIR=/var/backups/dns-soc-splunk/$(date +%F-%H%M)
+sudo mkdir -p "$BACKUP_DIR"
+
+docker compose stop splunk
+
+docker run --rm \
+  -v dns-soc-splunk-etc:/volume:ro \
+  -v "$BACKUP_DIR":/backup \
+  alpine:3 \
+  sh -c 'tar czf /backup/splunk-etc.tgz -C /volume .'
+
+docker run --rm \
+  -v dns-soc-splunk-var:/volume:ro \
+  -v "$BACKUP_DIR":/backup \
+  alpine:3 \
+  sh -c 'tar czf /backup/splunk-var.tgz -C /volume .'
+
+docker compose start splunk
+```
+
+Archive integrity is checked without extracting:
+
+```bash
+sudo tar -tzf "$BACKUP_DIR/splunk-etc.tgz" >/dev/null && echo "ETC BACKUP VERIFIED"
+sudo tar -tzf "$BACKUP_DIR/splunk-var.tgz" >/dev/null && echo "VAR BACKUP VERIFIED"
+```
+
+![Verified baseline backup](screenshots/platform/68-splunk-backup-baseline.png)
+
+The `.tgz` files are operational backups and are **not** committed to GitHub.
+
+## Update strategy
+
+Before a Splunk image update:
+
+1. record the currently running image/tag;
+2. verify the latest volume backup and, for a significant upgrade, take an EBS snapshot;
+3. review the target Splunk version before changing the pinned image;
+4. update the explicit image tag in `compose.yaml`;
+5. pull the target image and recreate the service;
+6. validate health, Splunk Web, indexes, TCP `9997`, searches and recent data;
+7. keep the previous recovery point until the new version is proven stable.
+
+The repository intentionally avoids `latest` for the final platform definition.
+
+## Rollback principle
+
+Do not treat a Splunk downgrade as simply switching an image tag after a major upgrade. Persistent Splunk data/configuration may have changed. The safe rollback point is the pre-change named-volume backup or EBS snapshot.
+
+## Commands to avoid during routine troubleshooting
+
+Do not use destructive cleanup commands against the live project without a verified recovery plan:
+
+```text
+docker compose down -v
+docker volume prune
+docker volume rm dns-soc-splunk-etc
+docker volume rm dns-soc-splunk-var
+rm -rf /var/lib/docker
+```
+
+Routine troubleshooting should inspect health, logs, disk and configuration first rather than deleting persistent state.
