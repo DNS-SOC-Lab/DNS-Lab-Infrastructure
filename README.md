@@ -80,19 +80,19 @@ The Project Lead also operates the authorized simulation for that scenario and r
 | Area | Status |
 |---|---|
 | Project design | Complete / maintained as the shared design baseline |
-| AWS identity, MFA, budget and SSM role | Complete |
-| VPCs, subnets, IGWs and route tables | Complete |
-| Baseline security groups | Complete |
-| Scenario 01 EC2 deployment | Complete |
-| Route 53 parent migration and child delegation | Complete |
-| Public DNS validation and static child-zone fixtures | Complete |
+| AWS identity, MFA, budget and SSM role | **Complete**  |
+| VPCs, subnets, IGWs and route tables | **Complete**  |
+| Baseline security groups | **Complete**  |
+| Scenario 01 EC2 deployment | **Complete**  |
+| Route 53 parent migration and child delegation | **Complete** |
+| Public DNS validation and static child-zone fixtures | **Complete** |
 | Nginx / HTTPS for main + `www` hostnames | Complete |
 | Splunk Enterprise platform / Gate A | **Complete** |
 | Five project indexes + 30-day retention | **Complete** |
 | Splunk receiver TCP `9997` | **Complete** |
-| Web Universal Forwarder + Nginx/Linux data quality | **Next** |
-| AWS security telemetry onboarding | Planned |
-| Shared AI foundation | Planned after Web/AWS data-quality gates |
+| Web Universal Forwarder + Nginx/Linux data quality | **Complete**  |
+| AWS security telemetry onboarding | **Complete**  |
+| Shared AI foundation |**Next** |
 | Scenario-specific detections and exercises | Maintained in separate scenario repositories |
 
 The current checkpoint is **trusted telemetry onboarding**. The Splunk platform is ready; the next implementation step is the Universal Forwarder on `dns-soc-web01`, followed by AWS telemetry and data-quality validation.
