@@ -31,34 +31,4 @@ Screenshots `51–54` remain reserved for the next **Web Universal Forwarder** p
 | [`troubleshooting/legacy-container-state.png`](troubleshooting/legacy-container-state.png) | Shows why the original `latest` / `RestartPolicy=no` one-off container was replaced |
 | [`troubleshooting/hec-401-provisioning-loop.png`](troubleshooting/hec-401-provisioning-loop.png) | Captures the exact provisioning task that caused the Compose restart loop before final correction |
 
-The public troubleshooting record is intentionally short. Repetitive intermediate checks are not needed to prove the final build.
-
-## Publication / redaction checklist
-
-Before Sonia pushes the repository, review every screenshot one final time.
-
-Redact or crop if present:
-
-- team members' exact public `/32` addresses;
-- temporary/public Splunk IPv4 addresses where they are not needed;
-- AWS account identifiers when unnecessary to explain the configuration;
-- SSM session IDs or personal browser/account information;
-- passwords, tokens, API keys, secret values, MFA material or private keys.
-
-The selected `62-sg-splunk-access-control.png` already hides the four team public IP values while preserving the rule count and `SG-WEB` receiver source.
-
-## Raw screenshots intentionally excluded
-
-The following files from the original screenshot archive should **not** be added to the public repository:
-
-| Raw file | Action | Reason |
-|---|---|---|
-| `1.jpeg` | Do not publish | Historical shell command contains an old Splunk password |
-| `2.jpeg` | Do not publish | Historical shell command contains an old Splunk password |
-| `3.jpeg` | Keep private/raw only | Browser address/tabs contain personal/environment details and a cleaner Web screenshot is available |
-| `4.jpeg` | Keep private/raw only | Useful internal-search check but not required for final Gate A evidence |
-| `5.jpeg`, `6.jpeg` | Keep private/raw only | Intermediate backup/permission troubleshooting duplicated by cleaner final evidence |
-| `Screenshot 2026-08-18 200014.png` | Keep private/raw only | Failed browser state exposes a public IPv4 and is superseded by the documented root cause/result |
-| other repeated `1957xx–2152xx` diagnostic screenshots | Keep private/raw only unless specifically needed later | Intermediate audit/migration checks are summarized in `04-troubleshooting-and-lessons.md` |
-
-Private RFC1918 addresses such as `10.50.20.10`, Docker image digests, container names, index names and normal technical configuration are intentionally retained because they explain the lab architecture.
+The public troubleshooting record is intentionally short.
