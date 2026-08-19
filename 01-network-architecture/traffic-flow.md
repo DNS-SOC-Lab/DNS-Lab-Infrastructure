@@ -57,12 +57,15 @@ Team admin   -> AWS Systems Manager -> EC2
 
 ```mermaid
 flowchart LR
-    W[Web / Linux Logs] --> UF[Splunk Universal Forwarder]
-    UF -->|TCP 9997| S[Splunk Enterprise]
-    AWS[AWS Telemetry] -. later onboarding .-> S
-    DNS[DNS Telemetry] -. later onboarding .-> S
+    W[Web / Linux Logs] -. next .-> UF[Splunk Universal Forwarder]
+    UF -. TCP 9997 .-> S[Splunk Enterprise
+Gate A complete]
+    AWS[AWS Telemetry] -. planned onboarding .-> S
+    DNS[Resolver DNS Telemetry] -. Scenario 02 onward .-> S
     S --> D[Search / Dashboard / Detection]
 ```
+
+The Splunk platform and TCP `9997` receiver are ready. The web Universal Forwarder path is the next implementation checkpoint; AWS and resolver telemetry remain planned until their respective build phases.
 
 ## Later defensive DNS path
 
