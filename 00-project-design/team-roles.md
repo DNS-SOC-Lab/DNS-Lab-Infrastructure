@@ -62,6 +62,21 @@ Typical work:
 
 After four scenarios, every member has performed each primary role once.
 
+## Shared AI foundation
+
+AI is shared infrastructure, not a fifth role and not a replacement for SOC judgement. The common Flask/LLM bridge is built once after the Web/AWS data-quality gates and then reused by all scenario repositories.
+
+For the initial shared AI foundation:
+
+| Team member | Shared responsibility |
+|---|---|
+| Sonia | Define the useful alert fields, AI payload requirements and detection-to-AI contract |
+| Abdul-Rehman | Coordinate Flask placement, Docker/network connectivity, API configuration and integration readiness |
+| Musfira | Test whether the AI summary is accurate, useful and consistent with raw Splunk evidence |
+| Lubaba | Review whether AI response suggestions are safe, relevant and still require human approval |
+
+The bridge and output schema stay common. Scenario-specific context/prompt profiles are added only after each scenario's detection fields are stable.
+
 ## Shared working rule
 
 All four members should understand the complete chain even when they do not own every action:
@@ -72,10 +87,11 @@ flowchart LR
     B --> C[Detection Tested]
     C --> D[Simulation]
     D --> E[Alert]
-    E --> F[SOC Confirmation]
-    F --> G[IR Response]
-    G --> H[Verification]
-    H --> I[Documentation]
+    E --> F[AI Enrichment]
+    F --> G[SOC Confirmation]
+    G --> H[IR Response]
+    H --> I[Verification]
+    I --> J[Documentation]
 ```
 
-AI is infrastructure shared by the team, not a fifth role. The SOC Analyst makes the final triage decision; response actions remain human-approved.
+The SOC Analyst makes the final triage decision; response actions remain human-approved.
