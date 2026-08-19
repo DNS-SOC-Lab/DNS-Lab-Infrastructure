@@ -6,6 +6,7 @@ Screenshots in this folder are implementation evidence for the AWS work complete
 - `network-foundation/` - VPC, subnet, IGW, route-table and security-group evidence
 - `ec2-deployment/` - launch configuration, Elastic IP, SSM validation and final Scenario 01 instance inventory
 - `route53-domain/` - parent DNS migration, child hosted zone, delegation, authoritative tests, public resolver validation, final static child records and DNS sanity checks
+- `nginx-https/` - web preflight, Nginx configuration, certificate, redirect, TLS, renewal and web-log validation
 
 Primary screenshots are displayed inline in the relevant technical documents so a reader can follow the implementation without opening every image separately. Supporting screenshots remain available through each document's evidence index.
 
