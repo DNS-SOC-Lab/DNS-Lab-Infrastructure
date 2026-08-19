@@ -100,7 +100,7 @@ The exact authoritative or forwarding behavior is decided when the resolver comp
 
 ## Sinkhole / containment
 
-Sinkholing belongs to the later defender-controlled resolver path, not the permanent public Route 53 baseline.
+Sinkholing belongs to the defender-controlled resolver path, not the permanent public Route 53 baseline. The capability is introduced with the Scenario 02 resolver/victim infrastructure and then reused by later response exercises. Scenario 04 requires the clearest before/after containment proof.
 
 The planned sinkhole address remains:
 
@@ -118,7 +118,7 @@ After containment
 Victim -> DNS resolver -> 10.50.30.30 sinkhole
 ```
 
-That gives the incident-response team a measurable before/after result without turning the public child zone into the containment mechanism.
+That gives the incident-response team a measurable before/after result without turning the public child zone into the containment mechanism. Scenario 02 establishes the capability; Scenario 03 may reuse it when useful; Scenario 04 explicitly demonstrates sinkhole/block containment and verification.
 
 ## Change-control rule
 
