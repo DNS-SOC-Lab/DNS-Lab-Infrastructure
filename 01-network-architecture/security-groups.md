@@ -25,6 +25,8 @@ SIEM access and log-receiver security group.
 | Inbound | TCP 8089 | Not public | Splunk management interface |
 | Inbound | SSH 22 | None in baseline | Prefer SSM |
 
+The current Gate A implementation matches this model: TCP `8000` has four separate team-source IPv4 rules and TCP `9997` references `SG-WEB`. No public `8088`, `8089` or SSH rule is present on `SG-SPLUNK`.
+
 The Flask/LLM bridge is intended to communicate with Splunk internally rather than exposing its application port to the Internet.
 
 ## `SG-ATTACKER`

@@ -1,20 +1,99 @@
-# AI-Assisted Alert Summarization
+# Shared AI-Assisted Alert Summarization
 
-**Status:** Planned — implementation has not started yet.
+**Status:** Planned — implementation starts only after Web and AWS telemetry pass their Splunk data-quality gates.
 
-The AI component is designed to assist the analyst after a Splunk detection fires. It does **not** make the final triage or response decision.
+The AI component is **shared infrastructure** for all four scenarios. It is built once, then each scenario adds a small profile that maps its stable alert fields and context into the common bridge. AI assists the analyst; it does not make the final triage or response decision.
 
 ```mermaid
 flowchart LR
     A[Splunk Detection] --> B[Webhook]
-    B --> C[Flask / LLM Bridge]
+    B --> C[Shared Flask / LLM Bridge]
     C --> D[LLM API]
     D --> E[Structured Summary]
     E --> F[Splunk HEC]
-    F --> G[AI Summary in Splunk]
+    F --> G[index=dns_soc_ai]
     G --> H[Human SOC Analyst Validates Raw Evidence]
 ```
 
-Planned outputs include a plain-English alert summary, suspicious indicators, a suggested MITRE technique, and investigation questions. The SOC Analyst must compare that output with the raw Splunk evidence before assigning a disposition.
+## Why this is built after trusted telemetry
 
-When implemented, this folder will contain the bridge code/configuration, prompt contract, webhook/HEC setup notes, safe secret handling, test cases and examples of useful vs. incorrect AI output.
+The bridge should consume a stable detection payload, not influence how logs are collected or how the detection is designed.
+
+```text
+Web Forwarder + data quality
+          |
+AWS telemetry + data quality
+          |
+          v
+Shared AI foundation
+          |
+Scenario detection reaches stable fields
+          |
+          v
+Scenario-specific AI profile
+```
+
+This keeps the telemetry and SPL logic evidence-driven while allowing every later scenario to reuse the same integration code.
+
+## Shared foundation scope
+
+The common implementation will cover:
+
+- second Docker container on the Splunk EC2 host;
+- internal Docker network communication;
+- Flask webhook endpoint;
+- safe LLM API secret handling;
+- a common alert request schema;
+- a common structured AI response schema;
+- error/timeout handling;
+- HEC return path to `dns_soc_ai`;
+- `sourcetype=dns_soc:ai:triage`;
+- health checks and a synthetic end-to-end test;
+- analyst validation of correct and incorrect AI output.
+
+TCP `8088` is not publicly exposed. When HEC is introduced, it is used through the controlled internal integration path.
+
+## Common output contract
+
+The exact schema is finalized during implementation, but the shared output should remain focused on analyst support:
+
+```text
+summary
+observed indicators
+why the activity may be suspicious
+suggested MITRE mapping
+questions / evidence still requiring verification
+possible response considerations
+```
+
+The model must not automatically mark an event true-positive/false-positive or execute containment.
+
+## Scenario profiles
+
+The bridge code stays common, while scenario context is versioned separately:
+
+| Scenario | Example profile focus |
+|---|---|
+| 01 — DNS Recon | record-type diversity, query rate, source, queried names, follow-up web activity |
+| 02 — DGA / NXDOMAIN | NXDOMAIN ratio, unique names, label/domain length, query rate, client behavior |
+| 03 — Fast Flux | answer/IP churn, TTL, destination changes and flow context |
+| 04 — DNS Tunneling | long/encoded labels, TXT/A patterns, frequency, parent domain and endpoint/network context |
+
+Scenario 02 may also add a separate statistical/ML anomaly-detection feature. That is a detection method, not a replacement for the shared LLM summarization bridge.
+
+## Initial shared ownership
+
+The initial foundation follows the Task 1 responsibilities already assigned by the team:
+
+| Team member | Responsibility |
+|---|---|
+| Sonia | Define alert fields, payload requirements and what the AI should analyze |
+| Abdul-Rehman | Coordinate Flask deployment, Docker/network path, API configuration and integration readiness |
+| Musfira | Validate whether AI summaries are useful and consistent with raw Splunk evidence |
+| Lubaba | Review whether AI response suggestions are appropriate and remain human-approved |
+
+Later scenario repositories can rotate detection/SOC/IR ownership without rebuilding the shared bridge.
+
+## Success condition
+
+AI integration is successful only if the SOC Analyst can compare the generated summary against the raw Splunk evidence and clearly explain where the AI was correct, incomplete or wrong.

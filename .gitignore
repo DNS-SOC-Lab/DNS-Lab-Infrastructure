@@ -43,3 +43,9 @@ Thumbs.db
 # Local evidence that may contain sensitive data
 private-evidence/
 raw-evidence/
+
+# Splunk runtime secrets and backup archives
+splunk.env
+*.tgz
+*.tar.gz
+03-splunk-build/backups/

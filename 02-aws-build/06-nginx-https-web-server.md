@@ -560,3 +560,25 @@ The web server successfully provides:
   - TCP/443
 - The web server does not publish private keys, credentials, AWS access keys, or Splunk credentials.
 - Let's Encrypt private-key material under `/etc/letsencrypt/` must never be committed to GitHub.
+
+---
+
+## 19. Next Telemetry Handoff
+
+The web service is complete. Log forwarding is intentionally handled as the next Splunk data-onboarding phase rather than as part of the Nginx installation itself.
+
+The next work on `dns-soc-web01` is:
+
+```text
+Splunk Universal Forwarder
+    |
+    +-- /var/log/nginx/soclab_access.log
+    +-- /var/log/nginx/soclab_error.log
+    +-- selected real Linux security/system source
+    |
+    | private TCP 9997
+    v
+10.50.20.10 / dns-soc-splunk01
+```
+
+The forwarder work and data-quality checks are tracked in [`../03-splunk-build/`](../03-splunk-build/). The Nginx logs do not replace authoritative DNS query telemetry; Route 53/VPC/CloudTrail evidence is added in the later AWS telemetry phase.
