@@ -101,13 +101,9 @@ The Web Forwarder is the next Gate B task. AWS telemetry follows after that. DNS
 
 ## Documents
 
-- [`01-platform-deployment.md`](01-platform-deployment.md) — final Docker/Splunk architecture and validation
+- [`01-platform-deployment.md`](01-platform-deployment.md) — Docker/Splunk architecture and validation
 - [`02-data-structure-and-validation.md`](02-data-structure-and-validation.md) — indexes, sourcetypes, naming and data-quality gates
 - [`03-backup-recovery-and-operations.md`](03-backup-recovery-and-operations.md) — persistence, restart, backup, recreate and upgrade strategy
-- [`04-troubleshooting-and-lessons.md`](04-troubleshooting-and-lessons.md) — concise engineering lessons from the build
-- [`configs/`](configs/) — repository-safe Compose and environment examples
-- [`screenshots/`](screenshots/) — selected public evidence and publication checklist
-
-## Evidence numbering
-
-Screenshots `51–54` remain reserved for the **post-web Universal Forwarder** handoff. The completed Splunk platform evidence uses `55–68`, matching the implementation handoff used by the team.
+- [`04-troubleshooting-and-lessons.md`](04-troubleshooting-and-lessons.md) — engineering lessons from the build
+- [`configs/`](configs/) — Compose and environment examples
+- [`screenshots/`](screenshots/) — evidence
