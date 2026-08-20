@@ -79,14 +79,14 @@ The Project Lead also operates the authorized simulation for that scenario and r
 
 | Area | Status |
 |---|---|
-| Project design | Complete / maintained as the shared design baseline |
+| Project design | **Complete** / maintained as the shared design baseline |
 | AWS identity, MFA, budget and SSM role | **Complete**  |
 | VPCs, subnets, IGWs and route tables | **Complete**  |
 | Baseline security groups | **Complete**  |
 | Scenario 01 EC2 deployment | **Complete**  |
 | Route 53 parent migration and child delegation | **Complete** |
 | Public DNS validation and static child-zone fixtures | **Complete** |
-| Nginx / HTTPS for main + `www` hostnames | Complete |
+| Nginx / HTTPS for main + `www` hostnames | **Complet**e |
 | Splunk Enterprise platform / Gate A | **Complete** |
 | Five project indexes + 30-day retention | **Complete** |
 | Splunk receiver TCP `9997` | **Complete** |
