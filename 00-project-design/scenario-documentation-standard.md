@@ -1,7 +1,7 @@
 # Scenario Documentation Standard
 
 **Status:** Shared project standard for all four scenario repositories.  
-**Research and documentation standard lead:** Lubaba — Scenario Documentation & Incident Response
+**Research and documentation standard lead:** [_Lubaba_](https://github.com/lubaba1513-pixel) — Scenario Documentation & Incident Response
 
 This documentation standard was researched, proposed and structured by Lubaba to keep all scenario repositories consistent, reproducible and easy to review across the project.
 
