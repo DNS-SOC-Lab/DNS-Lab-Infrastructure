@@ -285,7 +285,7 @@ index=dns_soc_aws
 
 **Gate C is complete.**
 
-The next shared infrastructure task is the AI foundation in [`../04-ai-integration/`](../04-ai-integration/). Scenario 01 dashboard/detection work starts later in the dedicated Scenario 01 repository.
+The shared AI foundation has since been completed in [`../04-ai-integration/`](../04-ai-integration/). Common infrastructure is complete, and Scenario 01 detection engineering is active in the dedicated Scenario 01 repository.
 
 ## Evidence index
 

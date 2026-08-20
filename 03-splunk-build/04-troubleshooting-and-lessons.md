@@ -70,7 +70,7 @@ During Compose provisioning, Splunk itself started but the container repeatedly 
 
 The team stopped the restart loop, preserved both named volumes and backups, then reconciled the protected bootstrap/admin credential with Splunk's stored admin state. The repository keeps only the safe environment example.
 
-HEC is still **not host-published**. Its controlled use belongs to the shared AI integration phase.
+HEC remains **not host-published**. It is now used only through the internal Docker path by the completed shared AI integration.
 
 **Lesson**
 
@@ -226,6 +226,52 @@ After the change:
 **Lesson**
 
 When SQS messages are received but never deleted, check the collector's internal processing log before changing AWS delivery architecture.
+
+## 10. Shared AI HEC path required HTTPS
+
+**Problem**
+
+The scheduled synthetic alert reached the AI bridge and the OpenAI request succeeded, but the bridge failed when returning the result to Splunk:
+
+```text
+AI bridge -> Splunk HEC
+ConnectionResetError: [Errno 104] Connection reset by peer
+```
+
+**Evidence / isolation**
+
+Scheduler logs proved the saved search ran successfully. Bridge logs proved the webhook and OpenAI processing also succeeded. That narrowed the failure to the final HEC hop.
+
+A direct protocol test showed the active HEC listener accepted:
+
+```text
+https://dns-soc-splunk:8088/services/collector/event
+```
+
+and not the HTTP URL initially configured.
+
+**Correction**
+
+The bridge environment was updated to use internal HTTPS HEC. Because the current Splunk internal certificate is not trusted inside the bridge container, the lab currently uses:
+
+```text
+SPLUNK_HEC_VERIFY_TLS=false
+```
+
+The traffic is still encrypted on the host-local Docker network; certificate verification remains a future hardening item.
+
+**Verification**
+
+The next scheduled synthetic alert completed the full path and produced structured events in:
+
+```text
+index=dns_soc_ai
+sourcetype=dns_soc:ai:triage
+```
+
+**Lesson**
+
+When a multi-stage integration fails, validate each hop independently. Scheduler success, webhook receipt, OpenAI success and HEC success are separate checks.
 
 ## Final outcome
 

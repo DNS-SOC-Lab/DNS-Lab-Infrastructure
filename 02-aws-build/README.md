@@ -59,7 +59,7 @@ The shared AWS foundation is complete for Scenario 01. Later scenario resources 
 
 | Scenario | AWS-side work still expected |
 |---|---|
-| **01 — DNS Recon** | None after the shared AI foundation is ready |
+| **01 — DNS Recon** | None; shared AI foundation is complete |
 | **02 — DGA** | Resolver/victim EC2 deployment in `SOC-MONITORING-SUBNET`, DNS/victim SGs, controlled DNS logging and reusable sinkhole capability |
 | **03 — Fast Flux** | Temporary team-controlled destinations plus temporary short-TTL `flux.soclab...` DNS changes |
 | **04 — DNS Tunneling** | Reuse Scenario 02 platform; add only the DNS service/delegation required by the final controlled tunneling design, if any |

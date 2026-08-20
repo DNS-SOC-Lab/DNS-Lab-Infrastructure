@@ -21,13 +21,13 @@ SIEM access and log-receiver security group.
 |---|---|---|---|
 | Inbound | TCP 8000 | Team public IPs only | Splunk Web |
 | Inbound | TCP 9997 | Approved source SGs such as `SG-WEB` | Splunk Universal Forwarder ingestion |
-| Inbound | TCP 8088 | Not public | HEC, enabled only when the internal design needs it |
+| Inbound | TCP 8088 | Not public | HEC is active only on the internal Docker path for AI results |
 | Inbound | TCP 8089 | Not public | Splunk management interface |
 | Inbound | SSH 22 | None in baseline | Prefer SSM |
 
 The current implementation matches this model: TCP `8000` has four separate team-source IPv4 rules and TCP `9997` references `SG-WEB`. The Web Universal Forwarder now actively uses that private receiver path. No public `8088`, `8089` or SSH rule is present on `SG-SPLUNK`.
 
-The Flask/LLM bridge is intended to communicate with Splunk internally rather than exposing its application port to the Internet.
+The deployed `dns-soc-ai-bridge` communicates with Splunk only over `dns-soc-internal`. TCP `5000` has no host publish and no AWS SG rule; HEC TCP `8088` is likewise not host-published or publicly allowed.
 
 ## `SG-ATTACKER`
 

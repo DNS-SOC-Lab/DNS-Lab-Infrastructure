@@ -27,6 +27,38 @@ services:
         max-size: "10m"
         max-file: "5"
 
+  ai-bridge:
+    build:
+      context: /opt/dns-soc-ai-bridge
+    container_name: dns-soc-ai-bridge
+    hostname: dns-soc-ai-bridge
+    restart: unless-stopped
+
+    env_file:
+      - /etc/dns-soc-ai/ai.env
+
+    networks:
+      - dns-soc-internal
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
 networks:
   dns-soc-internal:
     name: dns-soc-internal

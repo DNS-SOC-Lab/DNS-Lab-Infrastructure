@@ -110,6 +110,20 @@ EC2 workload using AWS-provided DNS
 
 A direct query explicitly sent to a Route 53 authoritative nameserver may bypass the VPC Resolver, so the two log families are not expected to contain identical activity.
 
+## Completed shared AI path
+
+```mermaid
+flowchart LR
+    SA[Splunk scheduled alert] -->|internal webhook| B[dns-soc-ai-bridge\nFlask + Gunicorn]
+    B --> O[OpenAI Responses API]
+    O -->|structured JSON| B
+    B -->|internal HTTPS HEC :8088| S[Splunk Enterprise]
+    S --> I[index=dns_soc_ai\nsourcetype=dns_soc:ai:triage]
+    I --> H[Human SOC validation]
+```
+
+The bridge and Splunk share `dns-soc-internal`. TCP `5000` and `8088` are not host-published and no new public security-group rules were added. The AI output is advisory; raw telemetry remains the evidence source.
+
 ## Later defender-controlled DNS path
 
 Scenario 02 introduces a team-controlled resolver inside the monitoring subnet:

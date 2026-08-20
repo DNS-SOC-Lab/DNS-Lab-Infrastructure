@@ -1,0 +1,21 @@
+# Confirm AI events are returned to the dedicated index/sourcetype.
+index=dns_soc_ai sourcetype="dns_soc:ai:triage"
+| sort - _time
+| head 5
+
+# Final strong-vs-incomplete comparison used for end-to-end validation.
+index=dns_soc_ai sourcetype="dns_soc:ai:triage"
+(alert.alert_id="AI-SYNTH-STRONG-001" OR alert.alert_id="AI-SYNTH-INCOMPLETE-001")
+| stats
+    latest(ai.confidence) as confidence
+    latest(ai.network_context.primary_osi_layer) as osi_layer
+    latest(ai.mitre_attack.technique_id) as mitre_id
+    latest(ai.mitre_attack.technique_name) as mitre_name
+    latest(ai.cyber_kill_chain.stage) as kill_chain
+    latest(human_validation_required) as human_validation_required
+    latest(processed_at) as processed_at
+  by alert.alert_id
+
+# Invalid-schema test must not create an indexed AI event.
+index=dns_soc_ai sourcetype="dns_soc:ai:triage"
+alert.alert_id="FAIL-TEST-001"

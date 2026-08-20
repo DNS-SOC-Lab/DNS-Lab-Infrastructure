@@ -1,0 +1,24 @@
+# Shared AI Foundation synthetic alert payloads.
+# These are foundation tests, not Scenario 01 attack ground truth.
+
+# Strong-evidence synthetic test
+| makeresults
+| eval alert_id="AI-SYNTH-STRONG-001"
+| eval alert_name="Shared AI Foundation Strong Evidence Test"
+| eval scenario="synthetic-foundation-test"
+| eval severity="high"
+| eval event_time=strftime(_time,"%Y-%m-%dT%H:%M:%SZ")
+| eval source="synthetic-splunk-alert"
+| eval evidence_json="{\"source_ip\":\"203.0.113.50\",\"queried_domain\":\"soclab.abdul4rehman215.tech\",\"query_types\":[\"A\",\"AAAA\",\"MX\",\"NS\",\"TXT\"],\"query_count\":37,\"time_window_seconds\":60,\"nxdomain_count\":6,\"follow_up_https\":true,\"web_paths\":[\"/\",\"/admin\",\"/.env\"]}"
+| table alert_id alert_name scenario severity event_time source evidence_json
+
+# Incomplete-evidence synthetic test
+| makeresults
+| eval alert_id="AI-SYNTH-INCOMPLETE-001"
+| eval alert_name="Shared AI Foundation Incomplete Evidence Test"
+| eval scenario="synthetic-foundation-test"
+| eval severity="medium"
+| eval event_time=strftime(_time,"%Y-%m-%dT%H:%M:%SZ")
+| eval source="synthetic-splunk-alert"
+| eval evidence_json="{\"queried_domain\":\"soclab.abdul4rehman215.tech\",\"query_count\":3}"
+| table alert_id alert_name scenario severity event_time source evidence_json

@@ -21,6 +21,19 @@ The later move from the first Ubuntu 26.04 host to the current **Ubuntu 24.04 LT
 
 The rebuild is documented as an implementation correction in [`04-troubleshooting-and-lessons.md`](04-troubleshooting-and-lessons.md).
 
+## Shared AI bridge operational state
+
+The same Compose project now also runs `dns-soc-ai-bridge`. Unlike Splunk state, the bridge application is normal source code and can be rebuilt from [`../04-ai-integration/bridge/`](../04-ai-integration/bridge/).
+
+Runtime secrets remain outside Git at `/etc/dns-soc-ai/ai.env`. Keep the real OpenAI service-account key and HEC token in the team's approved secret store/recovery process rather than copying them into repository backups.
+
+A bridge-only rebuild is non-destructive to Splunk state:
+
+```bash
+cd /opt/dns-soc-splunk
+docker compose up -d --build ai-bridge
+```
+
 ## Routine health checks
 
 From `/opt/dns-soc-splunk`:
@@ -31,6 +44,10 @@ docker compose ps
 docker inspect --format \
 'Status={{.State.Status}} Health={{if .State.Health}}{{.State.Health.Status}}{{else}}n/a{{end}} Restart={{.HostConfig.RestartPolicy.Name}}' \
 dns-soc-splunk
+
+docker inspect --format \
+'Status={{.State.Status}} Health={{if .State.Health}}{{.State.Health.Status}}{{else}}n/a{{end}} Restart={{.HostConfig.RestartPolicy.Name}}' \
+dns-soc-ai-bridge
 
 docker exec -u splunk dns-soc-splunk \
   /opt/splunk/bin/splunk status

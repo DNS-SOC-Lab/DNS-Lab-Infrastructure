@@ -1,0 +1,122 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "observed_indicators",
+    "network_context",
+    "suspicion_reasons",
+    "mitre_attack",
+    "cyber_kill_chain",
+    "missing_evidence",
+    "response_considerations",
+    "confidence"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "observed_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "network_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_osi_layer",
+        "related_layers",
+        "protocols",
+        "explanation"
+      ],
+      "properties": {
+        "primary_osi_layer": {
+          "type": "string"
+        },
+        "related_layers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "protocols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "explanation": {
+          "type": "string"
+        }
+      }
+    },
+    "suspicion_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mitre_attack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tactic",
+        "technique_id",
+        "technique_name",
+        "explanation"
+      ],
+      "properties": {
+        "tactic": {
+          "type": "string"
+        },
+        "technique_id": {
+          "type": "string"
+        },
+        "technique_name": {
+          "type": "string"
+        },
+        "explanation": {
+          "type": "string"
+        }
+      }
+    },
+    "cyber_kill_chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "explanation"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string"
+        },
+        "explanation": {
+          "type": "string"
+        }
+      }
+    },
+    "missing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "response_considerations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  }
+}

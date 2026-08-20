@@ -22,7 +22,7 @@ The base VPC/DNS/Splunk platform is reused rather than rebuilt.
 
 | Scenario | Additional infrastructure decision |
 |---|---|
-| **01** | None expected after the shared AI foundation is ready |
+| **01** | None; shared AI foundation is complete and Scenario 01 reuses the common platform |
 | **02** | Build `dns-soc-resolver01`, `dns-soc-victim01`, DNS/victim SGs and reusable sinkhole capability in `SOC-MONITORING-SUBNET` |
 | **03** | Reuse Scenario 02 systems; add only temporary team-controlled Fast Flux destinations and DNS records/TTL behavior |
 | **04** | Reuse Scenario 02 systems; add controlled tunneling DNS behavior and only add a dedicated authoritative service if the final implementation requires it |
