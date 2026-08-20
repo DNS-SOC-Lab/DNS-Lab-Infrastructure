@@ -1,12 +1,12 @@
 # Nginx HTTPS Web Server
 
-**Status:** Implemented and validated
-**Implementation Owner:** Musfira
-**AWS Service:** Amazon EC2 / Nginx / Let's Encrypt
-**EC2 Instance:** `dns-soc-web01`
-**Private IP:** `10.50.10.10`
-**Elastic IP:** `100.49.192.164`
-**Public Hostnames:** `soclab.abdul4rehman215.tech`, `www.soclab.abdul4rehman215.tech`
+- **Status:** Implemented and validated
+- **Implementation Owner:** Musfira
+- **AWS Service:** Amazon EC2 / Nginx / Let's Encrypt
+- **EC2 Instance:** `dns-soc-web01`
+- **Private IP:** `10.50.10.10`
+- **Elastic IP:** `100.49.192.164`
+- **Public Hostnames:** `soclab.abdul4rehman215.tech`, `www.soclab.abdul4rehman215.tech`
 
 ---
 
