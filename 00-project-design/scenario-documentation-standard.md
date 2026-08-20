@@ -1,6 +1,9 @@
 # Scenario Documentation Standard
 
-**Status:** Shared project standard for all four scenario repositories.
+**Status:** Shared project standard for all four scenario repositories.  
+**Research and documentation standard lead:** Lubaba — Scenario Documentation & Incident Response
+
+This documentation standard was researched, proposed and structured by Lubaba to keep all scenario repositories consistent, reproducible and easy to review across the project.
 
 The infrastructure repository provides the common platform. Each scenario repository must tell the complete SOC story from controlled behavior generation to verified response.
 
