@@ -9,6 +9,12 @@ The four scenarios use one permanent lab foundation and add only the scenario-sp
 | 03 | Fast Flux DNS | One name resolves to changing IP addresses with short TTLs | Answer churn, TTL, unique destination count, time correlation and network flows | T1568.001 — Dynamic Resolution: Fast Flux DNS | Detect changing infrastructure, investigate connections and prevent access to the controlled malicious namespace |
 | 04 | DNS Tunneling | Long/encoded harmless labels and unusual query patterns | Label length, entropy/randomness, TXT/A activity, query size/frequency, repeated parent domain and endpoint/network relationship | T1071.004 — Application Layer Protocol: DNS; T1572 where the implemented behavior fits | Isolate/contain the source, reuse the defender-controlled sinkhole/block path and prove the tunneling behavior stops |
 
+## Shared telemetry available before Scenario 01
+
+The infrastructure repository now provides trusted Web and AWS telemetry before any scenario-specific detection work begins. This includes Route 53 public authoritative logs, VPC Flow Logs, CloudTrail and **AWS VPC Resolver Query Logs** for both existing VPCs.
+
+AWS VPC Resolver logging is shared telemetry only. It does not mean the Scenario 02 defender resolver has been built. The team-controlled `dns-soc-resolver01`, `dns-soc-victim01` and sinkhole path remain Scenario 02 additions.
+
 ## DNS setup timing
 
 The public child zone is not rebuilt for every scenario. Its permanent five-record baseline is documented in [`scenario-dns-plan.md`](scenario-dns-plan.md). Scenario-specific DNS behavior is introduced only when needed:
