@@ -6,43 +6,59 @@ The lab is built in checkpoints. A later phase should not hide an unfinished fou
 
 | Phase | Work | Status |
 |---|---|---|
-| 01 | AWS identities, MFA and budget controls | Complete |
-| 02 | `SOC-LAB-VPC`, SOC subnets, IGW, routes and baseline security groups | Complete |
-| 03 | `ATTACK-LAB-VPC`, attack subnet, IGW, routes and baseline security group | Complete |
-| 04 | Launch Scenario 01 EC2 instances | Complete |
-| 05 | Route 53 parent migration, child delegation and permanent web/recon DNS baseline | Complete |
-| 06 | Nginx / HTTPS validation | Complete |
+| 01 | AWS identities, MFA and budget controls | **Complete** |
+| 02 | `SOC-LAB-VPC`, SOC subnets, IGW, routes and baseline security groups | **Complete** |
+| 03 | `ATTACK-LAB-VPC`, attack subnet, IGW, routes and baseline security group | **Complete** |
+| 04 | Launch Scenario 01 EC2 instances | **Complete** |
+| 05 | Route 53 parent migration, child delegation and permanent web/recon DNS baseline | **Complete** |
+| 06 | Nginx / HTTPS validation | **Complete** |
 | 07 | Splunk Enterprise Docker Compose platform / Gate A | **Complete** |
-| 08 | `dns-soc-web01` Universal Forwarder + Nginx/Linux data-quality validation | **Next** |
-| 09 | Enable AWS telemetry: Route 53 public query logging, VPC Flow Logs and CloudTrail | Planned |
-| 10 | Bring AWS telemetry into Splunk and validate index / host / source / sourcetype / time / fields | Planned |
-| 11 | Build the shared Flask / LLM bridge and validate the common alert-enrichment contract | Planned |
-| 12 | Scenario 01 DNS investigation dashboard and baseline | Planned |
-| 13 | Scenario 01 reconnaissance SPL detection, tuning and alert evidence contract | Planned |
-| 14 | Scenario 01 AI profile and human-validation workflow | Planned |
-| 15 | Execute Scenario 01 and document detection → investigation → response → verification | Planned |
-
-After Scenario 01 is stable, later scenario repositories drive their own infrastructure additions instead of rebuilding the common AWS/Splunk foundation.
+| 08 | `dns-soc-web01` Universal Forwarder + Nginx data-quality validation / Gate B | **Complete** |
+| 09 | Enable AWS telemetry: Route 53 public logging, VPC Flow Logs, CloudTrail and early VPC Resolver Query Logging | **Complete** |
+| 10 | Bring AWS telemetry into Splunk and validate index / host / source / sourcetype / time / fields / Gate C | **Complete** |
+| 11 | Build the shared Flask / LLM bridge and validate the common alert-enrichment contract | **Next** |
+| 12 | Scenario 01 DNS investigation dashboard and baseline | Separate Scenario 01 repository |
+| 13 | Scenario 01 reconnaissance SPL detection, tuning and alert evidence contract | Separate Scenario 01 repository |
+| 14 | Scenario 01 AI profile and human-validation workflow | Separate Scenario 01 repository |
+| 15 | Execute Scenario 01 and document detection -> investigation -> response -> verification | Separate Scenario 01 repository |
 
 ## Current checkpoint
 
-The shared infrastructure platform is ready through **Splunk Gate A**. AWS networking, public DNS authority, Nginx/HTTPS and the Splunk Enterprise Docker Compose deployment are complete and validated. Splunk uses persistent named volumes, restricted Web access, a private receiver on TCP `9997`, explicit project indexes and tested backup/recreate procedures.
-
-The next checkpoint is **trusted web/server telemetry**:
+The common AWS and Splunk foundation is trusted through **Gate C**.
 
 ```text
-dns-soc-web01
-    |
-    | Splunk Universal Forwarder
-    | Nginx access/error + selected real Linux security source
-    v
-10.50.20.10:9997
-    |
-    v
-Splunk data-quality validation
+Gate A - Splunk platform
+Docker + Splunk + persistence + indexes + TCP 9997
+                         COMPLETE
+                            |
+                            v
+Gate B - Web telemetry
+Universal Forwarder + Nginx data + data quality
+                         COMPLETE
+                            |
+                            v
+Gate C - AWS telemetry
+Route 53 + VPC Flow + CloudTrail + Resolver Query Logs
+                         COMPLETE
+                            |
+                            v
+Shared AI foundation
+Flask + LLM + internal HEC return path
+                           NEXT
 ```
 
-Only after the web data is trusted does the project move to AWS telemetry. The shared AI foundation is built after the Web/AWS data-quality gates so it can consume stable alert fields instead of influencing the telemetry or detection design.
+The current Splunk host is `dns-soc-splunk01` on **Ubuntu 24.04 LTS** at `10.50.20.10`, running Splunk Enterprise `10.4.2`. The platform was rebuilt cleanly on the supported host OS after an earlier KV Store compatibility problem; the final KV Store state is healthy (`status=ready`, `serverVersion=8.0.26`).
+
+## Resolver Query Logging decision
+
+The original roadmap introduced resolver-focused visibility mainly from Scenario 02 onward. The Project Lead later chose to enable **AWS Route 53 VPC Resolver Query Logging early** during Gate C because useful existing workloads already run in both VPCs.
+
+That decision does not redesign the later defensive DNS architecture:
+
+- AWS VPC Resolver Query Logging is active for `SOC-LAB-VPC` and `ATTACK-LAB-VPC` now;
+- `dns-soc-resolver01` and `dns-soc-victim01` are still introduced from Scenario 02 onward;
+- no Route 53 inbound/outbound Resolver endpoints were created for Gate C;
+- DNS Firewall and sinkhole infrastructure are still later scenario work.
 
 ## Later scenario expansion rule
 

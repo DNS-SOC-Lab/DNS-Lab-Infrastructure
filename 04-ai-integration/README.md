@@ -1,6 +1,6 @@
 # Shared AI-Assisted Alert Summarization
 
-**Status:** Planned — implementation starts only after Web and AWS telemetry pass their Splunk data-quality gates.
+**Status:** **NEXT — ready to implement.** Web Gate B and AWS Gate C are complete, so the shared AI foundation is now the only unfinished common-infrastructure phase before Scenario 01 detection engineering.
 
 The AI component is **shared infrastructure** for all four scenarios. It is built once, then each scenario adds a small profile that maps its stable alert fields and context into the common bridge. AI assists the analyst; it does not make the final triage or response decision.
 
@@ -20,12 +20,12 @@ flowchart LR
 The bridge should consume a stable detection payload, not influence how logs are collected or how the detection is designed.
 
 ```text
-Web Forwarder + data quality
+Web Forwarder + data quality  COMPLETE
           |
-AWS telemetry + data quality
+AWS telemetry + data quality COMPLETE
           |
           v
-Shared AI foundation
+Shared AI foundation         NEXT
           |
 Scenario detection reaches stable fields
           |
@@ -34,6 +34,20 @@ Scenario-specific AI profile
 ```
 
 This keeps the telemetry and SPL logic evidence-driven while allowing every later scenario to reuse the same integration code.
+
+
+## Ready-state checkpoint
+
+The prerequisites that originally blocked this phase are now complete:
+
+- Splunk Enterprise `10.4.2` is stable on Ubuntu 24.04 LTS;
+- KV Store is healthy;
+- `dns_soc_ai` exists with the 30-day project retention policy;
+- Web/Nginx telemetry is trusted;
+- all four AWS telemetry families are trusted in `dns_soc_aws`;
+- TCP `8088` is still not publicly exposed, so the HEC return path can be designed as an internal integration.
+
+The shared bridge can therefore be built without changing the completed telemetry architecture.
 
 ## Shared foundation scope
 

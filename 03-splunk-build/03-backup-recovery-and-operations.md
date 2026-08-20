@@ -14,6 +14,13 @@ dns-soc-splunk
 
 Both named volumes are external to the Compose service definition so normal container recreation does not delete them.
 
+
+## Current host rebuild and recovery model
+
+The later move from the first Ubuntu 26.04 host to the current **Ubuntu 24.04 LTS** host did not change the intended Splunk persistence model. The rebuilt environment returned to the same pinned image, named-volume layout, restricted port model and project indexes before AWS telemetry was trusted again.
+
+The rebuild is documented as an implementation correction in [`04-troubleshooting-and-lessons.md`](04-troubleshooting-and-lessons.md).
+
 ## Routine health checks
 
 From `/opt/dns-soc-splunk`:

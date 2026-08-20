@@ -1,6 +1,6 @@
 # AWS Build
 
-This folder records what has actually been built in AWS. It is intentionally separate from the architecture folder: the architecture explains the design; this folder proves the implementation.
+This folder records what has actually been built in AWS. Architecture files explain the design; this folder proves the deployed implementation.
 
 ## Current implementation status
 
@@ -23,15 +23,41 @@ This folder records what has actually been built in AWS. It is intentionally sep
 | Public DNS validation | Complete |
 | Child `www` CNAME + training TXT fixture | Complete |
 | Nginx / HTTPS for main + `www` hostnames | Complete |
-| AWS security/log telemetry | Not built yet |
+| Route 53 public authoritative query logging | **Complete** |
+| VPC Flow Logs - `SOC-LAB-VPC` | **Complete** |
+| VPC Flow Logs - `ATTACK-LAB-VPC` | **Complete** |
+| Multi-region CloudTrail management-event logging | **Complete** |
+| Route 53 VPC Resolver Query Logging - both VPCs | **Complete** |
+| AWS-to-Splunk delivery resources / IAM | **Complete** |
 
 ## Current AWS environment
 
-The Scenario 01 compute layer and the public DNS authority chain are now active. The parent domain stays on its existing website target while `soclab.abdul4rehman215.tech` is delegated to a separate Route 53 child zone. The child zone now has its final static baseline: main A record, Route 53 NS/SOA, the `"DNS SOC Training Lab"` TXT fixture and `www` CNAME. Both web names lead to the same web EC2 Elastic IP.
+The public DNS authority, public web target and security-telemetry layer are active.
 
-![Parent and child final DNS validation](screenshots/route53-domain/parent-child-final-validation.png)
+```text
+Route 53 public DNS
+        |
+        +--> soclab.abdul4rehman215.tech --> dns-soc-web01
+        |
+        +--> public query logs --> CloudWatch --> Kinesis
 
-*The current DNS state keeps `abdul4rehman215.tech` on its parent Route 53 authority and existing website address while the delegated `soclab` child zone resolves to `100.49.192.164`.*
+SOC-LAB-VPC ------------------+
+                              +--> VPC Flow Logs --> S3 --> SQS
+ATTACK-LAB-VPC ---------------+
+
+CloudTrail ----------------------> S3 --> SQS
+
+AWS VPC Resolver Query Logs
+SOC-LAB-VPC + ATTACK-LAB-VPC ---> S3 --> SQS
+```
+
+The Splunk-side collectors and the final data-quality gate are documented separately in [`../03-splunk-build/`](../03-splunk-build/).
+
+## Build-phase ownership
+
+The AWS security telemetry phase was implemented by **Musfira - AWS Telemetry / Cloud Engineering**. This is build ownership for the shared infrastructure and does not change the team's rotating scenario-role matrix.
+
+Splunk-side ingestion and validation of the resulting AWS data was owned by **Sonia - Detection Engineer** and is documented in [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
 
 ## Documents
 
@@ -41,6 +67,11 @@ The Scenario 01 compute layer and the public DNS authority chain are now active.
 - [`04-ec2-deployment.md`](04-ec2-deployment.md)
 - [`05-route53-and-domain.md`](05-route53-and-domain.md)
 - [`06-nginx-https-web-server.md`](06-nginx-https-web-server.md)
-- [`screenshots/`](screenshots/) - implementation evidence captured from the AWS console and validation sessions
+- [`07-security-telemetry.md`](07-security-telemetry.md) - Route 53 logging, VPC Flow Logs, CloudTrail, Resolver Query Logging, S3/SQS and IAM handoff
+- [`screenshots/`](screenshots/) - selected implementation evidence from the AWS console and validation sessions
 
-New build files are added only when that AWS component is actually implemented. The completed Splunk platform is documented separately in [`../03-splunk-build/`](../03-splunk-build/); this AWS folder remains focused on AWS-side configuration and evidence.
+## Evidence style
+
+Primary screenshots are shown next to the configuration they prove. The screenshot folders keep the same files available as a compact evidence archive.
+
+The repository records final resources, settings, problems and fixes. It keeps the final technical record concise and excludes repetitive trial-and-error output.

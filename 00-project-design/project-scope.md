@@ -24,10 +24,20 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | Private connection between VPCs | None |
 | SIEM | Splunk Enterprise in Docker |
 | Endpoint/server collection | Splunk Universal Forwarder where required |
-| AWS telemetry | Route 53 / Resolver logs, VPC Flow Logs and CloudTrail as the project reaches those stages |
-| AI | One shared Flask/LLM bridge built after trusted telemetry; scenario-specific profiles reuse the same platform and remain analyst-validated |
+| AWS telemetry | Route 53 public query logs, VPC Flow Logs, CloudTrail and AWS VPC Resolver Query Logs are active and validated in Splunk |
+| AI | One shared Flask/LLM bridge is the next shared-infrastructure phase now that Web and AWS telemetry are trusted; scenario-specific profiles reuse the same platform and remain analyst-validated |
 | Static child-zone fixtures | Permanent `A`, `NS`, `SOA`, training `TXT` and `www` CNAME records |
 | DNS defense | Team-controlled resolver and sinkhole capability introduced with Scenario 02 and reused by later IR scenarios |
+
+
+## Current telemetry boundary
+
+The shared infrastructure now has two different DNS visibility concepts that must not be confused:
+
+- **Route 53 public authoritative query logging** records queries that reach the public `soclab.abdul4rehman215.tech` hosted zone.
+- **Route 53 VPC Resolver Query Logging** records DNS queries handled by the AWS VPC Resolver for associated workloads in `SOC-LAB-VPC` and `ATTACK-LAB-VPC`.
+
+The second item was enabled early during Gate C because the existing VPC workloads already provide useful DNS telemetry. It does **not** replace the team-controlled defender resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01`, DNS Firewall and the sinkhole are still later infrastructure.
 
 ## DNS authority boundary
 

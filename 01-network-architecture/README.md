@@ -11,4 +11,4 @@ This folder is the blueprint for the lab network and DNS authority model. It exp
 | [`traffic-flow.md`](traffic-flow.md) | Management, DNS, public target, logging and scenario traffic paths |
 | [`diagrams/`](diagrams/) | Editable Mermaid source used by the architecture documentation |
 
-The implementation evidence for the currently built AWS resources and Route 53 zones is kept separately in [`../02-aws-build/`](../02-aws-build/).
+The implementation evidence for the currently built AWS resources, Route 53 zones and AWS security telemetry is kept separately in [`../02-aws-build/`](../02-aws-build/). Splunk-side Web/AWS data onboarding is documented in [`../03-splunk-build/`](../03-splunk-build/).
