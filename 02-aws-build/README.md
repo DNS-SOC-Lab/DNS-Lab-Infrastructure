@@ -53,13 +53,6 @@ SOC-LAB-VPC + ATTACK-LAB-VPC ---> S3 --> SQS
 
 The Splunk-side collectors and the final data-quality gate are documented separately in [`../03-splunk-build/`](../03-splunk-build/).
 
-## Build-phase ownership
-
-The AWS security telemetry phase was implemented by **Musfira - AWS Telemetry / Cloud Engineering**. This is build ownership for the shared infrastructure and does not change the team's rotating scenario-role matrix.
-
-Splunk-side ingestion and validation of the resulting AWS data was owned by **Sonia - Detection Engineer** and is documented in [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
-
-
 ## Deferred scenario-specific AWS build
 
 The shared AWS foundation is complete for Scenario 01. Later scenario resources are intentionally **not** created early.
