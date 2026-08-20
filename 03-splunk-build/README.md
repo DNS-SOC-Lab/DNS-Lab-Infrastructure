@@ -131,6 +131,21 @@ The Splunk Add-on for AWS `8.2.1` now has four active inputs:
 
 See [`06-aws-telemetry-onboarding.md`](06-aws-telemetry-onboarding.md).
 
+## Later scenario data onboarding
+
+The current Splunk platform should also be reused rather than rebuilt. Future scenario additions are small and source-specific:
+
+| Scenario | Splunk-side addition later | Destination |
+|---|---|---|
+| **01** | Scenario dashboard, SPL and alert logic only | Scenario 01 repository |
+| **02** | Onboard the team-controlled resolver logs after `dns-soc-resolver01` exists | `index=dns_soc_dns` with the real sourcetype chosen from the implemented resolver/log format |
+| **03** | Reuse resolver telemetry and correlate with VPC Flow / DNS answer churn | Existing indexes unless a real new source requires otherwise |
+| **04** | Reuse resolver/client telemetry and validate tunneling-specific fields | Existing indexes unless a real new source requires otherwise |
+
+Do not invent a BIND/Unbound sourcetype now. The final resolver input and field extraction are documented only after Scenario 02 implements and validates the real DNS service.
+
+Scenario dashboards and detections remain outside this folder. The shared scenario standard is [`../00-project-design/scenario-documentation-standard.md`](../00-project-design/scenario-documentation-standard.md).
+
 ## Current next step
 
 The shared telemetry foundation is finished. The next infrastructure phase is:
