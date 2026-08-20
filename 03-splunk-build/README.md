@@ -1,7 +1,7 @@
 # Splunk Build
 
 **Status:** Gates A, B and C complete — shared telemetry is trusted.  
-**Splunk implementation / validation owner:** Sonia — Detection Engineer
+**Splunk implementation / validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer
 
 This folder records the deployed Splunk Enterprise platform on `dns-soc-splunk01`, the Web Universal Forwarder path and the AWS telemetry onboarding used by the shared DNS SOC infrastructure.
 
