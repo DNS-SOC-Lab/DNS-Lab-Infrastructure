@@ -32,3 +32,8 @@ These addresses are part of the architecture plan and are assigned only when the
 | `10.60.10.10` | Attack host |
 
 The monitoring range is documented here because it is part of the locked network architecture, even though those later scenario systems are not part of the current AWS deployment yet.
+
+
+## Scenario 02 activation note
+
+The reserved `10.50.30.10`, `.20` and `.30` addresses are intentionally not treated as deployed resources yet. When Scenario 02 begins, the resolver/victim/sinkhole design should reuse these addresses and the existing `SOC-MONITORING-SUBNET`. The team must also document how private-subnet hosts receive only the egress needed for administration, package updates and approved DNS behavior.

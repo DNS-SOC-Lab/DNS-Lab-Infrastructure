@@ -12,3 +12,7 @@ This folder is the blueprint for the lab network and DNS authority model. It exp
 | [`diagrams/`](diagrams/) | Editable Mermaid source used by the architecture documentation |
 
 The implementation evidence for the currently built AWS resources, Route 53 zones and AWS security telemetry is kept separately in [`../02-aws-build/`](../02-aws-build/). Splunk-side Web/AWS data onboarding is documented in [`../03-splunk-build/`](../03-splunk-build/).
+
+## Later scenario activation
+
+The base network remains locked. Future scenario resources reuse the existing CIDRs and `SOC-MONITORING-SUBNET`; they do not introduce VPC peering or a new parallel network. The future resource sequence is documented in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
