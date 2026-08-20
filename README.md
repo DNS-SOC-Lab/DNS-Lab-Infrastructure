@@ -2,13 +2,13 @@
 
 **AWS · Splunk Enterprise · DNS Security · MITRE ATT&CK · Incident Response · AI-Assisted Analysis**
 
-This repository is the shared infrastructure record for a four-person DNS-focused SOC lab. It contains the common AWS network, public DNS, web target, Splunk platform, trusted telemetry pipelines and the shared AI integration that will support the separate scenario repositories.
+This repository is the shared infrastructure record for a four-person DNS-focused SOC lab. It contains the common AWS network, public DNS, web target, Splunk platform, trusted telemetry pipelines and the completed shared AI integration that supports the separate scenario repositories.
 
 The lab runs in **AWS `us-east-1` (N. Virginia)**. The attacker and SOC environments stay in separate VPCs with **no VPC peering and no private route between them**.
 
 ## Current checkpoint
 
-The shared platform has reached the end of its telemetry build:
+The shared platform has completed its common infrastructure build:
 
 ```text
 AWS identity / VPC / routing / SSM        COMPLETE
@@ -17,15 +17,16 @@ Nginx + HTTPS                            COMPLETE
 Splunk Gate A - platform                 COMPLETE
 Splunk Gate B - web telemetry            COMPLETE
 Splunk Gate C - AWS telemetry            COMPLETE
+Shared AI foundation                     COMPLETE
                                          |
                                          v
-Shared AI foundation                     NEXT
+COMMON SHARED INFRASTRUCTURE              COMPLETE
                                          |
                                          v
-Scenario 01 detection engineering        Separate scenario repository
+Scenario 01 detection engineering        ACTIVE - separate scenario repository
 ```
 
-The next infrastructure task is the **shared Flask / LLM bridge** in [`04-ai-integration/`](04-ai-integration/). Scenario-specific dashboards, SPL detections, tuning, simulations, analyst findings and response evidence remain outside this repository.
+The shared Flask / OpenAI / Splunk HEC bridge is implemented in [`04-ai-integration/`](04-ai-integration/). Scenario-specific dashboards, SPL detections, tuning, simulations, analyst findings, AI profiles and response evidence remain outside this repository.
 
 ## Architecture at a glance
 
@@ -49,8 +50,10 @@ flowchart TB
         MS[SOC-MONITORING-SUBNET<br/>10.50.30.0/24]
         W[dns-soc-web01<br/>10.50.10.10<br/>Nginx + HTTPS + UF]
         S[dns-soc-splunk01<br/>10.50.20.10<br/>Ubuntu 24.04 LTS<br/>Splunk Enterprise 10.4.2]
+        AI[dns-soc-ai-bridge<br/>container on dns-soc-splunk01]
         TS --> W
         SS --> S
+        S ---|dns-soc-internal| AI
         MS -.-> Future[Scenario 02 onward<br/>team-controlled resolver / victim / sinkhole]
     end
 
@@ -89,6 +92,10 @@ flowchart LR
     SQSC --> S
 
     S --> IDX[index=dns_soc_aws / dns_soc_web]
+    S -->|internal webhook| AIB[Shared AI bridge]
+    AIB --> OAI[OpenAI API]
+    OAI --> AIB
+    AIB -->|internal HTTPS HEC| AIDX[index=dns_soc_ai]
 ```
 
 The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real sourcetypes were recorded from live data instead of being invented in advance:
@@ -109,7 +116,7 @@ The common infrastructure in this repository supports four scenario repositories
 
 | Scenario | Focus | MITRE ATT&CK | Main learning goal | Additional infrastructure later |
 |---|---|---|---|---|
-| 01 | DNS Reconnaissance & Enumeration | T1590.002 | Detect abnormal DNS record enumeration and investigate follow-up activity | None expected after shared AI is ready |
+| 01 | DNS Reconnaissance & Enumeration | T1590.002 | Detect abnormal DNS record enumeration and investigate follow-up activity | None; shared AI is complete and Scenario 01 reuses the existing platform |
 | 02 | DGA + High NXDOMAIN | T1568.002 | Identify generated-domain behavior and introduce the defender-controlled resolver/sinkhole path | Resolver + victim + reusable sinkhole path |
 | 03 | Fast Flux DNS | T1568.001 | Correlate changing DNS answers, TTL behavior and destination changes | Temporary controlled endpoints + short-TTL Fast Flux DNS changes |
 | 04 | DNS Tunneling | T1071.004 / T1572 where implemented behavior fits | Detect suspicious encoded DNS behavior and prove containment through the defender-controlled DNS path | Reuse resolver/victim; optional authoritative DNS endpoint only if the final design requires it |
@@ -118,15 +125,12 @@ The common infrastructure in this repository supports four scenario repositories
 
 ### Scenario-specific infrastructure after the shared build
 
-The main AWS/Splunk foundation is already complete through Gate C. Once the shared AI bridge is complete, common infrastructure is considered finished. Later AWS work is created only when a scenario genuinely needs it.
+The main AWS/Splunk foundation and the shared AI bridge are complete. Common infrastructure is now considered finished. Later AWS work is created only when a scenario genuinely needs it.
 
 ```text
-Shared AI foundation
-        |
-        v
 COMMON INFRASTRUCTURE COMPLETE
         |
-        +--> Scenario 01: reuse existing platform
+        +--> Scenario 01: reuse existing platform + shared AI bridge
         |
         +--> Scenario 02: resolver + victim + reusable sinkhole
         |
@@ -168,8 +172,9 @@ The team rotates through four roles so every member practices more than one part
 | CloudTrail | **Complete** |
 | Route 53 Resolver Query Logging | **Complete** |
 | Combined AWS telemetry data quality / Gate C | **Complete** |
-| Shared AI foundation | **Next** |
-| Common/shared infrastructure | Complete after AI foundation passes its validation gate |
+| Shared AI foundation | **Complete** |
+| Common/shared infrastructure | **Complete** |
+| Scenario 01 detection engineering | **Active in separate Scenario 01 repository** |
 | Scenario 01 additional infrastructure | None currently expected |
 | Scenario 02 defender DNS infrastructure | **Planned when Scenario 02 begins** |
 | Scenario 03 temporary Fast Flux infrastructure | **Planned when Scenario 03 begins** |
@@ -182,7 +187,7 @@ The team rotates through four roles so every member practices more than one part
 - [`01-network-architecture/`](01-network-architecture/) - VPC blueprint, CIDRs, DNS authority design, controls and traffic flows
 - [`02-aws-build/`](02-aws-build/) - implemented AWS configuration, including security telemetry
 - [`03-splunk-build/`](03-splunk-build/) - Splunk platform, Web Forwarder onboarding, AWS Add-on inputs, validation and operations
-- [`04-ai-integration/`](04-ai-integration/) - shared AI-assisted alert summarization design; implementation is the next shared-infrastructure phase
+- [`04-ai-integration/`](04-ai-integration/) - completed shared AI-assisted alert-triage bridge, schemas, validation and evidence
 
 ## Documentation rule
 

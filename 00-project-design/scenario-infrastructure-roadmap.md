@@ -2,7 +2,7 @@
 
 **Status:** Planned design reference — resources are created only when the matching scenario reaches preparation.
 
-The shared AWS, DNS, Web and Splunk foundation is already trusted through Gate C. After the shared AI foundation is complete, the lab does **not** enter another large infrastructure build. Future AWS and DNS work is deliberately small, scenario-specific and added just in time.
+The shared AWS, DNS, Web, Splunk and AI foundation is complete. The lab does **not** enter another large common-infrastructure build. Future AWS and DNS work is deliberately small, scenario-specific and added just in time.
 
 This document answers one practical question:
 
@@ -25,7 +25,7 @@ The following components are already available and should not be rebuilt for eac
 - VPC Flow Logs for both existing VPCs;
 - CloudTrail;
 - AWS VPC Resolver Query Logging for both existing VPCs;
-- the shared AI bridge once Phase 11 is implemented.
+- the shared `dns-soc-ai-bridge`, validated through Splunk webhook -> OpenAI -> internal HEC -> `dns_soc_ai`.
 
 ## Scenario infrastructure summary
 

@@ -25,7 +25,7 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | SIEM | Splunk Enterprise in Docker |
 | Endpoint/server collection | Splunk Universal Forwarder where required |
 | AWS telemetry | Route 53 public query logs, VPC Flow Logs, CloudTrail and AWS VPC Resolver Query Logs are active and validated in Splunk |
-| AI | One shared Flask/LLM bridge is the next shared-infrastructure phase now that Web and AWS telemetry are trusted; scenario-specific profiles reuse the same platform and remain analyst-validated |
+| AI | One shared Flask/OpenAI bridge is implemented on `dns-soc-splunk01`; scenario-specific profiles reuse the same platform and remain analyst-validated |
 | Static child-zone fixtures | Permanent `A`, `NS`, `SOA`, training `TXT` and `www` CNAME records |
 | DNS defense | Team-controlled resolver and sinkhole capability introduced with Scenario 02 and reused by later IR scenarios |
 
@@ -41,7 +41,7 @@ The second item was enabled early during Gate C because the existing VPC workloa
 
 ## Shared versus scenario-specific infrastructure
 
-The common platform ends with the shared AI foundation. After that point, the lab uses a just-in-time scenario model rather than another broad infrastructure phase:
+The common platform is complete through the shared AI foundation. From this point, the lab uses a just-in-time scenario model rather than another broad infrastructure phase:
 
 - **Scenario 01:** reuses the completed shared platform; no new scenario-specific AWS resource is currently expected.
 - **Scenario 02:** adds the team-controlled resolver, victim and reusable sinkhole/deny path in `SOC-MONITORING-SUBNET`.
