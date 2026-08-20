@@ -1,8 +1,8 @@
 # AWS Telemetry Onboarding in Splunk
 
 **Status:** Gate C complete  
-**Splunk onboarding / validation owner:** [Sonia](https://github.com/sonia11mansha415) — Detection Engineer  
-**AWS source implementation:** [Musfira](https://github.com/MUSFIRA-ZAFAR) — AWS Telemetry / Cloud Engineering  
+**Splunk onboarding / validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer  
+**AWS source implementation:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — AWS Telemetry / Cloud Engineering  
 **Splunk Add-on for AWS:** `8.2.1`  
 **Destination index:** `dns_soc_aws`
 
