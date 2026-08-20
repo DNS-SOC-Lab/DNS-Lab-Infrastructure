@@ -1,7 +1,7 @@
 # Splunk Platform Deployment
 
 **Status:** Gate A complete  
-**Implementation owner:** Sonia — Detection Engineer
+**Implementation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer
 
 ## Objective
 
