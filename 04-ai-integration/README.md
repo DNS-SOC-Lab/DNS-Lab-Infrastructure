@@ -1,6 +1,9 @@
 # Shared AI-Assisted Alert Triage
 
-**Status:** **Complete.** The shared AI foundation is deployed and validated. The common AWS / Web / Splunk / AI platform is now complete; scenario repositories reuse this bridge after their detection fields are stable.
+**Status:** Complete  
+**Implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — **Shared AI Integration**
+
+The shared AI foundation is deployed and validated. The common AWS / Web / Splunk / AI platform is now complete; scenario repositories reuse this bridge after their detection fields are stable.
 
 The bridge is shared infrastructure for all four DNS SOC scenarios. It accepts a Splunk alert result, validates and normalizes the payload, asks the OpenAI API for a schema-controlled analyst aid, and writes the structured result back to Splunk for human review.
 
