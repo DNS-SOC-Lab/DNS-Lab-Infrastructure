@@ -64,7 +64,7 @@ flowchart TB
     X{{No VPC peering / no private route between attacker and SOC VPCs}}
 ```
 
-Hostinger remains the registrar. Route 53 is authoritative for the parent domain and delegates the lab namespace to a separate child hosted zone. The child zone keeps a stable baseline for the public lab. The attack host reaches the lab through public DNS and the public web target, not through a private SOC route.
+> Hostinger remains the registrar. Route 53 is authoritative for the parent domain and delegates the lab namespace to a separate child hosted zone. The child zone keeps a stable baseline for the public lab. The attack host reaches the lab through public DNS and the public web target, not through a private SOC route.
 
 ## Trusted telemetry now available
 
@@ -101,7 +101,7 @@ The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real 
 | Route 53 Resolver Query Logs | `dns_soc_aws` | `aws:s3` |
 | Nginx access telemetry | `dns_soc_web` | `dns_soc:nginx:access` |
 
-AWS VPC Resolver Query Logging is already active for the existing VPCs. This is **not** the same thing as the future team-controlled resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01` and the sinkhole/deny path have not been deployed yet. DNS Firewall is not required by the current locked scenario plan.
+> AWS VPC Resolver Query Logging is already active for the existing VPCs. This is **not** the same thing as the future team-controlled resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01` and the sinkhole/deny path have not been deployed yet. DNS Firewall is not required by the current locked scenario plan.
 
 ## Four scenarios
 
@@ -148,8 +148,6 @@ The team rotates through four roles so every member practices more than one part
 | Fast Flux | Sonia | Lubaba | Abdul-Rehman | Musfira |
 | DNS Tunneling | Lubaba | Abdul-Rehman | Musfira | Sonia |
 
-Build-phase ownership is documented separately from scenario-role rotation. For the telemetry phase, **Musfira owned AWS-side security telemetry implementation**, while **Sonia owned Splunk-side onboarding and data-quality validation**.
-
 ## Current build status
 
 | Area | Status |
@@ -176,7 +174,7 @@ Build-phase ownership is documented separately from scenario-role rotation. For 
 | Scenario 02 defender DNS infrastructure | **Planned when Scenario 02 begins** |
 | Scenario 03 temporary Fast Flux infrastructure | **Planned when Scenario 03 begins** |
 | Scenario 04 tunneling-specific infrastructure | **Conditional / planned when Scenario 04 begins** |
-| Scenario-specific detections and exercises | Separate scenario repositories |
+| Scenario-specific detections and exercises | Separate scenario [repositories](https://github.com/orgs/DNSentinel-Lab/repositories) |
 
 ## Repository map
 
