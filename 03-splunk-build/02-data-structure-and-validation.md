@@ -4,7 +4,7 @@
 
 Project telemetry is separated by purpose before ingestion starts. The lab does not use `main` as a catch-all project index.
 
-A source is not considered onboarded only because events are visible. Every onboarding step must validate:
+A source is not considered onboarded only because events are visible. Each onboarding step checks:
 
 ```text
 index
@@ -12,20 +12,20 @@ host
 source
 sourcetype
 timestamp
-useful fields
+useful investigation fields
 ```
 
 ## Project indexes
 
-| Index | Purpose | Max size | Retention |
-|---|---|---:|---:|
-| `dns_soc_web` | Nginx access/error telemetry | 5 GiB | 30 days |
-| `dns_soc_linux` | Selected Linux security/system telemetry | 5 GiB | 30 days |
-| `dns_soc_aws` | Route 53, VPC Flow Logs, CloudTrail and later applicable AWS DNS telemetry | 15 GiB | 30 days |
-| `dns_soc_dns` | Team-controlled resolver DNS data | 10 GiB | 30 days |
-| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days |
+| Index | Purpose | Max size | Retention | Current use |
+|---|---|---:|---:|---|
+| `dns_soc_web` | Nginx access/error telemetry | 5 GiB | 30 days | Active / Gate B |
+| `dns_soc_linux` | Selected Linux security/system telemetry | 5 GiB | 30 days | Reserved until a real source is explicitly onboarded |
+| `dns_soc_aws` | Route 53, VPC Flow Logs, CloudTrail and AWS VPC Resolver telemetry | 15 GiB | 30 days | Active / Gate C |
+| `dns_soc_dns` | Team-controlled resolver DNS data | 10 GiB | 30 days | Scenario 02 onward |
+| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | Next shared AI phase |
 
-The final validation search returned all five indexes with `frozenTimePeriodInSecs=2592000`.
+All five indexes were validated with:
 
 ```spl
 | rest splunk_server=local /services/data/indexes
@@ -34,89 +34,182 @@ The final validation search returned all five indexes with `frozenTimePeriodInSe
 | sort title
 ```
 
-![Project index configuration](screenshots/platform/65-splunk-custom-indexes.png)
-
-## Web and Linux naming
-
-The next onboarding phase uses the following stable identities.
-
-| Data | Index | Planned sourcetype | Host | Source |
-|---|---|---|---|---|
-| Nginx access | `dns_soc_web` | `dns_soc:nginx:access` | `dns-soc-web01` | `/var/log/nginx/soclab_access.log` |
-| Nginx error | `dns_soc_web` | `dns_soc:nginx:error` | `dns-soc-web01` | `/var/log/nginx/soclab_error.log` |
-| Linux security/system | `dns_soc_linux` | Finalize from the real source used | `dns-soc-web01` | Real file/journal source only |
-
-The Linux source must match what Ubuntu actually provides. The project does not create a fake `/var/log/auth.log` simply to satisfy an input path. If journald is the useful source, the collection method is documented when Gate B is implemented.
-
-## AWS sourcetypes
-
-AWS data goes to `dns_soc_aws`, but the project does **not** invent custom AWS sourcetype names before the real collection method exists.
-
-When Route 53, VPC Flow Logs and CloudTrail are enabled and connected to Splunk, the team records the actual sourcetypes produced by the chosen supported input/add-on and validates them against sample events.
-
-## Resolver data
-
-`dns_soc_dns` is reserved for the team-controlled defender resolver introduced from Scenario 02 onward. The final sourcetype is chosen after BIND/Unbound and its log format are actually implemented.
-
-The intended host identity is:
+The final retention value is:
 
 ```text
-host=dns-soc-resolver01
+frozenTimePeriodInSecs = 2592000
 ```
 
-## AI data
+![Project index configuration](screenshots/platform/65-splunk-custom-indexes.png)
 
-The shared AI foundation later returns enrichment to:
+## Gate B — Web telemetry
+
+The Web Universal Forwarder sends only required Nginx sources to the private receiver on `10.50.20.10:9997`.
+
+| Data | Index | Sourcetype | Host | Source |
+|---|---|---|---|---|
+| Nginx access | `dns_soc_web` | `dns_soc:nginx:access` | `dns-soc-web01` | `/var/log/nginx/soclab_access.log` |
+| Nginx error | `dns_soc_web` | `dns_soc:nginx:error` when real error events are collected | `dns-soc-web01` | `/var/log/nginx/soclab_error.log` |
+| Linux security/system | `dns_soc_linux` | Not claimed until a real source is enabled | `dns-soc-web01` | Real file/journal source only |
+
+The Gate B record clearly proves the Nginx access source. The project does **not** create a fake `/var/log/auth.log` merely to populate `dns_soc_linux`.
+
+Useful Web checks are preserved in [`validation/validation-searches.spl`](validation/validation-searches.spl).
+
+Gate B is documented in detail in [`05-web-forwarder-onboarding.md`](05-web-forwarder-onboarding.md).
+
+## Gate C — AWS telemetry
+
+AWS data is collected through the Splunk Add-on for AWS `8.2.1` and lands in `dns_soc_aws`.
+
+The project records the **real sourcetypes produced by the running inputs**:
+
+| Telemetry family | Splunk input | Input type | Actual sourcetype |
+|---|---|---|---|
+| Route 53 public authoritative query logs | `route53-public-query-logs` | Kinesis | `aws:kinesis` |
+| VPC Flow Logs | `vpc-flow-logs` | SQS-Based S3 / VPC Flow Logs decoder | `aws:cloudwatchlogs:vpcflow` |
+| CloudTrail | `cloudtrail-logs` | SQS-Based S3 / CloudTrail decoder | `aws:cloudtrail` |
+| Route 53 Resolver Query Logs | `resolver-query-logs` | SQS-Based S3 / Custom Data Type | `aws:s3` |
+
+![Four active AWS inputs](screenshots/aws-telemetry/aws-add-on-four-inputs-active.png)
+
+### Route 53 public authoritative logs
+
+Observed placement:
+
+```text
+index      = dns_soc_aws
+sourcetype = aws:kinesis
+host       = dns-soc-splunk01
+source     = CloudWatch / Route 53 stream identity
+```
+
+The raw events were validated for:
+
+- queried name;
+- query type;
+- result context such as `NOERROR` / `NXDOMAIN` when generated;
+- event time;
+- protocol;
+- AWS/source context actually present.
+
+This dataset records queries reaching the public authoritative hosted zone.
+
+### VPC Flow Logs
+
+Observed placement:
+
+```text
+index      = dns_soc_aws
+sourcetype = aws:cloudwatchlogs:vpcflow
+host       = $decideOnStartup
+source     = s3://.../vpc-flow/AWSLogs/.../vpcflowlogs/...
+```
+
+Both `SOC-LAB-VPC` and `ATTACK-LAB-VPC` were proven in the indexed data.
+
+Useful normalized fields observed from real events include:
+
+```text
+src / src_ip
+dest / dest_ip
+src_port
+dest_port
+protocol
+action
+vpcflow_action
+packets
+bytes
+start_time
+end_time
+```
+
+`action` is Splunk-normalized (`allowed` / `blocked`) while `vpcflow_action` preserves AWS-style `ACCEPT` / `REJECT` context.
+
+### CloudTrail
+
+Observed placement:
+
+```text
+index      = dns_soc_aws
+sourcetype = aws:cloudtrail
+host       = $decideOnStartup
+source     = s3://.../cloudtrail/AWSLogs/.../CloudTrail/...
+```
+
+Useful fields validated from real events:
+
+```text
+eventName
+eventSource
+sourceIPAddress
+userIdentity.type
+userIdentity.arn
+awsRegion
+errorCode / result context
+errorMessage when present
+```
+
+Because the trail is multi-region, events can legitimately contain regions other than `us-east-1`.
+
+### Route 53 Resolver Query Logs
+
+Observed placement:
+
+```text
+index      = dns_soc_aws
+sourcetype = aws:s3
+host       = $decideOnStartup
+source     = s3://.../AWSLogs/.../vpcdnsquerylogs/<vpc-id>/...
+```
+
+The input uses the Custom Data Type decoder, so JSON fields are exposed with `spath` rather than pretending the add-on produced a dedicated Resolver sourcetype.
+
+Useful fields validated from real events:
+
+```text
+query_timestamp
+vpc_id
+srcaddr
+srcids.instance
+query_name
+query_type
+rcode
+answers / answer data when AWS returns it
+region
+```
+
+This AWS-managed Resolver dataset stays in `dns_soc_aws`. The separate index `dns_soc_dns` is reserved for the future **team-controlled BIND/Unbound resolver** introduced from Scenario 02 onward.
+
+## Gate C completion search
+
+The final combined validation classified all four active AWS families:
+
+```spl
+index=dns_soc_aws
+| eval telemetry=case(
+    sourcetype="aws:kinesis","Route 53 Public Authoritative",
+    sourcetype="aws:cloudwatchlogs:vpcflow","VPC Flow Logs",
+    sourcetype="aws:cloudtrail","CloudTrail",
+    sourcetype="aws:s3" AND like(source,"%vpcdnsquerylogs%"),"Route 53 Resolver Query Logs"
+)
+| where isnotnull(telemetry)
+| stats count min(_time) as first max(_time) as last by telemetry sourcetype
+| convert ctime(first) ctime(last)
+| sort telemetry
+```
+
+![Combined AWS data-quality validation](screenshots/aws-telemetry/73-aws-data-quality-validation.png)
+
+*All four AWS telemetry families have real events in `dns_soc_aws` with their actual sourcetypes and usable timestamps.*
+
+## AI data boundary
+
+The shared AI foundation will later return enrichment to:
 
 ```text
 index=dns_soc_ai
 sourcetype=dns_soc:ai:triage
 ```
 
-The AI output is supporting context only. Raw DNS/network/server events remain the evidence source used by the SOC Analyst.
-
-## Gate B — Web Forwarder validation
-
-After the Universal Forwarder is installed on `dns-soc-web01`, generate fresh successful and failed web requests and validate the data in Splunk.
-
-Suggested checks:
-
-```spl
-index=dns_soc_web host=dns-soc-web01 earliest=-15m
-| stats count min(_time) as firstSeen max(_time) as lastSeen values(source) as sources values(sourcetype) as sourcetypes by host
-| convert ctime(firstSeen) ctime(lastSeen)
-```
-
-```spl
-index=dns_soc_web host=dns-soc-web01 earliest=-15m
-| stats count by source sourcetype
-```
-
-```spl
-index=dns_soc_linux host=dns-soc-web01 earliest=-15m
-| stats count min(_time) as firstSeen max(_time) as lastSeen values(source) as sources values(sourcetype) as sourcetypes by host
-| convert ctime(firstSeen) ctime(lastSeen)
-```
-
-Gate B should not pass until the team can show:
-
-- fresh Nginx `200` and controlled `404` activity;
-- expected `dns_soc_web` / `dns_soc_linux` placement;
-- `host=dns-soc-web01`;
-- correct source paths;
-- expected sourcetypes;
-- accurate event time;
-- useful parsed fields for later investigation.
-
-## Gate C — AWS telemetry validation
-
-After AWS logging is enabled, validate each data family independently before building Scenario 01 detection logic.
-
-| Data source | Main SOC value |
-|---|---|
-| Route 53 public query logs | Authoritative DNS reconnaissance evidence |
-| VPC Flow Logs | L3/L4 network-flow context around public/server activity |
-| CloudTrail | AWS API/control-plane changes |
-| Resolver Query Logs, when applicable | Internal victim/resolver DNS activity in later stages |
-
-The Detection Engineer records the real `index`, `host`, `source`, `sourcetype`, `_time` behavior and fields for each source. Dashboard/detection work starts only after this data-quality gate passes.
+AI output is supporting context only. Raw Web, DNS, flow and cloud events remain the evidence source used by the SOC Analyst.
