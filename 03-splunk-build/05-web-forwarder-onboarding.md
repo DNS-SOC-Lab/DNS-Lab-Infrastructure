@@ -1,7 +1,7 @@
 # Web Universal Forwarder Onboarding
 
 **Status:** Gate B complete  
-**Implementation / validation owner:** Sonia — Detection Engineer  
+**Implementation / validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer  
 **Source host:** `dns-soc-web01`  
 **Splunk receiver:** `10.50.20.10:9997`
 
