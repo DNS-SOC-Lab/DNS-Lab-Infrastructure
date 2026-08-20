@@ -70,10 +70,10 @@ For the initial shared AI foundation:
 
 | Team member | Shared responsibility |
 |---|---|
-| Sonia | Define the useful alert fields, AI payload requirements and detection-to-AI contract |
-| Abdul-Rehman | Coordinate Flask placement, Docker/network connectivity, API configuration and integration readiness |
-| Musfira | Test whether the AI summary is accurate, useful and consistent with raw Splunk evidence |
-| Lubaba | Review whether AI response suggestions are safe, relevant and still require human approval |
+| [**Sonia**](https://github.com/sonia11mansha415) | Define the useful alert fields, AI payload requirements and detection-to-AI contract |
+| [**Abdul-Rehman**](https://github.com/abdul4rehman215) | Coordinate Flask placement, Docker/network connectivity, API configuration and integration readiness |
+| [**Musfira**](https://github.com/MUSFIRA-ZAFAR) | Test whether the AI summary is accurate, useful and consistent with raw Splunk evidence |
+| [**Lubaba**](https://github.com/lubaba1513-pixel) | Review whether AI response suggestions are safe, relevant and still require human approval |
 
 The bridge and output schema stay common. Scenario-specific context/prompt profiles are added only after each scenario's detection fields are stable.
 
