@@ -1,8 +1,7 @@
 # Security Groups and Systems Manager
 
 - **Status:** Implemented and validated
-- **Implementation owner:** Abdul-Rehman
-
+- **Implementation owner:** [_Abdul-Rehman_](https://github.com/abdul4rehman215)
 ## Objective
 
 Control service exposure with Security Groups and administer EC2 through AWS Systems Manager so general-purpose SSH does not need to be opened to the Internet.
