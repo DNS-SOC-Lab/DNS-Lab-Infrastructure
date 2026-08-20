@@ -1,7 +1,7 @@
 # Validation, Failure Handling & Operations
 
 **Status:** Complete  
-**Implementation owner:** **Musfira — Shared AI Integration**
+**Implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — **Shared AI Integration**
 
 The shared bridge was validated with synthetic Splunk alerts before any scenario-specific AI profile was added.
 
