@@ -154,7 +154,7 @@ All three Scenario 01 instances reached the `Running` state and the captured EC2
 
 Scenario 01 now has its required compute foundation: a public-facing web target, a dedicated Splunk/SIEM host and a separate Kali attack host. The instances are running on the planned VPC/subnet layout, use the SSM administration path, and passed the network/DNS/time checks captured during deployment.
 
-Route 53 parent/child delegation is now complete and documented in [`05-route53-and-domain.md`](05-route53-and-domain.md). The next build step is Nginx and HTTPS validation for `soclab.abdul4rehman215.tech`.
+Route 53 parent/child delegation, Nginx/HTTPS, Web telemetry and AWS telemetry have all been completed after this EC2 checkpoint. Future EC2 additions are scenario-specific and are planned in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
 
 ## Evidence index
 
