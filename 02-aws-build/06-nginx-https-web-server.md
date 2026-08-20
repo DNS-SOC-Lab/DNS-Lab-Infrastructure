@@ -563,22 +563,27 @@ The web server successfully provides:
 
 ---
 
-## 19. Next Telemetry Handoff
+## 19. Telemetry Handoff - Completed
 
-The web service is complete. Log forwarding is intentionally handled as the next Splunk data-onboarding phase rather than as part of the Nginx installation itself.
-
-The next work on `dns-soc-web01` is:
+The web service is complete **and its log-forwarding handoff is now complete**. The Universal Forwarder sends the required Nginx telemetry over the private SOC VPC path to `10.50.20.10:9997`.
 
 ```text
-Splunk Universal Forwarder
+dns-soc-web01
     |
     +-- /var/log/nginx/soclab_access.log
     +-- /var/log/nginx/soclab_error.log
-    +-- selected real Linux security/system source
     |
+    | Splunk Universal Forwarder
     | private TCP 9997
     v
-10.50.20.10 / dns-soc-splunk01
+dns-soc-splunk01
+    |
+    v
+index=dns_soc_web
 ```
 
-The forwarder work and data-quality checks are tracked in [`../03-splunk-build/`](../03-splunk-build/). The Nginx logs do not replace authoritative DNS query telemetry; Route 53/VPC/CloudTrail evidence is added in the later AWS telemetry phase.
+The completed Splunk-side onboarding and Gate B evidence are documented in [`../03-splunk-build/05-web-forwarder-onboarding.md`](../03-splunk-build/05-web-forwarder-onboarding.md).
+
+The controlled 200/404 requests used here and during onboarding are **telemetry validation traffic only**. They are not the Scenario 01 DNS reconnaissance exercise.
+
+Authoritative DNS, VPC Flow, CloudTrail and VPC Resolver telemetry are documented separately in [`07-security-telemetry.md`](07-security-telemetry.md) and [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
