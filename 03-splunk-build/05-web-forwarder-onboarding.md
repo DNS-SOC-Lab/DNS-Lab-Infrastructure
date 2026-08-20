@@ -1,7 +1,8 @@
 # Web Universal Forwarder Onboarding
 
 **Status:** Gate B complete  
-**Implementation / validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer  
+**Web host / forwarder implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — Web Telemetry Implementation  
+**Splunk onboarding / data-validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer  
 **Source host:** `dns-soc-web01`  
 **Splunk receiver:** `10.50.20.10:9997`
 
@@ -31,7 +32,7 @@ No public ingestion endpoint is needed for this path. `SG-SPLUNK` allows TCP `99
 
 ## Universal Forwarder installation
 
-The Splunk Universal Forwarder was installed on `dns-soc-web01` and enabled to run as a service.
+Musfira performed the Web-instance implementation work on `dns-soc-web01`, including the terminal-side Universal Forwarder installation, service enablement and forwarder configuration.
 
 ![Universal Forwarder installed](screenshots/web-forwarder/51-splunk-uf-installed.png)
 
@@ -90,6 +91,8 @@ request happens now
 ```
 
 ## Splunk data-quality validation
+
+Sonia performed the Splunk-side onboarding checks and data-quality validation in Splunk Web, confirming that the Web telemetry arrived with the expected index, host, source, sourcetype and event timing.
 
 The useful checks were:
 
