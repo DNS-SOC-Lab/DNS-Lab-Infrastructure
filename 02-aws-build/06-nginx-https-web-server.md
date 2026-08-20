@@ -1,7 +1,7 @@
 # Nginx HTTPS Web Server
 
 - **Status:** Implemented and validated
-- **Implementation Owner:** Musfira
+- **Implementation Owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR)
 - **AWS Service:** Amazon EC2 / Nginx / Let's Encrypt
 - **EC2 Instance:** `dns-soc-web01`
 - **Private IP:** `10.50.10.10`
