@@ -1,9 +1,9 @@
 # Scenario 01 EC2 Deployment
 
-**Status:** Implemented and validated
-**Implementation owner:** Abdul-Rehman
-**Region:** `us-east-1` (N. Virginia)
-**Availability Zone observed:** `us-east-1c`
+- **Status:** Implemented and validated
+- **Implementation owner:** Abdul-Rehman
+- **Region:** `us-east-1` (N. Virginia)
+- **Availability Zone observed:** `us-east-1c`
 
 ## Objective
 
