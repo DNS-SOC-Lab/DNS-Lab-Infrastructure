@@ -1,7 +1,7 @@
 # Flask / OpenAI Bridge Deployment
 
 **Status:** Complete  
-**Implementation owner:** **Musfira — Shared AI Integration**
+**Implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — **Shared AI Integration**
 
 ## Runtime components
 
