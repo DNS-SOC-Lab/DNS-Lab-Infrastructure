@@ -1,0 +1,117 @@
+# DNS SOC Lab - reusable onboarding validation searches
+# These searches document the data-quality checks used for Gates B and C.
+# Scenario-specific detection SPL belongs in the separate scenario repositories.
+
+# -----------------------------------------------------------------------------
+# Gate B - Web / Nginx
+# -----------------------------------------------------------------------------
+
+# Source and sourcetype summary
+index=dns_soc_web host=dns-soc-web01
+| stats count by source sourcetype
+
+# Raw event inspection
+index=dns_soc_web host=dns-soc-web01
+| table _time host source sourcetype _raw
+| head 20
+
+# Time-range validation
+index=dns_soc_web host=dns-soc-web01
+| stats count min(_time) as first max(_time) as last by source sourcetype
+| convert ctime(first) ctime(last)
+
+# -----------------------------------------------------------------------------
+# Gate C - Common AWS inventory
+# -----------------------------------------------------------------------------
+
+index=dns_soc_aws
+| stats count by sourcetype
+
+index=dns_soc_aws
+| stats count min(_time) as first max(_time) as last by source sourcetype host
+| convert ctime(first) ctime(last)
+
+index=dns_soc_aws
+| table _time host source sourcetype _raw
+| head 20
+
+# -----------------------------------------------------------------------------
+# Route 53 public authoritative query logs
+# -----------------------------------------------------------------------------
+
+index=dns_soc_aws sourcetype="aws:kinesis"
+| table _time host source sourcetype _raw
+| head 20
+
+# -----------------------------------------------------------------------------
+# VPC Flow Logs
+# -----------------------------------------------------------------------------
+
+# Prove both configured VPC Flow Log sources are present.
+# Flow-log IDs are deployment-specific evidence from this lab.
+index=dns_soc_aws sourcetype="aws:cloudwatchlogs:vpcflow"
+| eval vpc=case(
+    like(source,"%fl-02bdbc4f9c52d9ab6%"),"SOC-LAB-VPC",
+    like(source,"%fl-0a025c5385966792b%"),"ATTACK-LAB-VPC",
+    true(),"other"
+)
+| stats count min(_time) as first max(_time) as last by vpc
+| convert ctime(first) ctime(last)
+
+# Investigation-friendly fields
+index=dns_soc_aws sourcetype="aws:cloudwatchlogs:vpcflow"
+| eval source_ip=coalesce(src_ip,src),
+       destination_ip=coalesce(dest_ip,dest),
+       source_port=src_port,
+       destination_port=dest_port,
+       flow_start=start_time,
+       flow_end=end_time
+| table _time source_ip destination_ip source_port destination_port protocol action vpcflow_action packets bytes flow_start flow_end
+| head 20
+
+# -----------------------------------------------------------------------------
+# CloudTrail
+# -----------------------------------------------------------------------------
+
+index=dns_soc_aws sourcetype="aws:cloudtrail"
+| table _time eventName eventSource sourceIPAddress userIdentity.type userIdentity.arn awsRegion errorCode errorMessage
+| head 20
+
+# -----------------------------------------------------------------------------
+# Route 53 Resolver Query Logs
+# -----------------------------------------------------------------------------
+
+# Resolver Query Logs arrive through Custom Data Type / aws:s3.
+index=dns_soc_aws sourcetype="aws:s3" source="*vpcdnsquerylogs*"
+| spath
+| table _time query_timestamp vpc_id srcaddr srcids.instance query_name query_type rcode answers region
+| head 20
+
+# VPC coverage summary
+index=dns_soc_aws sourcetype="aws:s3" source="*vpcdnsquerylogs*"
+| spath
+| stats count values(srcaddr) as client_ips values(srcids.instance) as instances by vpc_id
+
+# Response data when AWS provides it
+index=dns_soc_aws sourcetype="aws:s3" source="*vpcdnsquerylogs*"
+| spath
+| spath path=answers{}.Rdata output=answer_rdata
+| spath path=answers{}.Type output=answer_type
+| table _time query_timestamp vpc_id srcaddr srcids.instance query_name query_type rcode answer_type answer_rdata region
+| head 30
+
+# -----------------------------------------------------------------------------
+# Final Gate C evidence
+# -----------------------------------------------------------------------------
+
+index=dns_soc_aws
+| eval telemetry=case(
+    sourcetype="aws:kinesis","Route 53 Public Authoritative",
+    sourcetype="aws:cloudwatchlogs:vpcflow","VPC Flow Logs",
+    sourcetype="aws:cloudtrail","CloudTrail",
+    sourcetype="aws:s3" AND like(source,"%vpcdnsquerylogs%"),"Route 53 Resolver Query Logs"
+)
+| where isnotnull(telemetry)
+| stats count min(_time) as first max(_time) as last by telemetry sourcetype
+| convert ctime(first) ctime(last)
+| sort telemetry
