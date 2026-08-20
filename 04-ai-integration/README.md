@@ -1,122 +1,113 @@
-# Shared AI-Assisted Alert Summarization
+# Shared AI-Assisted Alert Triage
 
-**Status:** **NEXT — ready to implement.** Web Gate B and AWS Gate C are complete, so the shared AI foundation is now the only unfinished common-infrastructure phase before Scenario 01 detection engineering.
+**Status:** **Complete.** The shared AI foundation is deployed and validated. The common AWS / Web / Splunk / AI platform is now complete; scenario repositories reuse this bridge after their detection fields are stable.
 
-The AI component is **shared infrastructure** for all four scenarios. It is built once, then each scenario adds a small profile that maps its stable alert fields and context into the common bridge. AI assists the analyst; it does not make the final triage or response decision.
+The bridge is shared infrastructure for all four DNS SOC scenarios. It accepts a Splunk alert result, validates and normalizes the payload, asks the OpenAI API for a schema-controlled analyst aid, and writes the structured result back to Splunk for human review.
 
 ```mermaid
 flowchart LR
-    A[Splunk Detection] --> B[Webhook]
-    B --> C[Shared Flask / LLM Bridge]
-    C --> D[LLM API]
-    D --> E[Structured Summary]
-    E --> F[Splunk HEC]
-    F --> G[index=dns_soc_ai]
-    G --> H[Human SOC Analyst Validates Raw Evidence]
+    A[Splunk scheduled alert] --> B[Internal webhook]
+    B --> C[dns-soc-ai-bridge\nFlask + Gunicorn]
+    C --> D[OpenAI Responses API]
+    D --> E[Structured JSON result]
+    E --> F[Internal HTTPS HEC :8088]
+    F --> G[index=dns_soc_ai\nsourcetype=dns_soc:ai:triage]
+    G --> H[Human SOC Analyst validates raw evidence]
 ```
 
-## Why this is built after trusted telemetry
+## Final implementation state
 
-The bridge should consume a stable detection payload, not influence how logs are collected or how the detection is designed.
+| Item | Implemented state |
+|---|---|
+| Host | Existing `dns-soc-splunk01`; no new EC2 |
+| Bridge container | `dns-soc-ai-bridge` |
+| Application | Flask served by Gunicorn |
+| Docker network | `dns-soc-internal` |
+| Bridge port | TCP `5000`, Docker-internal only |
+| Splunk HEC | TCP `8088`, Docker-internal only |
+| OpenAI API | Responses API |
+| Model used during foundation validation | `gpt-5.6-terra`, configured through `OPENAI_MODEL` |
+| Splunk destination | `index=dns_soc_ai` |
+| Splunk sourcetype | `dns_soc:ai:triage` |
+| Webhook endpoint | `http://dns-soc-ai-bridge:5000/splunk-webhook` |
+| Health endpoint | `/health` |
+| AI decision boundary | Advisory only; `human_validation_required=true` |
 
-```text
-Web Forwarder + data quality  COMPLETE
-          |
-AWS telemetry + data quality COMPLETE
-          |
-          v
-Shared AI foundation         NEXT
-          |
-Scenario detection reaches stable fields
-          |
-          v
-Scenario-specific AI profile
-```
+No AWS security-group rule was added for TCP `5000` or `8088`. Only the existing Splunk Web and Universal Forwarder receiver remain host-published from the Compose stack.
 
-This keeps the telemetry and SPL logic evidence-driven while allowing every later scenario to reuse the same integration code.
+## What the bridge returns
 
-
-## Ready-state checkpoint
-
-The prerequisites that originally blocked this phase are now complete:
-
-- Splunk Enterprise `10.4.2` is stable on Ubuntu 24.04 LTS;
-- KV Store is healthy;
-- `dns_soc_ai` exists with the 30-day project retention policy;
-- Web/Nginx telemetry is trusted;
-- all four AWS telemetry families are trusted in `dns_soc_aws`;
-- TCP `8088` is still not publicly exposed, so the HEC return path can be designed as an internal integration.
-
-The shared bridge can therefore be built without changing the completed telemetry architecture.
-
-## Shared foundation scope
-
-The common implementation will cover:
-
-- second Docker container on the Splunk EC2 host;
-- internal Docker network communication;
-- Flask webhook endpoint;
-- safe LLM API secret handling;
-- a common alert request schema;
-- a common structured AI response schema;
-- error/timeout handling;
-- HEC return path to `dns_soc_ai`;
-- `sourcetype=dns_soc:ai:triage`;
-- health checks and a synthetic end-to-end test;
-- analyst validation of correct and incorrect AI output.
-
-TCP `8088` is not publicly exposed. When HEC is introduced, it is used through the controlled internal integration path.
-
-## Common output contract
-
-The exact schema is finalized during implementation, but the shared output should remain focused on analyst support:
+The response schema is intentionally structured so an analyst can review evidence instead of reading an unrestricted free-text answer:
 
 ```text
 summary
-observed indicators
-why the activity may be suspicious
-suggested MITRE mapping
-questions / evidence still requiring verification
-possible response considerations
+observed_indicators
+network_context
+  primary_osi_layer
+  related_layers
+  protocols
+  explanation
+suspicion_reasons
+mitre_attack
+  tactic
+  technique_id
+  technique_name
+  explanation
+cyber_kill_chain
+  stage
+  explanation
+missing_evidence
+response_considerations
+confidence
+human_validation_required
 ```
 
-The model must not automatically mark an event true-positive/false-positive or execute containment.
+The model is instructed to prefer uncertainty over unsupported assumptions. MITRE ATT&CK and Cyber Kill Chain fields are analyst context, not final classifications.
 
-## Scenario profiles
+## Validation completed
 
-The bridge code stays common, while scenario context is versioned separately:
+The shared foundation was proven without using the real Scenario 01 detection:
 
-| Scenario | Example profile focus |
-|---|---|
-| 01 — DNS Recon | record-type diversity, query rate, source, queried names, follow-up web activity |
-| 02 — DGA / NXDOMAIN | NXDOMAIN ratio, unique names, label/domain length, query rate, client behavior |
-| 03 — Fast Flux | answer/IP churn, TTL, destination changes and flow context |
-| 04 — DNS Tunneling | long/encoded labels, TXT/A patterns, frequency, parent domain and endpoint/network context |
+- direct OpenAI API authentication succeeded from `dns-soc-splunk01`;
+- both Docker containers were healthy on `dns-soc-internal`;
+- a dedicated HEC token wrote only to `dns_soc_ai` using `dns_soc:ai:triage`;
+- the bridge accepted Splunk's native webhook envelope and normalized the first result row into the common alert contract;
+- a strong synthetic alert produced structured analyst context in Splunk;
+- an incomplete synthetic alert returned low confidence, `Uncertain` framework context and a meaningful missing-evidence list;
+- human review confirmed the strong and incomplete outputs behaved differently as intended;
+- an invalid payload returned HTTP `400` / `schema_validation_failed` and created no bad AI event;
+- final strong-vs-incomplete comparison passed with `human_validation_required=true` for both results.
 
-Scenario 02 may also add a separate statistical/ML anomaly-detection feature. That is a detection method, not a replacement for the shared LLM summarization bridge.
+The strong synthetic result also demonstrated why framework mappings remain advisory: the model suggested `T1595 — Active Scanning`, while the analyst must evaluate the scenario's intended `T1590.002` DNS reconnaissance mapping against the real evidence.
 
-## Initial shared ownership
+## Documents
 
-The initial foundation follows the Task 1 responsibilities already assigned by the team:
+- [`01-architecture-and-security.md`](01-architecture-and-security.md) — final network/security boundary and trust model
+- [`02-bridge-deployment.md`](02-bridge-deployment.md) — deployed Flask/OpenAI/Docker implementation
+- [`03-splunk-hec-and-webhook.md`](03-splunk-hec-and-webhook.md) — HEC, webhook allow-list and native Splunk payload handling
+- [`04-validation-and-operations.md`](04-validation-and-operations.md) — strong/incomplete/failure tests, human validation and operating checks
+- [`bridge/`](bridge/) — repository-safe bridge source, Dockerfile and dependencies
+- [`configs/`](configs/) — safe environment and Splunk allow-list examples
+- [`schemas/`](schemas/) — reference copies of the request and response schemas enforced by `app.py`
+- [`validation/`](validation/) — reusable synthetic SPL and final validation searches
+- [`screenshots/`](screenshots/) — selected implementation evidence
 
-| Team member | Responsibility |
-|---|---|
-| Sonia | Define alert fields, payload requirements and what the AI should analyze |
-| Abdul-Rehman | Coordinate Flask deployment, Docker/network path, API configuration and integration readiness |
-| Musfira | Validate whether AI summaries are useful and consistent with raw Splunk evidence |
-| Lubaba | Review whether AI response suggestions are appropriate and remain human-approved |
+## Scenario handoff
 
-Later scenario repositories can rotate detection/SOC/IR ownership without rebuilding the shared bridge.
+The bridge stays scenario-neutral. A scenario repository adds only its own stable evidence mapping/profile after the detection is ready:
 
-## Success condition
+```text
+scenario detection
+      ↓
+analyst-ready evidence fields
+      ↓
+scenario profile / payload mapping
+      ↓
+shared AI bridge
+      ↓
+dns_soc_ai
+      ↓
+human validation
+```
 
-AI integration is successful only if the SOC Analyst can compare the generated summary against the raw Splunk evidence and clearly explain where the AI was correct, incomplete or wrong.
-
-
-## Handoff to scenario repositories
-
-When the shared bridge passes its synthetic end-to-end test, the **common infrastructure build is complete**.
-
-Scenario repositories then add only their own profile/payload mapping after the corresponding detection has stable evidence fields. Scenario-specific AI profiles do not redesign the common Flask/LLM/HEC path.
-
-The scenario workflow and repository layout are standardized in [`../00-project-design/scenario-documentation-standard.md`](../00-project-design/scenario-documentation-standard.md). Any later scenario-specific AWS additions are tracked separately in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
+Scenario 01 detection engineering is now active in its dedicated repository. Future scenario-specific infrastructure remains tracked in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).

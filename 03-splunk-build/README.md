@@ -1,6 +1,6 @@
 # Splunk Build
 
-**Status:** Gates A, B and C complete — shared telemetry is trusted.  
+**Status:** Gates A, B and C complete; the internal AI return path is also active and validated.  
 **Splunk implementation / validation owner:** [_Sonia_](https://github.com/sonia11mansha415) — Detection Engineer
 
 This folder records the deployed Splunk Enterprise platform on `dns-soc-splunk01`, the Web Universal Forwarder path and the AWS telemetry onboarding used by the shared DNS SOC infrastructure.
@@ -23,7 +23,7 @@ Scenario-specific dashboards, detections, tuning, attack ground truth and IR evi
 | Universal Forwarder receiver | TCP `9997`, host-bound to `10.50.20.10`, source restricted to `SG-WEB` |
 | Splunk Add-on for AWS | `8.2.1` |
 | AWS authentication | EC2 IAM role `DNS-SOC-EC2-SSM-Role`, autodiscovered by the add-on |
-| HEC `8088` | Not host-published; reserved for the shared AI integration |
+| HEC `8088` | Active for `dns-soc-ai-bridge` on `dns-soc-internal`; not host-published |
 | Management `8089` | Not host-published |
 | Public SSH | No SG rule; EC2 administration uses SSM |
 | Config persistence | `dns-soc-splunk-etc` -> `/opt/splunk/etc` |
@@ -56,15 +56,16 @@ flowchart LR
 
     subgraph Docker[Docker Engine / Compose]
         Splunk[Splunk Enterprise 10.4.2<br/>dns-soc-splunk]
+        AI[dns-soc-ai-bridge<br/>Flask + Gunicorn]
         Net[dns-soc-internal]
         Splunk --- Net
+        AI --- Net
+        AI -->|HTTPS HEC 8088 internal| Splunk
     end
 
     Host --> Docker
     Etc[(dns-soc-splunk-etc)] -->|/opt/splunk/etc| Splunk
     Var[(dns-soc-splunk-var)] -->|/opt/splunk/var| Splunk
-
-    Splunk -. 8088 internal later .-> AI[Shared AI bridge - NEXT]
 ```
 
 ## Project indexes
@@ -75,7 +76,7 @@ flowchart LR
 | `dns_soc_linux` | Selected Linux security/system telemetry | 5 GiB | 30 days | Reserved; only use a real source when implemented |
 | `dns_soc_aws` | Route 53, VPC Flow Logs, CloudTrail and AWS Resolver Query Logs | 15 GiB | 30 days | **Active / validated** |
 | `dns_soc_dns` | Team-controlled resolver DNS telemetry | 10 GiB | 30 days | Scenario 02 onward |
-| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | Next shared AI phase |
+| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | **Active / validated** |
 
 All five indexes were validated with `frozenTimePeriodInSecs=2592000`.
 
@@ -146,30 +147,33 @@ Do not invent a BIND/Unbound sourcetype now. The final resolver input and field 
 
 Scenario dashboards and detections remain outside this folder. The shared scenario standard is [`../00-project-design/scenario-documentation-standard.md`](../00-project-design/scenario-documentation-standard.md).
 
-## Current next step
+## Shared AI return path complete
 
-The shared telemetry foundation is finished. The next infrastructure phase is:
+The Splunk platform now participates in the completed shared AI foundation:
 
 ```text
-Splunk alert payload
+scheduled Splunk alert
         |
         v
-shared Flask / LLM bridge
+internal webhook -> dns-soc-ai-bridge
         |
         v
-LLM API
+OpenAI Responses API
         |
         v
-structured enrichment
+schema-controlled analyst context
         |
         v
-Splunk HEC (internal path)
+internal HTTPS HEC :8088
         |
         v
 index=dns_soc_ai
+sourcetype=dns_soc:ai:triage
 ```
 
-That work belongs in [`../04-ai-integration/`](../04-ai-integration/). After the shared AI foundation is validated, Scenario 01 detection engineering continues in the dedicated Scenario 01 repository.
+TCP `8088` remains unexposed on the EC2 host. The AI bridge runs as a second container on `dns-soc-internal`; its TCP `5000` application port is also container-only. Full implementation, security boundaries and validation are documented in [`../04-ai-integration/`](../04-ai-integration/).
+
+**Common shared infrastructure is complete.** Scenario 01 detection engineering is active in the dedicated Scenario 01 repository.
 
 ## Documents
 
