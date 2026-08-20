@@ -1,7 +1,7 @@
 # AWS Account Security and Access
 
 **Status:** Implemented  
-**Implementation owner:** Abdul-Rehman  
+**Implementation owner:** [_Abdul-Rehman_](https://github.com/abdul4rehman215) 
 **Region used for the lab:** `us-east-1`
 
 ## Objective
