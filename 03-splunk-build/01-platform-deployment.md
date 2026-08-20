@@ -52,7 +52,9 @@ persistent data    dns-soc-splunk-var -> /opt/splunk/var
 Docker network     dns-soc-internal
 ```
 
-The real admin password stays outside the repository in `/etc/dns-soc-splunk/splunk.env` with root-only permissions. Only [`configs/splunk.env.example`](configs/splunk.env.example) is tracked.
+The current Compose project also includes the completed `dns-soc-ai-bridge` service. It shares `dns-soc-internal`, exposes TCP `5000` only inside Docker, and returns AI triage events to Splunk over internal HEC TCP `8088`. The bridge implementation is documented separately in [`../04-ai-integration/`](../04-ai-integration/).
+
+The real Splunk admin password stays outside the repository in `/etc/dns-soc-splunk/splunk.env`, and the AI/API/HEC secrets stay outside Git in `/etc/dns-soc-ai/ai.env`. Only repository-safe examples are tracked.
 
 ![Docker Engine and Compose validation](screenshots/platform/56-docker-engine-compose-validation.png)
 
@@ -68,7 +70,7 @@ The real admin password stays outside the repository in `/etc/dns-soc-splunk/spl
 |---|---|---|
 | TCP `8000` | Splunk Web | `SG-SPLUNK` from approved team public addresses only |
 | TCP `9997` | Universal Forwarder receiver | `SG-SPLUNK` from `SG-WEB` |
-| TCP `8088` | HEC | Not host-published yet; reserved for shared AI integration |
+| TCP `8088` | HEC | Active for the shared AI bridge on the internal Docker path; not host-published |
 | TCP `8089` | Splunk management | Not host-published |
 | TCP `22` | SSH | No public SG rule; SSM is the administration path |
 
