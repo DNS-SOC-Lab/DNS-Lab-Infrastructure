@@ -1,7 +1,7 @@
 # AWS Security Telemetry
 
 **Status:** Implemented and validated  
-**Implementation owner:** Musfira - AWS Telemetry / Cloud Engineering  
+**Implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) - AWS Telemetry / Cloud Engineering  
 **Region:** `us-east-1`  
 **Splunk destination index:** `dns_soc_aws`
 
