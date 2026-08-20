@@ -114,7 +114,7 @@ The common infrastructure in this repository supports four scenario repositories
 | 03 | Fast Flux DNS | T1568.001 | Correlate changing DNS answers, TTL behavior and destination changes | Temporary controlled endpoints + short-TTL Fast Flux DNS changes |
 | 04 | DNS Tunneling | T1071.004 / T1572 where implemented behavior fits | Detect suspicious encoded DNS behavior and prove containment through the defender-controlled DNS path | Reuse resolver/victim; optional authoritative DNS endpoint only if the final design requires it |
 
-MITRE mappings describe the behavior the team intends to simulate and are reviewed again if the final implementation changes.
+> MITRE mappings describe the behavior the team intends to simulate and are reviewed again if the final implementation changes.
 
 ### Scenario-specific infrastructure after the shared build
 
@@ -135,7 +135,7 @@ COMMON INFRASTRUCTURE COMPLETE
         +--> Scenario 04: reuse defender DNS path + optional DNS service only if needed
 ```
 
-See [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md) for the build decisions and [`00-project-design/scenario-documentation-standard.md`](00-project-design/scenario-documentation-standard.md) for the common 20-part SOC workflow, networking view, MITRE discipline and dashboard engineering standard.
+> See [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md) for the build decisions and [`00-project-design/scenario-documentation-standard.md`](00-project-design/scenario-documentation-standard.md) for the common 20-part SOC workflow, networking view, MITRE discipline and dashboard engineering standard.
 
 ## Team model
 
