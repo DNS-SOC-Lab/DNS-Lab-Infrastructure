@@ -1,7 +1,7 @@
 # Route 53 Parent and Child DNS Delegation
 
 **Status:** Implemented and validated  
-**Implementation owner:** Abdul-Rehman  
+**Implementation owner:** [_Abdul-Rehman_](https://github.com/abdul4rehman215)  
 **AWS service:** Amazon Route 53  
 **Registrar:** Hostinger  
 **Parent domain:** `abdul4rehman215.tech`  
