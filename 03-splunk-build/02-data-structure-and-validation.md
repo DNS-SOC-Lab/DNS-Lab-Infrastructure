@@ -23,7 +23,7 @@ useful investigation fields
 | `dns_soc_linux` | Selected Linux security/system telemetry | 5 GiB | 30 days | Reserved until a real source is explicitly onboarded |
 | `dns_soc_aws` | Route 53, VPC Flow Logs, CloudTrail and AWS VPC Resolver telemetry | 15 GiB | 30 days | Active / Gate C |
 | `dns_soc_dns` | Team-controlled resolver DNS data | 10 GiB | 30 days | Scenario 02 onward |
-| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | Next shared AI phase |
+| `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | **Active / shared AI foundation** |
 
 All five indexes were validated with:
 
@@ -203,13 +203,16 @@ index=dns_soc_aws
 
 *All four AWS telemetry families have real events in `dns_soc_aws` with their actual sourcetypes and usable timestamps.*
 
-## AI data boundary
+## Shared AI data boundary
 
-The shared AI foundation will later return enrichment to:
+The completed shared AI bridge returns enrichment to:
 
 ```text
 index=dns_soc_ai
 sourcetype=dns_soc:ai:triage
+source=dns-soc-ai-bridge
 ```
 
-AI output is supporting context only. Raw Web, DNS, flow and cloud events remain the evidence source used by the SOC Analyst.
+The bridge receives Splunk alert evidence through an internal webhook, calls the OpenAI API for schema-controlled analyst context, and returns the result through internal HTTPS HEC. AI output is supporting context only. Raw Web, DNS, flow and cloud events remain the evidence source used by the SOC Analyst.
+
+Implementation and validation are documented in [`../04-ai-integration/`](../04-ai-integration/).

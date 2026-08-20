@@ -1,0 +1,6 @@
+# Repository-safe example of the effective Splunk webhook allow-list entry.
+# Deployed under /opt/splunk/etc/system/local/alert_actions.conf.
+
+[webhook]
+enable_allowlist = true
+allowlist.dns_soc_ai_bridge = ^http:\/\/dns-soc-ai-bridge:5000\/splunk-webhook$
