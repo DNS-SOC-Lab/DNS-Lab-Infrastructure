@@ -68,6 +68,8 @@ The parent and child Route 53 zones have separate authoritative nameserver sets.
 
 `SOC-MONITORING-SUBNET` uses the private SOC route table. It is reserved for later DNS/victim/defense components that should not be directly reachable from the Internet.
 
+When Scenario 02 activates this subnet, the team must make an explicit egress decision for SSM/package updates and approved upstream DNS behavior. The base design does not pre-create a NAT path or public management exposure simply because those future hosts may need software installation. The minimum required egress is selected and documented when the real systems are built.
+
 ## Routing principle
 
 ```text
@@ -77,3 +79,7 @@ Attack public subnet  -> 0.0.0.0/0 -> ATTACK-LAB-IGW
 ```
 
 No VPC peering, Transit Gateway or cross-VPC private route is part of the base design.
+
+## Scenario expansion reference
+
+The expected Scenario 02–04 infrastructure additions are documented in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md). The base routing rule remains unchanged unless a later scenario has a documented requirement.

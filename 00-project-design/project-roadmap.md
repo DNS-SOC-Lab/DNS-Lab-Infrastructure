@@ -58,7 +58,7 @@ That decision does not redesign the later defensive DNS architecture:
 - AWS VPC Resolver Query Logging is active for `SOC-LAB-VPC` and `ATTACK-LAB-VPC` now;
 - `dns-soc-resolver01` and `dns-soc-victim01` are still introduced from Scenario 02 onward;
 - no Route 53 inbound/outbound Resolver endpoints were created for Gate C;
-- DNS Firewall and sinkhole infrastructure are still later scenario work.
+- the sinkhole/deny path is still later Scenario 02 work; DNS Firewall is not required by the base plan and is added only if a later scenario explicitly justifies it.
 
 ## Later scenario expansion rule
 
@@ -67,3 +67,19 @@ That decision does not redesign the later defensive DNS architecture:
 - **Scenario 04:** reuse the same platform and include a clear before/after sinkhole or block verification as part of containment.
 
 Scenario-specific SPL, dashboards, attack ground truth, analyst findings and IR evidence belong in the scenario repositories, not in the shared infrastructure build folder.
+
+
+## After the shared AI foundation
+
+Phase 11 is the final common-infrastructure build. Once the Flask/LLM bridge and internal Splunk return path pass their own validation, the permanent shared platform is complete.
+
+Future infrastructure is added only when the matching scenario starts:
+
+| Scenario | Infrastructure stage | Planned state |
+|---|---|---|
+| **01 — DNS Recon** | Reuse existing AWS/Splunk/Web/DNS/AI platform | No additional scenario infrastructure expected |
+| **02 — DGA** | Activate the monitoring subnet with `dns-soc-resolver01`, `dns-soc-victim01`, DNS/victim SGs and reusable sinkhole path | Planned for Scenario 02 preparation |
+| **03 — Fast Flux** | Reuse Scenario 02 platform; add only temporary controlled destinations and `flux.soclab...` short-TTL DNS behavior | Planned for Scenario 03 preparation |
+| **04 — DNS Tunneling** | Reuse Scenario 02 platform; add controlled tunneling namespace/behavior and only add a separate authoritative DNS endpoint if the final design requires it | Planned/conditional for Scenario 04 preparation |
+
+The detailed future-resource plan is maintained in [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md). The scenario repositories follow [`scenario-documentation-standard.md`](scenario-documentation-standard.md).

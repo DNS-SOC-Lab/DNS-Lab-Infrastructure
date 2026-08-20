@@ -17,3 +17,9 @@ For implementation work, capture the command or action, purpose, result, timesta
 ## Safety
 
 Never commit passwords, MFA secrets, private keys, `.pem` files, API tokens, access keys, raw `.env` files, or screenshots containing credentials. Attack simulations must stay inside systems and domains the team owns or is explicitly authorized to test.
+
+## Scenario repositories
+
+Scenario work follows the shared [`00-project-design/scenario-documentation-standard.md`](00-project-design/scenario-documentation-standard.md). Keep infrastructure changes in this repository and keep scenario-specific dashboards, SPL, attack ground truth, AI profiles, analyst findings, IR evidence and screenshots in the matching scenario repository.
+
+Future Scenario 02–04 AWS additions are planned in [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md) and should be documented under `02-aws-build/` only after the resources are actually created.

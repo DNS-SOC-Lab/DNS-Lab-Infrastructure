@@ -111,3 +111,12 @@ Later scenario repositories can rotate detection/SOC/IR ownership without rebuil
 ## Success condition
 
 AI integration is successful only if the SOC Analyst can compare the generated summary against the raw Splunk evidence and clearly explain where the AI was correct, incomplete or wrong.
+
+
+## Handoff to scenario repositories
+
+When the shared bridge passes its synthetic end-to-end test, the **common infrastructure build is complete**.
+
+Scenario repositories then add only their own profile/payload mapping after the corresponding detection has stable evidence fields. Scenario-specific AI profiles do not redesign the common Flask/LLM/HEC path.
+
+The scenario workflow and repository layout are standardized in [`../00-project-design/scenario-documentation-standard.md`](../00-project-design/scenario-documentation-standard.md). Any later scenario-specific AWS additions are tracked separately in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).

@@ -15,6 +15,20 @@ The infrastructure repository now provides trusted Web and AWS telemetry before 
 
 AWS VPC Resolver logging is shared telemetry only. It does not mean the Scenario 02 defender resolver has been built. The team-controlled `dns-soc-resolver01`, `dns-soc-victim01` and sinkhole path remain Scenario 02 additions.
 
+
+## Infrastructure delta by scenario
+
+The base VPC/DNS/Splunk platform is reused rather than rebuilt.
+
+| Scenario | Additional infrastructure decision |
+|---|---|
+| **01** | None expected after the shared AI foundation is ready |
+| **02** | Build `dns-soc-resolver01`, `dns-soc-victim01`, DNS/victim SGs and reusable sinkhole capability in `SOC-MONITORING-SUBNET` |
+| **03** | Reuse Scenario 02 systems; add only temporary team-controlled Fast Flux destinations and DNS records/TTL behavior |
+| **04** | Reuse Scenario 02 systems; add controlled tunneling DNS behavior and only add a dedicated authoritative service if the final implementation requires it |
+
+See [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md) for the full future build plan.
+
 ## DNS setup timing
 
 The public child zone is not rebuilt for every scenario. Its permanent five-record baseline is documented in [`scenario-dns-plan.md`](scenario-dns-plan.md). Scenario-specific DNS behavior is introduced only when needed:
@@ -45,3 +59,7 @@ flowchart LR
 ```
 
 The AI step is enrichment only. Raw telemetry and the human investigation remain the source of truth.
+
+## Scenario repository standard
+
+All four scenario repositories use the common workflow in [`scenario-documentation-standard.md`](scenario-documentation-standard.md), including the 20 required documentation areas, network/protocol view, dashboard engineering pattern, MITRE discipline and evidence rules.

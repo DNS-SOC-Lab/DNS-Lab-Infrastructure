@@ -4,6 +4,8 @@ This file separates the **permanent public DNS foundation** from DNS behavior th
 
 The goal is to keep Route 53 stable between exercises while still documenting exactly what DNS work remains for DGA, Fast Flux, DNS Tunneling and sinkhole/containment testing.
 
+For the EC2/security-group/network side of those later additions, see [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md).
+
 ## Permanent child-zone baseline
 
 The Route 53 child hosted zone `soclab.abdul4rehman215.tech` now contains five permanent record sets:

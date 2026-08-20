@@ -129,3 +129,27 @@ dns-soc-resolver01
 ```
 
 That later path is separate from the AWS VPC Resolver Query Logging already enabled during Gate C.
+
+
+## Scenario 03 and 04 reuse rule
+
+The defender-controlled DNS path created for Scenario 02 becomes shared scenario infrastructure:
+
+```text
+Scenario 02
+victim -> resolver -> upstream / sinkhole
+              |
+              +-> Splunk DNS telemetry
+
+Scenario 03
+reuse victim + resolver
+              +-> temporary flux.soclab answers
+              +-> correlate changing answers with network flows
+
+Scenario 04
+reuse victim + resolver
+              +-> harmless encoded DNS behavior
+              +-> contain with the same defender-controlled block/sinkhole path
+```
+
+No new VPC or attacker-to-SOC private route is introduced for these scenarios. See [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).

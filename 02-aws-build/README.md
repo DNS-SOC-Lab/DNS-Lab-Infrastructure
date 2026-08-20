@@ -59,6 +59,22 @@ The AWS security telemetry phase was implemented by **Musfira - AWS Telemetry / 
 
 Splunk-side ingestion and validation of the resulting AWS data was owned by **Sonia - Detection Engineer** and is documented in [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
 
+
+## Deferred scenario-specific AWS build
+
+The shared AWS foundation is complete for Scenario 01. Later scenario resources are intentionally **not** created early.
+
+| Scenario | AWS-side work still expected |
+|---|---|
+| **01 — DNS Recon** | None after the shared AI foundation is ready |
+| **02 — DGA** | Resolver/victim EC2 deployment in `SOC-MONITORING-SUBNET`, DNS/victim SGs, controlled DNS logging and reusable sinkhole capability |
+| **03 — Fast Flux** | Temporary team-controlled destinations plus temporary short-TTL `flux.soclab...` DNS changes |
+| **04 — DNS Tunneling** | Reuse Scenario 02 platform; add only the DNS service/delegation required by the final controlled tunneling design, if any |
+
+When those resources are actually built, their implementation belongs in this folder and should record resource names, network placement, security controls, telemetry, validation evidence and cleanup/reset actions.
+
+The design source of truth is [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md). Do not create future numbered build documents until the corresponding resources exist.
+
 ## Documents
 
 - [`01-account-security-and-access.md`](01-account-security-and-access.md)

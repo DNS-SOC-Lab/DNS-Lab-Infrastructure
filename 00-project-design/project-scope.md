@@ -37,7 +37,18 @@ The shared infrastructure now has two different DNS visibility concepts that mus
 - **Route 53 public authoritative query logging** records queries that reach the public `soclab.abdul4rehman215.tech` hosted zone.
 - **Route 53 VPC Resolver Query Logging** records DNS queries handled by the AWS VPC Resolver for associated workloads in `SOC-LAB-VPC` and `ATTACK-LAB-VPC`.
 
-The second item was enabled early during Gate C because the existing VPC workloads already provide useful DNS telemetry. It does **not** replace the team-controlled defender resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01`, DNS Firewall and the sinkhole are still later infrastructure.
+The second item was enabled early during Gate C because the existing VPC workloads already provide useful DNS telemetry. It does **not** replace the team-controlled defender resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01` and the reusable sinkhole path are still later infrastructure. DNS Firewall is not required by the locked base plan and would be introduced only if a later scenario explicitly chooses and justifies it.
+
+## Shared versus scenario-specific infrastructure
+
+The common platform ends with the shared AI foundation. After that point, the lab uses a just-in-time scenario model rather than another broad infrastructure phase:
+
+- **Scenario 01:** reuses the completed shared platform; no new scenario-specific AWS resource is currently expected.
+- **Scenario 02:** adds the team-controlled resolver, victim and reusable sinkhole/deny path in `SOC-MONITORING-SUBNET`.
+- **Scenario 03:** reuses Scenario 02 and adds only temporary team-controlled Fast Flux destinations and DNS behavior.
+- **Scenario 04:** reuses the same defender DNS path and adds a separate authoritative DNS service only if the final tunneling design genuinely needs it.
+
+The design details are maintained in [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md). The common scenario workflow is maintained in [`scenario-documentation-standard.md`](scenario-documentation-standard.md).
 
 ## DNS authority boundary
 
