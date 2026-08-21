@@ -108,7 +108,7 @@ The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real 
 
 ## Four scenarios
 
-The common infrastructure in this repository supports four scenario repositories maintained separately by the team.
+The common infrastructure in this repository supports four scenario repositories maintained separately.
 
 | Scenario | Focus | MITRE ATT&CK | Main learning goal | Additional infrastructure later |
 |---|---|---|---|---|
