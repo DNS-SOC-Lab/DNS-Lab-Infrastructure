@@ -11,16 +11,16 @@ The lab runs in **AWS `us-east-1` (N. Virginia)**. The attacker and SOC environm
 The shared platform has completed its common infrastructure build:
 
 ```text
-AWS identity / VPC / routing / SSM        COMPLETE
+AWS identity / VPC / routing / SSM       COMPLETE
 Route 53 authority and delegation        COMPLETE
 Nginx + HTTPS                            COMPLETE
-Splunk Gate A - platform                 COMPLETE
-Splunk Gate B - web telemetry            COMPLETE
-Splunk Gate C - AWS telemetry            COMPLETE
+Splunk - platform                        COMPLETE
+Splunk - web telemetry                   COMPLETE
+Splunk - AWS telemetry                   COMPLETE
 Shared AI foundation                     COMPLETE
                                          |
                                          v
-COMMON SHARED INFRASTRUCTURE              COMPLETE
+COMMON SHARED INFRASTRUCTURE             COMPLETE
                                          |
                                          v
 Scenario 01 detection engineering        ACTIVE - separate scenario repository
