@@ -7,7 +7,7 @@
 
 ## Objective
 
-Enable the AWS-side logging needed for DNS and cloud investigation, then hand the data to the supported Splunk AWS Add-on without redesigning the lab.
+Enable the AWS-side logging needed for DNS and cloud investigation, then hand the data to the supported Splunk AWS Add-on.
 
 The final AWS telemetry families are:
 
