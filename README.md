@@ -4,7 +4,7 @@
 
 This repository is the shared infrastructure record for a four-person DNS-focused SOC lab. It contains the common AWS network, public DNS, web target, Splunk platform, trusted telemetry pipelines and the completed shared AI integration that supports the separate scenario repositories.
 
-The lab runs in **AWS `us-east-1` (N. Virginia)**. The attacker and SOC environments stay in separate VPCs with **no VPC peering and no private route between them**.
+The lab runs in **AWS `us-east-1` (N. Virginia)**. The attacker and SOC environments stay in separate VPCs.
 
 ## Current checkpoint
 
@@ -25,8 +25,6 @@ COMMON SHARED INFRASTRUCTURE              COMPLETE
                                          v
 Scenario 01 detection engineering        ACTIVE - separate scenario repository
 ```
-
-The shared Flask / OpenAI / Splunk HEC bridge is implemented in [`04-ai-integration/`](04-ai-integration/). Scenario-specific dashboards, SPL detections, tuning, simulations, analyst findings, AI profiles and response evidence remain outside this repository.
 
 ## Architecture at a glance
 
@@ -98,7 +96,7 @@ flowchart LR
     AIB -->|internal HTTPS HEC| AIDX[index=dns_soc_ai]
 ```
 
-The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real sourcetypes were recorded from live data instead of being invented in advance:
+The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real sourcetypes were recorded from live data:
 
 | Telemetry | Destination index | Actual sourcetype |
 |---|---|---|
@@ -107,8 +105,6 @@ The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real 
 | CloudTrail | `dns_soc_aws` | `aws:cloudtrail` |
 | Route 53 Resolver Query Logs | `dns_soc_aws` | `aws:s3` |
 | Nginx access telemetry | `dns_soc_web` | `dns_soc:nginx:access` |
-
-> AWS VPC Resolver Query Logging is already active for the existing VPCs. This is **not** the same thing as the future team-controlled resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01` and the sinkhole/deny path have not been deployed yet. DNS Firewall is not required by the current locked scenario plan.
 
 ## Four scenarios
 
@@ -121,11 +117,11 @@ The common infrastructure in this repository supports four scenario repositories
 | 03 | Fast Flux DNS | T1568.001 | Correlate changing DNS answers, TTL behavior and destination changes | Temporary controlled endpoints + short-TTL Fast Flux DNS changes |
 | 04 | DNS Tunneling | T1071.004 / T1572 where implemented behavior fits | Detect suspicious encoded DNS behavior and prove containment through the defender-controlled DNS path | Reuse resolver/victim; optional authoritative DNS endpoint only if the final design requires it |
 
-> MITRE mappings describe the behavior the team intends to simulate and are reviewed again if the final implementation changes.
+> MITRE mappings describe the behavior the team intends to simulate.
 
 ### Scenario-specific infrastructure after the shared build
 
-The main AWS/Splunk foundation and the shared AI bridge are complete. Common infrastructure is now considered finished. Later AWS work is created only when a scenario genuinely needs it.
+The main AWS/Splunk foundation and the shared AI bridge are complete. Common infrastructure is now finished. Later AWS work is created only when a scenario genuinely needs it.
 
 ```text
 COMMON INFRASTRUCTURE COMPLETE
@@ -164,18 +160,14 @@ The team rotates through four roles so every member practices more than one part
 | Route 53 parent migration and child delegation | **Complete** |
 | Public DNS validation and static child-zone fixtures | **Complete** |
 | Nginx / HTTPS for main + `www` hostnames | **Complete** |
-| Splunk Enterprise platform / Gate A | **Complete** |
-| Five project indexes + 30-day retention | **Complete** |
-| Web Universal Forwarder + Nginx data quality / Gate B | **Complete** |
-| Route 53 public authoritative telemetry | **Complete** |
-| VPC Flow Logs | **Complete** |
-| CloudTrail | **Complete** |
-| Route 53 Resolver Query Logging | **Complete** |
-| Combined AWS telemetry data quality / Gate C | **Complete** |
+| Splunk Enterprise platform | **Complete** |
+| Five project indexes in Splunk + 30-day retention | **Complete** |
+| Web EC2 Instance Universal Forwarder + Nginx data quality in Splunk | **Complete** |
+| AWS Security Telemtry | **Complete** |
+| Combined AWS telemetry data quality in Splunk | **Complete** |
 | Shared AI foundation | **Complete** |
-| Common/shared infrastructure | **Complete** |
+| Common infrastructure | **Complete** |
 | Scenario 01 detection engineering | **Active in separate Scenario 01 repository** |
-| Scenario 01 additional infrastructure | None currently expected |
 | Scenario 02 defender DNS infrastructure | **Planned when Scenario 02 begins** |
 | Scenario 03 temporary Fast Flux infrastructure | **Planned when Scenario 03 begins** |
 | Scenario 04 tunneling-specific infrastructure | **Conditional / planned when Scenario 04 begins** |
