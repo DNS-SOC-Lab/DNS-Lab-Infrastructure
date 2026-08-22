@@ -119,6 +119,54 @@ Protocol testing showed the active HEC listener required HTTPS. Updating `SPLUNK
 
 The current lab uses encrypted HEC with certificate verification disabled because the bridge does not trust the internal/self-signed Splunk certificate. This is an accepted lab setting and a future hardening item, not an application failure.
 
+## Validation 4 — first real scenario consumer: Scenario 01
+
+After the shared AI foundation had passed its synthetic strong/incomplete tests, Scenario 01 became the first real detection consumer to validate the common contract end to end.
+
+The Scenario 01 Detection Engineer first stabilized the human-facing detection and alert evidence. The final scheduled alert then supplied the bridge-compatible result fields:
+
+```text
+alert_id
+alert_name
+scenario
+severity
+event_time
+source
+evidence_json
+```
+
+A fresh controlled Scenario 01 DNS-reconnaissance validation produced this path:
+
+```text
+Route 53 authoritative telemetry
+        -> Kinesis
+        -> Splunk detection v1.0
+        -> scheduled alert
+        -> native Webhook
+        -> bridge normalization
+        -> OpenAI structured response (HTTP 200)
+        -> internal HTTPS HEC
+        -> index=dns_soc_ai / sourcetype=dns_soc:ai:triage
+```
+
+The first webhook attempt reached the bridge but returned HTTP 400 because the Scenario 01 result row did not yet match the shared schema. The correction was made at the scenario evidence-contract boundary rather than by rebuilding the shared bridge or changing the working network path.
+
+The returned event is nested under `alert.*` and `ai.*`, and retains:
+
+```text
+human_validation_required = true
+```
+
+That validation proves the shared foundation can accept a real scenario alert while preserving the architecture rule:
+
+```text
+scenario detection decides when the alert fires
+AI receives structured evidence afterward
+human analyst remains the source of truth
+```
+
+Detailed Scenario 01 detection logic, screenshots, troubleshooting and payload mapping belong in the separate `Scenario-01-DNS-Recon` repository; this shared repository records only the common-platform handoff result.
+
 ## Routine health checks
 
 Container state:
