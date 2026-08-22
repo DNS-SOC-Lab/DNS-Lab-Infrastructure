@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario 02 Resolver & Sinkhole Onboarding
 
 **Status:** Complete — infrastructure data-quality gate passed  
@@ -202,3 +208,15 @@ RPZ redirect + HTTP evidence         PASS
 ```
 
 `dns_soc_dns` is now ready for Scenario 02 baseline and detection engineering. Thresholds and DGA logic must still be developed from real baseline plus controlled DGA/high-NXDOMAIN behavior in the Scenario 02 repository.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

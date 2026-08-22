@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Base Network Architecture
 
 The lab uses two non-overlapping VPCs and no private route between them.
@@ -82,3 +88,15 @@ Resolver 10.50.30.10 / Unbound
 The final RPZ state keeps enforcement disabled until a later human-approved exercise response.
 
 See [`diagrams/base-network.mmd`](diagrams/base-network.mmd) and [`diagrams/scenario-02-defender-dns.mmd`](diagrams/scenario-02-defender-dns.mmd).
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../../README.md) · [📁 Screenshots](../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario 02 AWS / Defender-DNS Evidence
 
 Selected screenshots continue the shared infrastructure numbering at `79`.
@@ -24,3 +30,15 @@ Selected screenshots continue the shared infrastructure numbering at `79`.
 | `106-scenario02-final-health-sinkhole.png` | Sinkhole final Nginx/forwarder health |
 
 Repeated troubleshooting captures are intentionally not part of the final evidence set. Useful root causes and fixes are documented in the build record instead.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../../README.md) · [📁 Screenshots](../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

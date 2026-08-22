@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../README.md) · [📁 02 Aws Build](../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # AWS Screenshot Evidence
 
 Screenshots in this folder are selected implementation evidence for the AWS build.
@@ -27,3 +33,15 @@ Primary screenshots are displayed inline in the relevant technical documents so 
 | [`security-telemetry/resolver-query-log-s3-delivery.png`](security-telemetry/resolver-query-log-s3-delivery.png) | Resolver Query Log files are arriving under the standard `vpcdnsquerylogs` S3 path |
 
 Credential material, MFA QR codes, private keys and raw secrets are intentionally not part of the evidence set.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../README.md) · [📁 02 Aws Build](../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Splunk Troubleshooting & Lessons
 
 The final platform is stable. This file records only engineering problems that changed how the team built or validated the platform. Repetitive commands and intermediate trial-and-error output are intentionally excluded.
@@ -316,3 +322,15 @@ and the final rsyslog `omfile` action uses the same ownership. This gives a narr
 ### Data-quality lesson
 
 Do not declare a source onboarded after only seeing raw events. Scenario 02 validated index, host, source, sourcetype, time, core DNS fields and reply metrics before the resolver dataset was considered ready.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

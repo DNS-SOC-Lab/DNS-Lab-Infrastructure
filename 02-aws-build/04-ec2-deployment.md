@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario 01 EC2 Deployment
 
 - **Status:** Implemented and validated
@@ -166,3 +172,15 @@ Route 53 parent/child delegation, Nginx/HTTPS, Web telemetry and AWS telemetry w
 - [Attacker launch summary](screenshots/ec2-deployment/attacker-launch-summary.png)
 - [Attacker SSM validation](screenshots/ec2-deployment/attacker-ssm-validation.png)
 - [Scenario 01 EC2 inventory](screenshots/ec2-deployment/scenario01-ec2-inventory.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

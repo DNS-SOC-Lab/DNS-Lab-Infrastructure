@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 00 Project Design](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario Infrastructure Roadmap
 
 **Status:** Scenario 02 defender DNS infrastructure complete; Scenario 03–04 additions remain just-in-time.
@@ -166,3 +172,15 @@ For every new scenario resource:
 4. preserve repository-safe configuration/evidence;
 5. reset temporary DNS/containment changes after the exercise;
 6. never publish credentials, API keys, private keys or sensitive account details.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 00 Project Design](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

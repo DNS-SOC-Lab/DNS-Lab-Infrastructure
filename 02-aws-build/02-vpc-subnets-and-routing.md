@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # VPC, Subnets and Routing
 
 **Status:** Implemented  
@@ -133,3 +139,15 @@ The implemented network matches the locked design: two isolated VPCs, explicit s
 - [SOC private subnet association](screenshots/network-foundation/soc-private-associations.png)
 - [Attack public routes](screenshots/network-foundation/attack-public-routes.png)
 - [Attack subnet association](screenshots/network-foundation/attack-public-associations.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

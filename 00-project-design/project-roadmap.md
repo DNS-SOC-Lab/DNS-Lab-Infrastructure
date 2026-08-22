@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 00 Project Design](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Project Roadmap
 
 The lab is built in checkpoints. A later phase should not hide an unfinished foundation or data-quality problem.
@@ -97,3 +103,15 @@ Scenario repositories reuse this bridge and add only a scenario profile after st
 - **Scenario 04:** reuse the same defender path; add a separate authoritative DNS endpoint only if the final tunneling implementation genuinely requires it.
 
 Scenario-specific SPL, dashboards, attack ground truth, analyst findings, AI profiles and incident-response evidence belong in the scenario repositories rather than this shared infrastructure folder.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 00 Project Design](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Route 53 Parent and Child DNS Delegation
 
 **Status:** Implemented and validated  
@@ -302,3 +308,15 @@ The stable public DNS baseline is complete. Nginx/HTTPS, Web telemetry and AWS t
 - [Parent mail DNS sanity](screenshots/route53-domain/parent-mail-dns-sanity.png)
 - [Final child-zone static records](screenshots/route53-domain/child-zone-final-static-records.png)
 - [Final child static-record validation](screenshots/route53-domain/child-static-records-validation.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

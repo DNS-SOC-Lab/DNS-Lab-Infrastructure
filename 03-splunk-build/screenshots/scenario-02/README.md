@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../../README.md) · [📁 Screenshots](../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario 02 Splunk Evidence
 
 | File | What it proves |
@@ -12,3 +18,15 @@
 | `96-sinkhole-events-in-splunk.png` | Sinkhole Nginx events are searchable in `dns_soc_web` |
 | `98-rpz-safe-match-in-splunk.png` | RPZ match is searchable while policy enforcement is disabled |
 | `101-rpz-sinkhole-http-in-splunk.png` | Contained HTTP request from the victim is visible in Splunk |
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../../README.md) · [📁 Screenshots](../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

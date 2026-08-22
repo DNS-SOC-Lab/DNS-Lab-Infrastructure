@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Splunk Data Structure & Validation
 
 ## Design rule
@@ -265,3 +271,15 @@ source=dns-soc-ai-bridge
 The bridge receives Splunk alert evidence through an internal webhook, calls the OpenAI API for schema-controlled analyst context, and returns the result through internal HTTPS HEC. AI output is supporting context only. Raw Web, DNS, flow and cloud events remain the evidence source used by the SOC Analyst.
 
 Implementation and validation are documented in [`../04-ai-integration/`](../04-ai-integration/).
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

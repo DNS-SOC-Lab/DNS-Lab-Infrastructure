@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Contributing
 
 This is a four-person hands-on SOC lab. Contributions should show real work, not just final screenshots.
@@ -23,3 +29,15 @@ Never commit passwords, MFA secrets, private keys, `.pem` files, API tokens, acc
 Scenario work follows the shared [`00-project-design/scenario-documentation-standard.md`](00-project-design/scenario-documentation-standard.md). Keep infrastructure changes in this repository and keep scenario-specific dashboards, SPL, attack ground truth, AI profiles, analyst findings, IR evidence and screenshots in the matching scenario repository.
 
 Scenario infrastructure state is maintained in [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md). Scenario 02 resources are now implemented and documented under `02-aws-build/`; Scenario 03–04 additions should still be documented there only after those resources actually exist.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

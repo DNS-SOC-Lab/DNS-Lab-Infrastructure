@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # DNS Authority and Delegation
 
 ## Objective
@@ -161,3 +167,15 @@ The five-record child baseline above is permanent infrastructure. Later scenario
 - Sinkhole behavior is implemented later inside the defender-controlled resolver path.
 
 The detailed change-control plan is maintained in [`../00-project-design/scenario-dns-plan.md`](../00-project-design/scenario-dns-plan.md).
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

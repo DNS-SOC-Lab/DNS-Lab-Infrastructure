@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Nginx HTTPS Web Server
 
 - **Status:** Implemented and validated
@@ -587,3 +593,15 @@ The completed Splunk-side onboarding and Gate B evidence are documented in [`../
 The controlled 200/404 requests used here and during onboarding are **telemetry validation traffic only**. They are not the Scenario 01 DNS reconnaissance exercise.
 
 Authoritative DNS, VPC Flow, CloudTrail and VPC Resolver telemetry are documented separately in [`07-security-telemetry.md`](07-security-telemetry.md) and [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
