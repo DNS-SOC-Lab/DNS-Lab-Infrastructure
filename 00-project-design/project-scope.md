@@ -17,7 +17,7 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | Parent authoritative DNS | Route 53 public hosted zone for `abdul4rehman215.tech` |
 | Public lab namespace | `soclab.abdul4rehman215.tech` |
 | Child authoritative DNS | Separate Route 53 public hosted zone delegated from the parent zone |
-| Public web targets | `soclab.abdul4rehman215.tech` → `100.49.192.164`; `www.soclab.abdul4rehman215.tech` → CNAME to the main hostname |
+| Public web targets | `soclab.abdul4rehman215.tech` -> `100.49.192.164`; `www.soclab.abdul4rehman215.tech` -> CNAME to the main hostname |
 | Existing parent services | Preserved through the Route 53 parent zone, including website and mail-related DNS |
 | SOC network | `SOC-LAB-VPC` |
 | Attacker network | `ATTACK-LAB-VPC` |
@@ -25,34 +25,37 @@ The goal is not to create a single dashboard or one successful alert. Each exerc
 | SIEM | Splunk Enterprise in Docker |
 | Endpoint/server collection | Splunk Universal Forwarder where required |
 | AWS telemetry | Route 53 public query logs, VPC Flow Logs, CloudTrail and AWS VPC Resolver Query Logs are active and validated in Splunk |
-| AI | One shared Flask/OpenAI bridge is implemented on `dns-soc-splunk01`; scenario-specific profiles reuse the same platform and remain analyst-validated |
+| Team-controlled DNS telemetry | Unbound query/reply/RPZ telemetry from `dns-soc-resolver01` is active in `dns_soc_dns` |
+| AI | One shared Flask/OpenAI bridge is implemented on `dns-soc-splunk01`; scenario-specific profiles reuse it and remain analyst-validated |
 | Static child-zone fixtures | Permanent `A`, `NS`, `SOA`, training `TXT` and `www` CNAME records |
-| DNS defense | Team-controlled resolver and sinkhole capability introduced with Scenario 02 and reused by later IR scenarios |
+| DNS defense | Scenario 02 defender resolver + reusable RPZ/sinkhole path is implemented and reused by later scenarios |
 
+## Current DNS telemetry boundary
 
-## Current telemetry boundary
+Three DNS concepts must not be confused:
 
-The shared infrastructure now has two different DNS visibility concepts that must not be confused:
+- **Route 53 public authoritative query logging** records queries reaching the public child hosted zone.
+- **AWS VPC Resolver Query Logging** records queries handled by the AWS-provided resolver for associated VPC workloads.
+- **Team-controlled Unbound logging** records the DNS path through `dns-soc-resolver01` and provides query/reply/RPZ evidence for the private victim path.
 
-- **Route 53 public authoritative query logging** records queries that reach the public `soclab.abdul4rehman215.tech` hosted zone.
-- **Route 53 VPC Resolver Query Logging** records DNS queries handled by the AWS VPC Resolver for associated workloads in `SOC-LAB-VPC` and `ATTACK-LAB-VPC`.
+The Scenario 02 resolver forwards normal DNS upstream to `10.50.0.2`. Its own logs are copied through rsyslog to `/var/log/dns-soc/unbound.log` and forwarded to `index=dns_soc_dns`.
 
-The second item was enabled early during Gate C because the existing VPC workloads already provide useful DNS telemetry. It does **not** replace the team-controlled defender resolver planned for Scenario 02. `dns-soc-resolver01`, `dns-soc-victim01` and the reusable sinkhole path are still later infrastructure. DNS Firewall is not required by the locked base plan and would be introduced only if a later scenario explicitly chooses and justifies it.
+DNS Firewall is not part of the locked implementation. Containment uses the team-controlled Unbound RPZ path.
 
 ## Shared versus scenario-specific infrastructure
 
-The common platform is complete through the shared AI foundation. From this point, the lab uses a just-in-time scenario model rather than another broad infrastructure phase:
+The common platform and Scenario 02 defender DNS infrastructure are now complete:
 
-- **Scenario 01:** reuses the completed shared platform; no new scenario-specific AWS resource is currently expected.
-- **Scenario 02:** adds the team-controlled resolver, victim and reusable sinkhole/deny path in `SOC-MONITORING-SUBNET`.
+- **Scenario 01:** reuses the common AWS/Splunk/Web/DNS/AI platform.
+- **Scenario 02:** uses the implemented private resolver, victim and sinkhole in `SOC-MONITORING-SUBNET`; scenario execution and ML are separate later work.
 - **Scenario 03:** reuses Scenario 02 and adds only temporary team-controlled Fast Flux destinations and DNS behavior.
 - **Scenario 04:** reuses the same defender DNS path and adds a separate authoritative DNS service only if the final tunneling design genuinely needs it.
 
-The design details are maintained in [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md). The common scenario workflow is maintained in [`scenario-documentation-standard.md`](scenario-documentation-standard.md).
+The detailed resource state is maintained in [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md). The common scenario workflow is maintained in [`scenario-documentation-standard.md`](scenario-documentation-standard.md).
 
 ## DNS authority boundary
 
-Hostinger is used as the registrar, but the authoritative DNS path is now handled by Route 53:
+Hostinger is the registrar, while Route 53 is authoritative:
 
 ```text
 .tech registry
@@ -72,13 +75,13 @@ Route 53 child zone: soclab.abdul4rehman215.tech
             +-- TXT -> "DNS SOC Training Lab"
 ```
 
-This keeps the existing parent domain services intact while giving the lab namespace its own authoritative child zone. The five-record child baseline is kept stable. DGA, Fast Flux and tunneling behavior is introduced only when the relevant scenario needs it; the reusable internal sinkhole capability is introduced with the Scenario 02 resolver infrastructure rather than as a public Route 53 record. See [`scenario-dns-plan.md`](scenario-dns-plan.md).
+The public child zone stays stable. Scenario 02 DGA names are intentionally **not** pre-created; they should return real NXDOMAIN before any controlled RPZ response. The reusable sinkhole is private (`10.50.30.30`) and is not represented by a permanent public Route 53 record.
 
 ## Scope boundaries
 
 The project focuses on DNS behavior and the network evidence around it. It may use endpoint, cloud or web telemetry when those sources help prove the DNS story, but the lab does not try to become a general-purpose attack range.
 
-Attack simulations are limited to infrastructure and domains the team owns or is explicitly authorized to test. High-volume public attacks, public DNS reflection/amplification, and uncontrolled exfiltration are outside scope.
+Attack simulations are limited to infrastructure and domains the team owns or is explicitly authorized to test. High-volume public attacks, public DNS reflection/amplification and uncontrolled exfiltration are outside scope.
 
 ## What the team should be able to demonstrate
 
@@ -86,9 +89,11 @@ By the end of the four scenarios, the project should show that the team can:
 
 - design segmented AWS networking and reason about traffic paths;
 - design and validate parent/child DNS authority and delegation;
+- operate a private defender-side resolver and reusable containment path;
 - onboard useful DNS, network, server and cloud telemetry into Splunk;
 - baseline normal behavior before writing detections;
 - build and tune SPL detections around defined threat behavior;
+- compare rule-based analytics with ML only where the evidence supports it;
 - investigate alerts using raw evidence rather than trusting a label;
 - map observed behavior to MITRE ATT&CK without over-mapping;
 - preserve evidence, contain confirmed incidents and verify the result;

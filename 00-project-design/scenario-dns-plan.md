@@ -1,14 +1,12 @@
 # Scenario DNS Plan
 
-This file separates the **permanent public DNS foundation** from DNS behavior that is created only when a later scenario needs it.
+This file separates the permanent public DNS foundation from scenario DNS behavior and the now-completed private defender DNS platform.
 
-The goal is to keep Route 53 stable between exercises while still documenting exactly what DNS work remains for DGA, Fast Flux, DNS Tunneling and sinkhole/containment testing.
-
-For the EC2/security-group/network side of those later additions, see [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md).
+For EC2/security-group/network details, see [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md).
 
 ## Permanent child-zone baseline
 
-The Route 53 child hosted zone `soclab.abdul4rehman215.tech` now contains five permanent record sets:
+The Route 53 child hosted zone `soclab.abdul4rehman215.tech` keeps five permanent record sets:
 
 | Name | Type | Value | TTL | Purpose |
 |---|---|---|---:|---|
@@ -18,56 +16,79 @@ The Route 53 child hosted zone `soclab.abdul4rehman215.tech` now contains five p
 | `soclab.abdul4rehman215.tech` | TXT | `"DNS SOC Training Lab"` | 300 | Controlled reconnaissance fixture |
 | `www.soclab.abdul4rehman215.tech` | CNAME | `soclab.abdul4rehman215.tech.` | 300 | Secondary public web hostname |
 
-The main hostname and `www` alias are both intended to be supported by Nginx and by the public TLS certificate.
+## Scenario 01 — DNS Reconnaissance
 
-## Scenario 01 - DNS Reconnaissance
+No additional public DNS record is required. The existing A/NS/SOA/TXT/CNAME baseline is sufficient for record enumeration and HTTPS follow-up.
 
-No additional Route 53 record is required before the first scenario.
+## Scenario 02 — DGA / High NXDOMAIN
 
-The permanent child zone already gives the exercise useful authoritative data:
+**Infrastructure status:** Complete.  
+**Scenario simulation/detection status:** Not started.
 
-- A record for the public web target;
-- NS and SOA authority information;
-- TXT training fixture;
-- `www` CNAME that leads back to the main web target.
+Do **not** create random DGA records in Route 53.
 
-The authorized simulation can also query record types that are intentionally not configured, such as AAAA or MX. A missing record type at an existing name is still useful reconnaissance behavior even when it returns no data.
-
-The web alias also supports a realistic DNS-to-web follow-up path:
-
-```text
-DNS enumeration
-      |
-      +-- soclab A / NS / SOA / TXT
-      +-- www CNAME
-      |
-      v
-HTTPS follow-up
-      |
-      v
-Nginx access log
-      |
-      v
-Splunk correlation
-```
-
-## Scenario 02 - DGA / High NXDOMAIN
-
-Do **not** pre-create random DGA records in Route 53.
-
-The scenario needs many generated names that do not exist so the defender can measure NXDOMAIN behavior, query volume, label length/randomness and unique-name counts.
-
-A controlled pattern can use names conceptually under:
+Controlled names will conceptually use:
 
 ```text
 <generated-label>.dga.soclab.abdul4rehman215.tech
 ```
 
-The exact generator and client path are implemented in the Scenario 02 environment. The public child zone should not be filled with those generated names.
+Those names normally do not exist, producing real `NXDOMAIN` through the implemented path:
 
-## Scenario 03 - Fast Flux DNS
+```text
+dns-soc-victim01
+10.50.30.20
+      |
+      v
+dns-soc-resolver01 / Unbound
+10.50.30.10
+      |
+      v
+AWS VPC Resolver 10.50.0.2
+      |
+      v
+Route 53 authority / Internet DNS
+      |
+      v
+NXDOMAIN when the generated name does not exist
+```
 
-This scenario requires a later **temporary DNS change** because real Fast Flux behavior needs controlled changing address answers and a short TTL.
+This supports later metrics such as:
+
+- NXDOMAIN count and ratio;
+- unique names;
+- query rate;
+- label length/randomness;
+- repeated client behavior;
+- query type and time pattern.
+
+### Reusable RPZ/sinkhole path
+
+Scenario 02 infrastructure also implemented a private sinkhole at `10.50.30.30` and an Unbound RPZ policy.
+
+Normal/safe state:
+
+```text
+controlled generated/test name
+        -> Unbound
+        -> normal upstream result / NXDOMAIN
+```
+
+Approved containment state during a future exercise:
+
+```text
+controlled name/pattern
+        -> Unbound RPZ match
+        -> 10.50.30.30
+        -> private Nginx sinkhole
+        -> Splunk evidence
+```
+
+The infrastructure test proved this path once and then restored `rpz-action-override: disabled`. That test proves the control works; it is **not** the Scenario 02 incident-response exercise.
+
+## Scenario 03 — Fast Flux DNS
+
+Scenario 03 reuses the Scenario 02 resolver/victim/sinkhole platform but needs a temporary public DNS change because controlled Fast Flux behavior requires changing address answers and a short TTL.
 
 Planned namespace:
 
@@ -78,17 +99,17 @@ flux.soclab.abdul4rehman215.tech
 At Scenario 03 preparation time:
 
 1. provision or identify only team-controlled public endpoints;
-2. create a controlled A RRset for `flux.soclab.abdul4rehman215.tech`;
+2. create a controlled A RRset;
 3. use a deliberately short scenario TTL;
-4. rotate the controlled addresses according to the scenario plan;
+4. rotate only those controlled addresses;
 5. capture DNS-answer and network-flow evidence;
-6. remove or reset the temporary record after the exercise.
+6. remove/reset the temporary record after the exercise.
 
 Do not use random third-party Internet addresses to imitate Fast Flux.
 
-## Scenario 04 - DNS Tunneling
+## Scenario 04 — DNS Tunneling
 
-Do **not** create a normal static Route 53 A record now just to reserve the tunneling name.
+Do **not** create a normal static Route 53 A record just to reserve the tunneling name.
 
 Planned namespace:
 
@@ -96,43 +117,18 @@ Planned namespace:
 tunnel.soclab.abdul4rehman215.tech
 ```
 
-The useful telemetry in this scenario comes from the future team-controlled DNS resolver / DNS service path, where harmless encoded labels and query patterns can be observed and forwarded to Splunk.
+The final design must be chosen when the scenario is prepared. Reuse the Scenario 02 resolver/victim/sinkhole platform. Add a separate authoritative DNS endpoint/delegation only if the controlled tunneling simulation genuinely needs to receive and interpret the encoded queries.
 
-The exact authoritative or forwarding behavior is decided when the resolver component is implemented. Route 53 is changed only if the final Scenario 04 design actually requires a public delegation or record.
+The traffic must contain harmless lab-generated data only.
 
-## Sinkhole / containment
+## DNS cleanup rule
 
-Sinkholing belongs to the defender-controlled resolver path, not the permanent public Route 53 baseline. The capability is introduced with the Scenario 02 resolver/victim infrastructure and then reused by later response exercises. Scenario 04 requires the clearest before/after containment proof.
+Temporary scenario DNS changes must be documented with:
 
-The planned sinkhole address remains:
+- what was added or changed;
+- expected TTL/behavior;
+- exact scenario purpose;
+- before/after validation;
+- reset/removal state after the exercise.
 
-```text
-10.50.30.30
-```
-
-The intended response proof is:
-
-```text
-Before containment
-Victim -> DNS resolver -> suspicious controlled destination
-
-After containment
-Victim -> DNS resolver -> 10.50.30.30 sinkhole
-```
-
-That gives the incident-response team a measurable before/after result without turning the public child zone into the containment mechanism. Scenario 02 establishes the capability; Scenario 03 may reuse it when useful; Scenario 04 explicitly demonstrates sinkhole/block containment and verification.
-
-## Change-control rule
-
-The five-record child-zone baseline is treated as the stable public DNS foundation.
-
-Later scenario DNS changes must be:
-
-- tied to a specific scenario;
-- created only when the scenario design requires them;
-- limited to team-controlled infrastructure;
-- documented with the expected TTL and behavior;
-- validated before the simulation;
-- removed or reset after the scenario when they are temporary.
-
-This keeps the public web/DNS foundation predictable while allowing later scenarios to introduce the DNS behavior they actually need.
+The permanent child-zone baseline stays stable unless a project-level change is deliberately approved.

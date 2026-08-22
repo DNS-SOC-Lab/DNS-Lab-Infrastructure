@@ -1,65 +1,31 @@
 # Scenario Matrix
 
-The four scenarios use one permanent lab foundation and add only the scenario-specific components and telemetry they need.
+The four scenario repositories use one shared infrastructure and one documentation standard. The table separates **scenario behavior** from the infrastructure already available to support it.
 
-| # | Scenario | DNS / network behavior | Detection focus | MITRE ATT&CK | Response objective |
+| # | Scenario | Primary MITRE ATT&CK | Detection focus | Response objective | Infrastructure state |
 |---|---|---|---|---|---|
-| 01 | DNS Reconnaissance & Enumeration | Multiple A, AAAA, MX, NS, TXT and CNAME/alias observations; authority/recursion observations; follow-up web activity | Record-type diversity, query rate, unique names, source behavior, DNS-to-web correlation | T1590.002 — Gather Victim Network Information: DNS | Identify source and scope; reduce unnecessary exposure; verify the control |
-| 02 | DGA + High NXDOMAIN | Many generated/random-looking names and failed resolutions through the defender-visible resolver path | NXDOMAIN ratio, domain length/randomness, query volume, unique domains, client/process context | T1568.002 — Dynamic Resolution: Domain Generation Algorithms | Identify the affected client, introduce the reusable resolver/sinkhole capability, contain controlled DGA behavior when appropriate and verify the result |
-| 03 | Fast Flux DNS | One name resolves to changing IP addresses with short TTLs | Answer churn, TTL, unique destination count, time correlation and network flows | T1568.001 — Dynamic Resolution: Fast Flux DNS | Detect changing infrastructure, investigate connections and prevent access to the controlled malicious namespace |
-| 04 | DNS Tunneling | Long/encoded harmless labels and unusual query patterns | Label length, entropy/randomness, TXT/A activity, query size/frequency, repeated parent domain and endpoint/network relationship | T1071.004 — Application Layer Protocol: DNS; T1572 where the implemented behavior fits | Isolate/contain the source, reuse the defender-controlled sinkhole/block path and prove the tunneling behavior stops |
+| 01 | DNS Reconnaissance & Enumeration | `T1590.002` — Gather Victim Network Information: DNS | query volume, unique names, record-type diversity, source identity and Web/network follow-up | investigate source/scope and verify the approved response | Shared platform complete; scenario detection engineering active separately |
+| 02 | DGA + High NXDOMAIN | `T1568.002` — Dynamic Resolution: Domain Generation Algorithms | NXDOMAIN count/ratio, unique generated names, rate, label length/randomness, client/time behavior | human-confirm DGA-like behavior, enable approved RPZ/sinkhole response and prove before/after | **Resolver/victim/sinkhole + telemetry + reusable RPZ path complete; scenario execution/ML not started** |
+| 03 | Fast Flux DNS | `T1568.001` — Dynamic Resolution: Fast Flux DNS | answer/IP churn, TTL, changing destinations and client follow-up | identify controlled flux behavior and verify containment | Reuse Scenario 02 platform; temporary flux resources later |
+| 04 | DNS Tunneling | `T1071.004` — Application Layer Protocol: DNS; `T1572` only where implemented behavior fits | label structure/length, frequency, query type, unique subdomains and client behavior | investigate encoded DNS behavior and prove block/sinkhole result | Reuse Scenario 02 platform; authoritative endpoint only if final design requires it |
 
-## Shared telemetry available before Scenario 01
+## Scenario 02 status boundary
 
-The infrastructure repository now provides trusted Web and AWS telemetry before any scenario-specific detection work begins. This includes Route 53 public authoritative logs, VPC Flow Logs, CloudTrail and **AWS VPC Resolver Query Logs** for both existing VPCs.
+Infrastructure validation has already proven:
 
-AWS VPC Resolver logging is shared telemetry only. It does not mean the Scenario 02 defender resolver has been built. The team-controlled `dns-soc-resolver01`, `dns-soc-victim01` and sinkhole path remain Scenario 02 additions.
-
-
-## Infrastructure delta by scenario
-
-The base VPC/DNS/Splunk platform is reused rather than rebuilt.
-
-| Scenario | Additional infrastructure decision |
-|---|---|
-| **01** | None; shared AI foundation is complete and Scenario 01 reuses the common platform |
-| **02** | Build `dns-soc-resolver01`, `dns-soc-victim01`, DNS/victim SGs and reusable sinkhole capability in `SOC-MONITORING-SUBNET` |
-| **03** | Reuse Scenario 02 systems; add only temporary team-controlled Fast Flux destinations and DNS records/TTL behavior |
-| **04** | Reuse Scenario 02 systems; add controlled tunneling DNS behavior and only add a dedicated authoritative service if the final implementation requires it |
-
-See [`scenario-infrastructure-roadmap.md`](scenario-infrastructure-roadmap.md) for the full future build plan.
-
-## DNS setup timing
-
-The public child zone is not rebuilt for every scenario. Its permanent five-record baseline is documented in [`scenario-dns-plan.md`](scenario-dns-plan.md). Scenario-specific DNS behavior is introduced only when needed:
-
-- **Scenario 01:** uses the existing A/NS/SOA/TXT/CNAME baseline; no extra Route 53 record is required.
-- **Scenario 02:** introduces the team-controlled resolver/victim path. Generated names are intentionally left nonexistent so NXDOMAIN behavior can be measured. The internal sinkhole capability is established here for later IR reuse.
-- **Scenario 03:** a temporary controlled `flux.soclab...` A RRset and short TTL are created later when team-controlled endpoints exist.
-- **Scenario 04:** the tunneling namespace uses the controlled resolver/DNS path; the sinkhole/block capability is reused as the explicit final containment proof.
-- **Sinkhole:** internal defender infrastructure at `10.50.30.30`, not a permanent public Route 53 record.
-
-## Scenario design rule
-
-MITRE mapping follows the **behavior actually generated and detected**. A technique is not added just because it sounds related. If the implementation changes, the mapping is reviewed before the scenario is marked complete.
-
-## Common evidence model
-
-Every scenario should eventually collect enough evidence for this chain:
-
-```mermaid
-flowchart LR
-    A[Simulation Ground Truth] --> B[DNS / Network Telemetry]
-    B --> C[Splunk Search]
-    C --> D[Detection / Alert]
-    D --> E[AI-Assisted Summary]
-    E --> F[Human SOC Investigation]
-    F --> G[IR / Defense]
-    G --> H[Verification Evidence]
+```text
+victim -> Unbound -> normal DNS / NXDOMAIN
+resolver logs -> Splunk
+RPZ match -> Splunk
+controlled RPZ redirect -> private Nginx sinkhole
+sinkhole access log -> Splunk
+reset -> NXDOMAIN / safe disabled enforcement
 ```
 
-The AI step is enrichment only. Raw telemetry and the human investigation remain the source of truth.
+This does **not** mean the Scenario 02 exercise is complete. The separate repository must still produce the controlled DGA activity, detection/alert, AI-assisted analysis, human investigation, approved response and final verification evidence.
 
-## Scenario repository standard
+## Common completion rule
 
-All four scenario repositories use the common workflow in [`scenario-documentation-standard.md`](scenario-documentation-standard.md), including the 20 required documentation areas, network/protocol view, dashboard engineering pattern, MITRE discipline and evidence rules.
+A scenario is complete only after the repository can reproduce and defend the full chain:
+
+**Simulation → Telemetry → Detection → Alert → AI Assistance → Human Investigation → Response → Verification → Lessons Learned.**
