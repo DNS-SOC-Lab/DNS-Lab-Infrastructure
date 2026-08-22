@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # AWS Security Telemetry
 
 **Status:** Implemented and validated  
@@ -324,3 +330,15 @@ The final evidence that these sources are searchable with useful fields belongs 
 - [VPC Flow Log S3 delivery](screenshots/security-telemetry/vpc-flow-s3-delivery.png)
 - [CloudTrail logging](screenshots/security-telemetry/cloudtrail-trail-logging.png)
 - [Resolver Query Log S3 delivery](screenshots/security-telemetry/resolver-query-log-s3-delivery.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

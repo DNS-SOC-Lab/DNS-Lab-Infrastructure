@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # AWS Account Security and Access
 
 **Status:** Implemented  
@@ -54,3 +60,15 @@ The AWS account now has individual team identities, centralized administrator pe
 - [IAM password policy](screenshots/account-security/iam-password-policy.png)
 - [DNS-SOC-Admins permissions](screenshots/account-security/dns-soc-admins.png)
 - [AWS monthly budget](screenshots/account-security/monthly-budget.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 02 Aws Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
