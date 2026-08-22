@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # CIDR and Address Plan
 
 The two VPC CIDRs do not overlap. Subnet ranges are intentionally simple so the team can identify a system's role from its address during investigations.
@@ -34,3 +40,15 @@ The two VPC CIDRs do not overlap. Subnet ranges are intentionally simple so the 
 `SOC-MONITORING-SUBNET` remains private. Its route table uses `SOC-MONITORING-NAT` for `0.0.0.0/0`, while `10.50.0.0/16` stays local.
 
 This supports package updates/management without assigning public IPv4 addresses to the Scenario 02 hosts.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

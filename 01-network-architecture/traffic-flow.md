@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Traffic Flow
 
 The lab has separate paths for public DNS, public scenario activity, SOC administration, Web telemetry, AWS telemetry, the completed defender-controlled DNS path and the shared AI bridge.
@@ -143,3 +149,15 @@ AI output is advisory; raw telemetry remains the evidence source.
 ## Scenario 03 and 04 reuse
 
 Scenario 03 and 04 reuse the Scenario 02 victim/resolver/sinkhole path. They do not introduce a new VPC or attacker-to-SOC private route.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 01 Network Architecture](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
