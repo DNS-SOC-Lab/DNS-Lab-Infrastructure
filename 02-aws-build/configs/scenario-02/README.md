@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../../README.md) · [📁 02 Aws Build](../../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Scenario 02 Repository-Safe Configurations
 
 These files preserve the working Scenario 02 defender-DNS configuration without credentials, instance-specific MAC addresses or authentication material.
@@ -10,3 +16,15 @@ These files preserve the working Scenario 02 defender-DNS configuration without 
 - [`sinkhole/index.html`](sinkhole/index.html) — controlled private sinkhole page
 
 The deployed EC2 files remain the live source of truth. These copies are documentation artifacts and must not be treated as credential stores.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../../README.md) · [📁 02 Aws Build](../../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
