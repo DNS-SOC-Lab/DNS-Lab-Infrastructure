@@ -1,0 +1,21 @@
+flowchart LR
+    V[dns-soc-victim01<br/>10.50.30.20]
+    R[dns-soc-resolver01<br/>10.50.30.10<br/>Unbound + RPZ]
+    AWS[AWS VPC Resolver<br/>10.50.0.2]
+    DNS[Route 53 / Internet DNS]
+    H[dns-soc-sinkhole01<br/>10.50.30.30<br/>Nginx]
+    S[dns-soc-splunk01<br/>10.50.20.10<br/>Splunk Enterprise]
+    NAT[SOC-MONITORING-NAT<br/>public NAT in SOC-TARGET-SUBNET]
+    Internet((Internet))
+
+    V -->|UDP/TCP 53| R
+    R -->|normal forward| AWS
+    AWS --> DNS
+    R -. RPZ local-data when approved .-> H
+    V -. HTTP 80 after RPZ redirect .-> H
+    R -->|UF TCP 9997<br/>unbound:dns| S
+    H -->|UF TCP 9997<br/>nginx:access| S
+    V -. package/management egress .-> NAT
+    R -. package/management egress .-> NAT
+    H -. package/management egress .-> NAT
+    NAT --> Internet

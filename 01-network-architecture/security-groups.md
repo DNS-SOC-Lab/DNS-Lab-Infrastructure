@@ -1,43 +1,54 @@
 # Security Group Design
 
-Security Groups are the primary service-level control in the base lab. The design starts with the minimum communication needed for the current stage and adds ports only when a scenario requires them.
+Security Groups are the primary service-level network control. Ports are added only for real service paths.
 
 ## `SG-WEB`
-
-Public target security group.
 
 | Direction | Protocol / Port | Source / Destination | Reason |
 |---|---|---|---|
 | Inbound | TCP 80 | `0.0.0.0/0` | Public HTTP / redirect path |
 | Inbound | TCP 443 | `0.0.0.0/0` | Public HTTPS target |
-| Inbound | SSH 22 | None in baseline | Administration uses SSM where possible |
-| Outbound | Required egress | As implemented | Updates, logging and application needs |
+| Inbound | SSH 22 | None | Administration uses SSM |
 
 ## `SG-SPLUNK`
 
-SIEM access and log-receiver security group.
-
 | Direction | Protocol / Port | Source | Reason |
 |---|---|---|---|
-| Inbound | TCP 8000 | Team public IPs only | Splunk Web |
-| Inbound | TCP 9997 | Approved source SGs such as `SG-WEB` | Splunk Universal Forwarder ingestion |
-| Inbound | TCP 8088 | Not public | HEC is active only on the internal Docker path for AI results |
-| Inbound | TCP 8089 | Not public | Splunk management interface |
-| Inbound | SSH 22 | None in baseline | Prefer SSM |
+| Inbound | TCP 8000 | Approved team public IPs only | Splunk Web |
+| Inbound | TCP 9997 | `SG-WEB`, `SG-DNS`, `SG-VICTIM`, `SG-SINKHOLE` | Private Universal Forwarder receiver |
+| Inbound | TCP 8088 | No public rule | HEC is internal-only for the AI bridge |
+| Inbound | TCP 8089 | No public rule | Splunk management interface |
+| Inbound | SSH 22 | None | SSM administration |
 
-The current implementation matches this model: TCP `8000` has four separate team-source IPv4 rules and TCP `9997` references `SG-WEB`. The Web Universal Forwarder now actively uses that private receiver path. No public `8088`, `8089` or SSH rule is present on `SG-SPLUNK`.
-
-The deployed `dns-soc-ai-bridge` communicates with Splunk only over `dns-soc-internal`. TCP `5000` has no host publish and no AWS SG rule; HEC TCP `8088` is likewise not host-published or publicly allowed.
+`SG-VICTIM -> 9997` is reserved for a future victim forwarder path. No victim UF was installed during the Scenario 02 infrastructure build.
 
 ## `SG-ATTACKER`
 
-The attack host does not need a public inbound management port in the base design.
+No unnecessary public inbound management rule. The attack host uses SSM and scenario-required outbound paths.
 
-| Direction | Baseline | Reason |
-|---|---|---|
-| Inbound | No unnecessary inbound rules | Use SSM for administration |
-| Outbound | DNS and web traffic required by the scenario, plus management/update access | Keep the attack path explicit |
+## `SG-DNS`
 
-## Later scenario controls
+| Direction | Protocol / Port | Source | Reason |
+|---|---|---|---|
+| Inbound | UDP 53 | `SG-VICTIM` | Victim DNS queries |
+| Inbound | TCP 53 | `SG-VICTIM` | TCP DNS fallback/queries |
 
-DNS/victim security groups are added when those systems are actually deployed. The architecture principle is already fixed: DNS port 53 must never become an Internet-facing open recursive resolver, and victim access should be source-specific rather than `0.0.0.0/0`.
+There is no `0.0.0.0/0` DNS rule. The resolver is not an Internet-facing recursive resolver.
+
+## `SG-VICTIM`
+
+No inbound application service is required for Scenario 02.
+
+The victim uses outbound DNS to `10.50.30.10`, private HTTP to the sinkhole during validation/response, VPC-local Splunk receiver access only if a forwarder is later enabled, and NAT egress where management/package access requires it.
+
+## `SG-SINKHOLE`
+
+| Direction | Protocol / Port | Source | Reason |
+|---|---|---|---|
+| Inbound | TCP 80 | `SG-VICTIM` | Private RPZ containment HTTP evidence |
+
+The sinkhole has no public IP and no public inbound service.
+
+## Security rule
+
+The Scenario 02 defender DNS design relies on private addressing, SG-to-SG rules and SSM. A victim host-firewall rule to prevent deliberate direct AWS DNS bypass was discussed during planning but was **not implemented**, so it is not part of the deployed control set.

@@ -1,85 +1,84 @@
 # Base Network Architecture
 
-## Design objective
+The lab uses two non-overlapping VPCs and no private route between them.
 
-Keep the attacker network logically separate from the SOC network while still allowing realistic public-facing DNS and web interaction. Internal SOC communication stays inside `SOC-LAB-VPC`; the attacker does not receive a private route to `10.50.0.0/16`.
+```text
+ATTACK-LAB-VPC  10.60.0.0/16
+    ATTACK-PUBLIC-SUBNET 10.60.10.0/24
+        dns-attack01 10.60.10.10
 
-Public DNS is also separated by responsibility: Hostinger remains the registrar, Route 53 is authoritative for the parent domain, and a separate Route 53 child zone serves the SOC lab namespace.
+SOC-LAB-VPC     10.50.0.0/16
+    SOC-TARGET-SUBNET     10.50.10.0/24
+        dns-soc-web01     10.50.10.10
+        SOC-MONITORING-NAT (public NAT)
 
-## VPC and public DNS layout
+    SOC-SIEM-SUBNET       10.50.20.0/24
+        dns-soc-splunk01  10.50.20.10
 
-```mermaid
-flowchart TB
-    Registrar[Hostinger<br/>Registrar]
-    Internet((Internet / .tech))
-    Parent[Route 53 Parent Zone<br/>abdul4rehman215.tech]
-    Child[Route 53 Child Zone<br/>soclab.abdul4rehman215.tech<br/>A + NS + SOA + TXT + www CNAME]
-    Existing[Existing parent services<br/>A: 2.57.91.91<br/>mail DNS preserved]
-
-    subgraph AVPC[ATTACK-LAB-VPC · 10.60.0.0/16]
-        ASubnet[ATTACK-PUBLIC-SUBNET<br/>10.60.10.0/24]
-        Attack[dns-attack01<br/>10.60.10.10]
-        ASubnet --> Attack
-    end
-
-    subgraph SVPC[SOC-LAB-VPC · 10.50.0.0/16]
-        Target[SOC-TARGET-SUBNET<br/>10.50.10.0/24]
-        SIEM[SOC-SIEM-SUBNET<br/>10.50.20.0/24]
-        Monitoring[SOC-MONITORING-SUBNET<br/>10.50.30.0/24]
-        Web[dns-soc-web01<br/>10.50.10.10<br/>EIP 100.49.192.164]
-        Splunk[dns-soc-splunk01<br/>10.50.20.10]
-        Target --> Web
-        SIEM --> Splunk
-        Monitoring -.-> Future[Later scenario-specific<br/>DNS / victim / defense components]
-    end
-
-    Registrar -. registrar nameservers .-> Parent
-    Internet --> Parent
-    Parent --> Existing
-    Parent -->|NS delegation for soclab| Child
-    Child -->|soclab A / www CNAME to 100.49.192.164| Web
-    Attack --> Internet
-    Web --> Splunk
-
-    X{{No VPC peering / no private route between VPCs}}
+    SOC-MONITORING-SUBNET 10.50.30.0/24  private
+        dns-soc-resolver01 10.50.30.10
+        dns-soc-victim01   10.50.30.20
+        dns-soc-sinkhole01 10.50.30.30
 ```
-
-The DNS authority chain is documented in more detail in [`dns-authority-and-delegation.md`](dns-authority-and-delegation.md).
 
 ## Trust boundaries
 
-### Public attack boundary
+- The attack VPC and SOC VPC do not use VPC peering, Transit Gateway or a private cross-VPC route.
+- The public Web target is intentionally reachable through the Internet on 80/443.
+- Splunk Web is restricted to approved team source addresses; administration uses SSM.
+- The Scenario 02 resolver and sinkhole are private-only.
+- `SG-DNS` accepts DNS only from the victim security group.
+- `SG-SINKHOLE` accepts HTTP only from the victim security group.
+- Universal Forwarders use the VPC-local path to `10.50.20.10:9997`.
 
-`ATTACK-LAB-VPC` is a separate address space with its own Internet Gateway and public route table. The attack host reaches public lab services through the Internet. It does not route directly to SOC private addresses.
+## Routing
 
-### Public DNS boundary
+### SOC public subnets
 
-The parent and child Route 53 zones have separate authoritative nameserver sets. The parent zone owns `abdul4rehman215.tech` and delegates only `soclab.abdul4rehman215.tech` to the child zone. This creates a visible DNS authority boundary without changing the VPC separation model.
+`SOC-TARGET-SUBNET` and `SOC-SIEM-SUBNET` use the SOC public route table and Internet Gateway where the current design requires public reachability.
 
-### Public target boundary
+### SOC monitoring subnet
 
-`SOC-TARGET-SUBNET` is where intentionally public lab services are placed. `soclab.abdul4rehman215.tech` resolves to the Elastic IP associated with `dns-soc-web01`, and `www.soclab.abdul4rehman215.tech` is a CNAME to the same hostname. Exposure is controlled by service-specific security groups rather than opening the entire VPC.
-
-### SIEM boundary
-
-`SOC-SIEM-SUBNET` contains Splunk and the AI bridge as they are deployed. Splunk Web is restricted to the team rather than exposed as a general public service. Log ingestion ports are allowed only from approved sources.
-
-### Monitoring boundary
-
-`SOC-MONITORING-SUBNET` uses the private SOC route table. It is reserved for later DNS/victim/defense components that should not be directly reachable from the Internet.
-
-When Scenario 02 activates this subnet, the team must make an explicit egress decision for SSM/package updates and approved upstream DNS behavior. The base design does not pre-create a NAT path or public management exposure simply because those future hosts may need software installation. The minimum required egress is selected and documented when the real systems are built.
-
-## Routing principle
+`SOC-MONITORING-SUBNET` is explicitly associated with `SOC-PRIVATE-RT`:
 
 ```text
-SOC public subnets     -> 0.0.0.0/0 -> SOC-LAB-IGW
-SOC monitoring subnet -> local VPC route only
-Attack public subnet  -> 0.0.0.0/0 -> ATTACK-LAB-IGW
+10.50.0.0/16 -> local
+0.0.0.0/0    -> SOC-MONITORING-NAT
 ```
 
-No VPC peering, Transit Gateway or cross-VPC private route is part of the base design.
+`SOC-MONITORING-NAT` is in the public `SOC-TARGET-SUBNET` in `us-east-1c`.
 
-## Scenario expansion reference
+The resolver's normal DNS path does not depend on the NAT:
 
-The expected Scenario 02–04 infrastructure additions are documented in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md). The base routing rule remains unchanged unless a later scenario has a documented requirement.
+```text
+10.50.30.20 -> 10.50.30.10:53 -> 10.50.0.2 -> DNS authority
+```
+
+## Public DNS authority
+
+Hostinger remains the registrar. Route 53 hosts the parent zone and delegates `soclab.abdul4rehman215.tech` to the child hosted zone. The public child zone remains separate from the private Scenario 02 RPZ/sinkhole control.
+
+## Scenario 02 defender path
+
+```text
+Victim 10.50.30.20
+    |
+    | UDP/TCP 53
+    v
+Resolver 10.50.30.10 / Unbound
+    |
+    +--> AWS VPC Resolver 10.50.0.2 -> normal DNS
+    |
+    +--> resolver logs -> UF -> Splunk 10.50.20.10:9997
+    |
+    +--> RPZ local data when deliberately enabled
+             |
+             v
+        Sinkhole 10.50.30.30:80
+             |
+             +--> Nginx access log -> UF -> Splunk
+```
+
+The final RPZ state keeps enforcement disabled until a later human-approved exercise response.
+
+See [`diagrams/base-network.mmd`](diagrams/base-network.mmd) and [`diagrams/scenario-02-defender-dns.mmd`](diagrams/scenario-02-defender-dns.mmd).

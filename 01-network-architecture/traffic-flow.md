@@ -1,6 +1,6 @@
 # Traffic Flow
 
-The lab has separate paths for public DNS, public scenario activity, SOC administration, Web telemetry, AWS telemetry and later defender-controlled DNS work.
+The lab has separate paths for public DNS, public scenario activity, SOC administration, Web telemetry, AWS telemetry, the completed defender-controlled DNS path and the shared AI bridge.
 
 ## Public DNS resolution path
 
@@ -18,152 +18,128 @@ sequenceDiagram
     C->>W: Optional HTTP / HTTPS follow-up
 ```
 
-The parent zone owns the delegation. The child zone owns the lab A record, the `www` CNAME and the training TXT fixture. Both web hostnames ultimately reach `dns-soc-web01`.
-
 ## Scenario 01 public path
 
-```mermaid
-sequenceDiagram
-    participant A as dns-attack01
-    participant I as Internet
-    participant P as Route 53 Parent DNS
-    participant C as Route 53 Child DNS
-    participant W as dns-soc-web01
-    participant S as Splunk
-
-    A->>I: Authorized public DNS enumeration
-    I->>P: Resolve lab namespace authority
-    P-->>I: Refer soclab to child nameservers
-    I->>C: Query child DNS records
-    C-->>A: DNS responses
-    A->>I: Optional HTTPS follow-up
-    I->>W: Public web traffic
-    W-->>S: Nginx telemetry through UF TCP 9997
+```text
+dns-attack01 -> Internet -> Route 53 child authority -> optional public Web follow-up
+                                                    -> Nginx UF -> Splunk
 ```
 
-The attack host reaches the public namespace without a private route into `SOC-LAB-VPC`. This preserves the intended network boundary while still creating useful DNS, web and VPC-flow evidence.
+No attacker-to-SOC private route exists.
 
 ## Team management path
 
 ```text
 Team browser -> Internet -> Splunk Web :8000
-                         -> restricted to approved team source IPs
+                         -> approved team sources only
 
 Team admin   -> AWS Systems Manager -> EC2
-             -> no general-purpose public SSH required
+             -> no public SSH required
 ```
 
-## Completed Web telemetry path
-
-```mermaid
-flowchart LR
-    W[dns-soc-web01<br/>10.50.10.10]
-    UF[Splunk Universal Forwarder]
-    S[dns-soc-splunk01<br/>10.50.20.10]
-    I[index=dns_soc_web]
-
-    W --> UF
-    UF -->|SOC VPC private route<br/>TCP 9997| S
-    S --> I
-```
-
-The project monitors the required Nginx files rather than all of `/var/log`. Controlled successful and failed HTTP requests were generated only to validate data onboarding; they are not treated as the Scenario 01 attack simulation.
-
-## Completed AWS telemetry paths
-
-```mermaid
-flowchart LR
-    R53[Route 53 public query logs] --> CW[CloudWatch Logs]
-    CW --> K[Kinesis Data Stream]
-    K --> S[Splunk AWS Add-on]
-
-    VF[VPC Flow Logs<br/>SOC + ATTACK VPCs] --> S3A[S3]
-    S3A --> QA[SQS]
-    QA --> S
-
-    CT[CloudTrail] --> S3B[S3]
-    S3B --> QB[SQS]
-    QB --> S
-
-    RQ[Route 53 Resolver Query Logs<br/>SOC + ATTACK VPCs] --> S3C[S3]
-    S3C --> QC[SQS]
-    QC --> S
-
-    S --> IDX[index=dns_soc_aws]
-```
-
-The real Splunk sourcetypes are documented in [`../03-splunk-build/06-aws-telemetry-onboarding.md`](../03-splunk-build/06-aws-telemetry-onboarding.md).
-
-## Public authoritative DNS vs VPC Resolver logging
-
-These are different visibility points:
+## Web telemetry path
 
 ```text
-Public Internet query
-    -> Route 53 authoritative nameserver
-    -> public Route 53 query log
-
-EC2 workload using AWS-provided DNS
-    -> VPC Resolver
-    -> Resolver Query Log
+dns-soc-web01
+   -> Splunk Universal Forwarder
+   -> VPC-local TCP 9997
+   -> dns-soc-splunk01
+   -> index=dns_soc_web
 ```
 
-A direct query explicitly sent to a Route 53 authoritative nameserver may bypass the VPC Resolver, so the two log families are not expected to contain identical activity.
+## AWS telemetry paths
 
-## Completed shared AI path
+```text
+Route 53 public query logs -> CloudWatch -> Kinesis -> Splunk
+VPC Flow Logs              -> S3 -> SQS -> Splunk
+CloudTrail                 -> S3 -> SQS -> Splunk
+AWS Resolver Query Logs    -> S3 -> SQS -> Splunk
+                                              |
+                                              v
+                                      index=dns_soc_aws
+```
+
+Public authoritative DNS logs and AWS VPC Resolver Query Logs are different visibility points and are not expected to contain identical events.
+
+## Completed Scenario 02 normal DNS path
 
 ```mermaid
-flowchart LR
-    SA[Splunk scheduled alert] -->|internal webhook| B[dns-soc-ai-bridge\nFlask + Gunicorn]
-    B --> O[OpenAI Responses API]
-    O -->|structured JSON| B
-    B -->|internal HTTPS HEC :8088| S[Splunk Enterprise]
-    S --> I[index=dns_soc_ai\nsourcetype=dns_soc:ai:triage]
-    I --> H[Human SOC validation]
+sequenceDiagram
+    participant V as dns-soc-victim01 / 10.50.30.20
+    participant R as dns-soc-resolver01 / Unbound / 10.50.30.10
+    participant A as AWS VPC Resolver / 10.50.0.2
+    participant D as DNS authority
+
+    V->>R: DNS query UDP/TCP 53
+    R->>A: Forward normal DNS
+    A->>D: Resolve authoritative data
+    D-->>A: Answer / NXDOMAIN
+    A-->>R: Result
+    R-->>V: Result
 ```
 
-The bridge and Splunk share `dns-soc-internal`. TCP `5000` and `8088` are not host-published and no new public security-group rules were added. The AI output is advisory; raw telemetry remains the evidence source.
+Normal victim applications use the Ubuntu local stub (`127.0.0.53`), whose validated upstream is `10.50.30.10`.
 
-## Later defender-controlled DNS path
-
-Scenario 02 introduces a team-controlled resolver inside the monitoring subnet:
+## Resolver telemetry path
 
 ```text
-dns-soc-victim01
-        |
-        | DNS :53
-        v
-dns-soc-resolver01
-        |
-        +--> upstream DNS
-        |
-        +--> defender-side query logs -> Splunk
-        |
-        +--> later sinkhole / block decision
+Unbound
+  -> syslog
+  -> rsyslog filter
+  -> /var/log/dns-soc/unbound.log
+  -> Resolver UF
+  -> 10.50.20.10:9997
+  -> index=dns_soc_dns / sourcetype=unbound:dns
 ```
 
-That later path is separate from the AWS VPC Resolver Query Logging already enabled during Gate C.
+## RPZ/sinkhole response path
 
-
-## Scenario 03 and 04 reuse rule
-
-The defender-controlled DNS path created for Scenario 02 becomes shared scenario infrastructure:
+Safe default:
 
 ```text
-Scenario 02
-victim -> resolver -> upstream / sinkhole
-              |
-              +-> Splunk DNS telemetry
-
-Scenario 03
-reuse victim + resolver
-              +-> temporary flux.soclab answers
-              +-> correlate changing answers with network flows
-
-Scenario 04
-reuse victim + resolver
-              +-> harmless encoded DNS behavior
-              +-> contain with the same defender-controlled block/sinkhole path
+victim query -> Unbound RPZ match -> match logged -> enforcement disabled -> normal upstream result
 ```
 
-No new VPC or attacker-to-SOC private route is introduced for these scenarios. See [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
+Controlled response when deliberately enabled:
+
+```text
+victim query
+    -> Unbound RPZ
+    -> A 10.50.30.30
+    -> dns-soc-sinkhole01:80
+    -> Nginx access log
+    -> Sinkhole UF
+    -> index=dns_soc_web / sourcetype=nginx:access
+```
+
+The infrastructure test proved this once and then restored disabled enforcement. Future scenario containment still requires a human decision.
+
+## Monitoring-subnet egress
+
+```text
+dns-soc-resolver01 / victim / sinkhole
+    -> SOC-PRIVATE-RT 0.0.0.0/0
+    -> SOC-MONITORING-NAT in SOC-TARGET-SUBNET
+    -> SOC-LAB-IGW
+    -> Internet
+```
+
+This path supports package/management egress and does not make the three hosts public.
+
+## Shared AI path
+
+```text
+Splunk scheduled alert
+    -> internal webhook
+    -> dns-soc-ai-bridge
+    -> OpenAI Responses API
+    -> internal HTTPS HEC
+    -> index=dns_soc_ai
+    -> human SOC validation
+```
+
+AI output is advisory; raw telemetry remains the evidence source.
+
+## Scenario 03 and 04 reuse
+
+Scenario 03 and 04 reuse the Scenario 02 victim/resolver/sinkhole path. They do not introduce a new VPC or attacker-to-SOC private route.
