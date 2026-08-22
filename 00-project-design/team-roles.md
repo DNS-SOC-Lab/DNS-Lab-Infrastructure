@@ -1,6 +1,8 @@
 # Team Roles
 
-The project uses four rotating roles. Nobody waits for another person to finish an entire phase; each role has preparation, live-session and documentation work that can run in parallel.
+**Role rotation model — designed and proposed by [Lubaba](https://github.com/lubaba1513-pixel).** The four-role rotation was created so that, across the four scenarios, every team member gets an equal opportunity to practise each primary SOC role: Project Lead / Attack Simulation Operator, SOC Analyst / Threat Hunter, Detection Engineer / AI Integrator, and Incident Responder / Defender.
+
+The project uses these four rotating roles. Nobody waits for another person to finish an entire phase; each role has preparation, live-session and documentation work that can run in parallel.
 
 ## Role responsibilities
 
