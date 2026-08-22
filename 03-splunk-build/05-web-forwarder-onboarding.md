@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Web Universal Forwarder Onboarding
 
 **Status:** Gate B complete  
@@ -165,3 +171,15 @@ That gives the SOC Analyst a stronger story than a DNS alert by itself.
 - [`52-web-forwarder-target.png`](screenshots/web-forwarder/52-web-forwarder-target.png)
 - [`53-nginx-logs-in-splunk.png`](screenshots/web-forwarder/53-nginx-logs-in-splunk.png)
 - [`nginx-source-summary.png`](screenshots/web-forwarder/nginx-source-summary.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

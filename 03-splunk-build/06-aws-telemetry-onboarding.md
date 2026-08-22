@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # AWS Telemetry Onboarding in Splunk
 
 **Status:** Gate C complete  
@@ -300,3 +306,15 @@ The shared AI foundation has since been completed in [`../04-ai-integration/`](.
 - [`72-aws-resolver-data-in-splunk.png`](screenshots/aws-telemetry/72-aws-resolver-data-in-splunk.png)
 - [`resolver-source-summary.png`](screenshots/aws-telemetry/resolver-source-summary.png)
 - [`73-aws-data-quality-validation.png`](screenshots/aws-telemetry/73-aws-data-quality-validation.png)
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 03 Splunk Build](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
