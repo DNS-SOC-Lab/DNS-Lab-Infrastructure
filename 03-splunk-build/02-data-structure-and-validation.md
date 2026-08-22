@@ -22,7 +22,7 @@ useful investigation fields
 | `dns_soc_web` | Nginx access/error telemetry | 5 GiB | 30 days | Active / Gate B |
 | `dns_soc_linux` | Selected Linux security/system telemetry | 5 GiB | 30 days | Reserved until a real source is explicitly onboarded |
 | `dns_soc_aws` | Route 53, VPC Flow Logs, CloudTrail and AWS VPC Resolver telemetry | 15 GiB | 30 days | Active / Gate C |
-| `dns_soc_dns` | Team-controlled resolver DNS data | 10 GiB | 30 days | Scenario 02 onward |
+| `dns_soc_dns` | Team-controlled Unbound resolver DNS data | 10 GiB | 30 days | **Active / Scenario 02 validated** |
 | `dns_soc_ai` | AI triage/enrichment returned to Splunk | 5 GiB | 30 days | **Active / shared AI foundation** |
 
 All five indexes were validated with:
@@ -179,7 +179,7 @@ answers / answer data when AWS returns it
 region
 ```
 
-This AWS-managed Resolver dataset stays in `dns_soc_aws`. The separate index `dns_soc_dns` is reserved for the future **team-controlled BIND/Unbound resolver** introduced from Scenario 02 onward.
+This AWS-managed Resolver dataset stays in `dns_soc_aws`. It is separate from the now-active team-controlled Unbound resolver dataset in `dns_soc_dns`.
 
 ## Gate C completion search
 
@@ -202,6 +202,55 @@ index=dns_soc_aws
 ![Combined AWS data-quality validation](screenshots/aws-telemetry/73-aws-data-quality-validation.png)
 
 *All four AWS telemetry families have real events in `dns_soc_aws` with their actual sourcetypes and usable timestamps.*
+
+## Scenario 02 — team-controlled resolver and sinkhole
+
+Scenario 02 added a second, team-controlled DNS visibility point rather than replacing AWS Resolver Query Logs.
+
+### Unbound resolver identity
+
+```text
+index      = dns_soc_dns
+host       = dns-soc-resolver01
+source     = /var/log/dns-soc/unbound.log
+sourcetype = unbound:dns
+```
+
+The project validated real `NOERROR` and `NXDOMAIN` query/reply events from client `10.50.30.20`, correct event time, and the persistent fields:
+
+```text
+event_type
+client_ip
+qname
+qtype
+rcode
+response_time
+cache_flag
+response_size
+```
+
+`transport` is not present in the current text log and is not invented. `cache_flag` is preserved as the observed numeric indicator without assigning an unvalidated meaning. RPZ behavior is available in raw Unbound events; no normalized `rpz_action` field is claimed yet.
+
+![Resolver field validation](screenshots/scenario-02/92-resolver-field-validation.png)
+
+*The core DNS fields are persistent and searchable without repeating inline `rex` in every investigation search.*
+
+### Private sinkhole identity
+
+```text
+index      = dns_soc_web
+host       = dns-soc-sinkhole01
+source     = /var/log/nginx/access.log
+sourcetype = nginx:access
+```
+
+This sourcetype is intentionally preserved as deployed. It is not silently renamed to the separate public Web-host convention.
+
+![Sinkhole events in Splunk](screenshots/scenario-02/96-sinkhole-events-in-splunk.png)
+
+*The private sinkhole access source is searchable with the expected host/source/sourcetype identity.*
+
+The complete onboarding record is [`07-scenario-02-dns-onboarding.md`](07-scenario-02-dns-onboarding.md).
 
 ## Shared AI data boundary
 
