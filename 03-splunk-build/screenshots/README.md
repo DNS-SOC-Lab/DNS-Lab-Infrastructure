@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../README.md) · [📁 03 Splunk Build](../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Splunk Screenshot Evidence
 
 This folder contains the selected public evidence for the completed Splunk platform and telemetry gates.
@@ -70,3 +76,15 @@ Supporting screenshots:
 | [`troubleshooting/cloudtrail-sqs-processing-stall.png`](troubleshooting/cloudtrail-sqs-processing-stall.png) | CloudTrail queue shows the same processing stall pattern |
 
 The public troubleshooting record stays short and focuses on root cause and fix rather than repetitive intermediate output.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../README.md) · [📁 03 Splunk Build](../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->
