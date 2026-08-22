@@ -23,8 +23,8 @@ The lab is built in checkpoints. A later phase should not hide an unfinished fou
 | 09 | Enable AWS telemetry: Route 53 public logging, VPC Flow Logs, CloudTrail and VPC Resolver Query Logging | **Complete** |
 | 10 | Bring AWS telemetry into Splunk and validate index / host / source / sourcetype / time / fields / Gate C | **Complete** |
 | 11 | Build the shared Flask / OpenAI bridge and validate the common alert-enrichment contract | **Complete** |
-| 12 | Scenario 01 DNS investigation dashboard and detection engineering | **Active / separate Scenario 01 repository** |
-| 13 | Scenario 01 controlled exercise, AI-assisted analysis and response evidence | Separate Scenario 01 repository |
+| 12 | Scenario 01 DNS investigation dashboard and detection engineering | **Complete / maintained in separate Scenario 01 repository** |
+| 13 | Scenario 01 controlled exercise, AI-assisted analysis and response evidence | **Pending / separate Scenario 01 repository** |
 
 ## Parallel Scenario 02 infrastructure expansion
 
@@ -59,7 +59,7 @@ AWS + Route 53 + Web + Splunk + AWS telemetry + shared AI
              |                               |
              v                               v
 Scenario 01 detection engineering     Scenario 02 defender DNS platform
-ACTIVE IN SCENARIO 01 REPO            COMPLETE
+COMPLETE IN SCENARIO 01 REPO          COMPLETE
                                              |
                                              v
                                       Scenario 02 baseline / detection / ML

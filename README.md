@@ -139,7 +139,8 @@ The root README tracks only the **high-level shared-platform and scenario state*
 | 📡 Web + AWS security telemetry | ✅ Complete |
 | 🤖 Shared AI foundation | ✅ Complete |
 | 🛡️ Common shared infrastructure | ✅ Complete |
-| 🔎 Scenario 01 detection engineering | 🟡 Active in separate Scenario 01 repository |
+| 🔎 Scenario 01 detection engineering | ✅ Complete — maintained in separate Scenario 01 repository |
+| 🧑‍💻 Scenario 01 official SOC / IR exercise | ⚪ Pending — maintained in separate Scenario 01 repository |
 | 🧬 Scenario 02 defender DNS infrastructure + Splunk onboarding | ✅ Complete |
 | 🧬 Scenario 02 detection engineering / ML / exercise | ⚪ Not started in this repository baseline |
 | 🔄 Scenario 03 Fast Flux resources | ⚪ Planned when Scenario 03 begins |

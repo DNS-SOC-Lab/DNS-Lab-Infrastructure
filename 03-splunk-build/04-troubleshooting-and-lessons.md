@@ -279,6 +279,54 @@ sourcetype=dns_soc:ai:triage
 
 When a multi-stage integration fails, validate each hop independently. Scheduler success, webhook receipt, OpenAI success and HEC success are separate checks.
 
+## 11. Scenario 01 Kinesis checkpoint interruption — KV Store / host-kernel recovery
+
+**Problem**
+
+During Scenario 01 Detection Engineering, authoritative DNS queries were succeeding but fresh `aws:kinesis` Route 53 events stopped appearing in Splunk. Historical events remained searchable, so the symptom could easily have been mistaken for a bad detection or alert window.
+
+**Evidence / isolation**
+
+The known-good Scenario 01 detection was left unchanged while the ingestion path was traced. Splunk internal logs showed the AWS input failing to obtain checkpoint details and returning KV Store initialization errors.
+
+The host was running the newer AWS kernel:
+
+```text
+7.0.0-1011-aws
+```
+
+while the previously installed compatible kernel remained available:
+
+```text
+6.17.0-1017-aws
+```
+
+**Safe correction**
+
+The recovery was kept reversible. A one-time GRUB boot into `6.17.0-1017-aws` was used to test the compatibility hypothesis.
+
+The team deliberately did **not**:
+
+- delete KV Store data;
+- rebuild the Splunk container;
+- destroy Docker volumes;
+- remove the newer kernel;
+- rewrite Kinesis or Scenario 01 detection configuration.
+
+**Verification**
+
+After the compatible-kernel boot:
+
+- the Splunk container recovered normally;
+- KV Store became healthy;
+- AWS Kinesis checkpoint processing resumed;
+- a fresh authoritative DNS probe appeared again in `index=dns_soc_aws sourcetype="aws:kinesis"`;
+- the existing Scenario 01 detection began seeing current events without a rule change.
+
+**Lesson**
+
+When fresh telemetry disappears, prove the ingestion layer before changing a validated detection. Protect known-good configuration and prefer a reversible diagnostic change before destructive recovery.
+
 ## Final outcome
 
 The corrections above did not change the core project design. They improved the implementation until it matched the intended operating model:
