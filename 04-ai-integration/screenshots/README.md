@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../../README.md) · [📁 04 Ai Integration](../README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Shared AI Foundation Evidence
 
 These screenshots document the completed shared AI integration. Secrets and token values are not intentionally exposed.
@@ -12,3 +18,15 @@ These screenshots document the completed shared AI integration. Secrets and toke
 | - | [`ai-security-context-detail.png`](ai-security-context-detail.png) | Detailed OSI/protocol/indicator/response context from the strong synthetic test |
 
 The original evidence plan reserved screenshot 76 for a webhook-alert configuration view. A clean standalone copy of that screenshot was not present in the supplied evidence pack, so the repository does not fabricate it. The numbered sequence instead uses the real internal HEC validation screenshot; webhook configuration is documented textually in [`../03-splunk-hec-and-webhook.md`](../03-splunk-hec-and-webhook.md) and proven functionally by the successful scheduled-alert end-to-end path.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../../README.md) · [📁 04 Ai Integration](../README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

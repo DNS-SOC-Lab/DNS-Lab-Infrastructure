@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 04 Ai Integration](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Splunk HEC & Webhook Integration
 
 **Status:** Complete  
@@ -106,3 +112,15 @@ http://dns-soc-ai-bridge:5000/splunk-webhook
 The test schedule was used only to exercise Splunk's real scheduler + alert-action path. It is not a Scenario 01 detection and should not be treated as production alert logic.
 
 A clean standalone webhook-configuration screenshot was not included in the supplied evidence pack. The repository therefore does not fabricate one; webhook behavior is instead supported by the validated effective configuration and successful end-to-end alert flow documented here.
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 04 Ai Integration](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

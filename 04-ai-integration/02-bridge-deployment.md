@@ -1,3 +1,9 @@
+<!-- dns-soc-nav:start -->
+[🏠 Repository Home](../README.md) · [📁 04 Ai Integration](README.md)
+<!-- dns-soc-nav:end -->
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
 # Flask / OpenAI Bridge Deployment
 
 **Status:** Complete  
@@ -129,3 +135,15 @@ There is intentionally no `ports:` block on the AI bridge service.
 ![AI bridge and Splunk containers healthy](screenshots/74-ai-bridge-container-health.png)
 
 *Both services are healthy and the bridge is attached to `dns-soc-internal`; TCP 5000 is shown only as a container port.*
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+<!-- dns-soc-footer:start -->
+<div align="center">
+
+[🏠 Repository Home](../README.md) · [📁 04 Ai Integration](README.md)
+
+<sub>DNSentinel Lab · Controlled DNS security training documentation</sub>
+
+</div>
+<!-- dns-soc-footer:end -->

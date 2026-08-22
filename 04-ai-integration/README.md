@@ -1,24 +1,31 @@
-# Shared AI-Assisted Alert Triage
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=19,24,30&height=135&section=header&text=AI%20Integration&fontSize=34&fontColor=ffffff&animation=fadeIn&desc=Splunk%20Webhook%20%7C%20Flask%20Bridge%20%7C%20HEC%20%7C%20Human%20Validation&descSize=15&descAlignY=68" width="100%" alt="AI Integration" />
 
-**Status:** Complete  
+[🏠 Repository Home](../README.md) · [🔎 Splunk Build](../03-splunk-build/README.md) · **🤖 AI Integration**
+
+**Status:** ✅ Complete  
 **Implementation owner:** [_Musfira_](https://github.com/MUSFIRA-ZAFAR) — **Shared AI Integration**
 
-The shared AI foundation is deployed and validated. The common AWS / Web / Splunk / AI platform is now complete; scenario repositories reuse this bridge after their detection fields are stable.
+The shared AI foundation is deployed and validated. It is common infrastructure for all four DNS SOC scenarios: Splunk sends an alert result to a controlled bridge, the bridge obtains schema-constrained analyst context from the OpenAI API, and the result is written back to Splunk for **human review**.
 
-The bridge is shared infrastructure for all four DNS SOC scenarios. It accepts a Splunk alert result, validates and normalizes the payload, asks the OpenAI API for a schema-controlled analyst aid, and writes the structured result back to Splunk for human review.
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+## 🧠 Shared AI Flow
 
 ```mermaid
 flowchart LR
     A[Splunk scheduled alert] --> B[Internal webhook]
-    B --> C[dns-soc-ai-bridge\nFlask + Gunicorn]
+    B --> C[dns-soc-ai-bridge<br/>Flask + Gunicorn]
     C --> D[OpenAI Responses API]
     D --> E[Structured JSON result]
     E --> F[Internal HTTPS HEC :8088]
-    F --> G[index=dns_soc_ai\nsourcetype=dns_soc:ai:triage]
+    F --> G[index=dns_soc_ai<br/>sourcetype=dns_soc:ai:triage]
     G --> H[Human SOC Analyst validates raw evidence]
 ```
 
-## Final implementation state
+> [!IMPORTANT]
+> AI provides **analyst assistance**, not the final security decision. `human_validation_required=true` remains part of the design boundary.
+
+## ⚙️ Final Implementation State
 
 | Item | Implemented state |
 |---|---|
@@ -38,9 +45,7 @@ flowchart LR
 
 No AWS security-group rule was added for TCP `5000` or `8088`. Only the existing Splunk Web and Universal Forwarder receiver remain host-published from the Compose stack.
 
-## What the bridge returns
-
-The response schema is intentionally structured so an analyst can review evidence instead of reading an unrestricted free-text answer:
+## 📦 Structured Analyst Output
 
 ```text
 summary
@@ -65,39 +70,39 @@ confidence
 human_validation_required
 ```
 
-The model is instructed to prefer uncertainty over unsupported assumptions. MITRE ATT&CK and Cyber Kill Chain fields are analyst context, not final classifications.
+The model is instructed to prefer uncertainty over unsupported assumptions. MITRE ATT&CK and Cyber Kill Chain fields remain analyst context, not final classifications.
 
-## Validation completed
+## ✅ Validation Completed
 
-The shared foundation was proven without using the real Scenario 01 detection:
-
-- direct OpenAI API authentication succeeded from `dns-soc-splunk01`;
-- both Docker containers were healthy on `dns-soc-internal`;
-- a dedicated HEC token wrote only to `dns_soc_ai` using `dns_soc:ai:triage`;
-- the bridge accepted Splunk's native webhook envelope and normalized the first result row into the common alert contract;
-- a strong synthetic alert produced structured analyst context in Splunk;
-- an incomplete synthetic alert returned low confidence, `Uncertain` framework context and a meaningful missing-evidence list;
-- human review confirmed the strong and incomplete outputs behaved differently as intended;
-- an invalid payload returned HTTP `400` / `schema_validation_failed` and created no bad AI event;
-- final strong-vs-incomplete comparison passed with `human_validation_required=true` for both results.
+- Direct OpenAI API authentication succeeded from `dns-soc-splunk01`.
+- Both Docker containers were healthy on `dns-soc-internal`.
+- A dedicated HEC token wrote only to `dns_soc_ai` using `dns_soc:ai:triage`.
+- The bridge accepted Splunk's native webhook envelope and normalized the first result row into the common alert contract.
+- A strong synthetic alert produced structured analyst context in Splunk.
+- An incomplete synthetic alert returned low confidence, `Uncertain` framework context and a meaningful missing-evidence list.
+- Human review confirmed the strong and incomplete outputs behaved differently as intended.
+- An invalid payload returned HTTP `400` / `schema_validation_failed` and created no bad AI event.
+- Final strong-vs-incomplete comparison passed with `human_validation_required=true` for both results.
 
 The strong synthetic result also demonstrated why framework mappings remain advisory: the model suggested `T1595 — Active Scanning`, while the analyst must evaluate the scenario's intended `T1590.002` DNS reconnaissance mapping against the real evidence.
 
-## Documents
+## 📚 AI Documents
 
-- [`01-architecture-and-security.md`](01-architecture-and-security.md) — final network/security boundary and trust model
-- [`02-bridge-deployment.md`](02-bridge-deployment.md) — deployed Flask/OpenAI/Docker implementation
-- [`03-splunk-hec-and-webhook.md`](03-splunk-hec-and-webhook.md) — HEC, webhook allow-list and native Splunk payload handling
-- [`04-validation-and-operations.md`](04-validation-and-operations.md) — strong/incomplete/failure tests, human validation and operating checks
-- [`bridge/`](bridge/) — repository-safe bridge source, Dockerfile and dependencies
-- [`configs/`](configs/) — safe environment and Splunk allow-list examples
-- [`schemas/`](schemas/) — reference copies of the request and response schemas enforced by `app.py`
-- [`validation/`](validation/) — reusable synthetic SPL and final validation searches
-- [`screenshots/`](screenshots/) — selected implementation evidence
+| Document | Focus |
+|---|---|
+| 🏗️ [`01-architecture-and-security.md`](01-architecture-and-security.md) | Final network/security boundary and trust model |
+| 🐍 [`02-bridge-deployment.md`](02-bridge-deployment.md) | Flask/OpenAI/Docker implementation |
+| 🔁 [`03-splunk-hec-and-webhook.md`](03-splunk-hec-and-webhook.md) | HEC, webhook allow-list and native Splunk payload handling |
+| ✅ [`04-validation-and-operations.md`](04-validation-and-operations.md) | Strong/incomplete/failure tests, human validation and operating checks |
+| 📦 [`bridge/`](bridge/) | Repository-safe bridge source, Dockerfile and dependencies |
+| ⚙️ [`configs/`](configs/) | Safe environment and Splunk allow-list examples |
+| 🧾 [`schemas/`](schemas/) | Request/response schemas enforced by `app.py` |
+| 🧪 [`validation/`](validation/) | Reusable synthetic SPL and final validation searches |
+| 🖼️ [`screenshots/`](screenshots/) | Selected implementation evidence |
 
-## Scenario handoff
+## 🔄 Scenario Handoff
 
-The bridge stays scenario-neutral. A scenario repository adds only its own stable evidence mapping/profile after the detection is ready:
+The bridge stays scenario-neutral. A scenario repository adds only its stable evidence mapping/profile after detection fields are ready:
 
 ```text
 scenario detection
@@ -113,4 +118,8 @@ dns_soc_ai
 human validation
 ```
 
-Scenario 01 detection engineering is now active in its dedicated repository. Future scenario-specific infrastructure remains tracked in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
+Scenario 01 detection engineering is active in its dedicated repository. Future scenario-specific infrastructure remains tracked in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%" alt="section divider" />
+
+[🔎 Previous: Splunk Build](../03-splunk-build/README.md) · [🏠 Repository Home](../README.md)
