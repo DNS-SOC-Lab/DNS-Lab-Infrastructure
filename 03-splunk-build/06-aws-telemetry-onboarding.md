@@ -244,7 +244,7 @@ index=dns_soc_aws sourcetype="aws:s3"
 
 This source answers a different question from public Route 53 logging: **what DNS did workloads in the associated VPCs ask the AWS VPC Resolver to resolve?**
 
-The data remains in `dns_soc_aws`. `dns_soc_dns` is still reserved for the later team-controlled BIND/Unbound resolver.
+The data remains in `dns_soc_aws`. The separate `dns_soc_dns` index is now active for the implemented team-controlled Unbound resolver and is documented in [`07-scenario-02-dns-onboarding.md`](07-scenario-02-dns-onboarding.md).
 
 ---
 

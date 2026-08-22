@@ -24,6 +24,8 @@ COMMON SHARED INFRASTRUCTURE             COMPLETE
                                          |
                                          v
 Scenario 01 detection engineering        ACTIVE - separate scenario repository
+Scenario 02 defender DNS infrastructure  COMPLETE
+Scenario 02 detection / ML / exercise    NOT STARTED
 ```
 
 ## Architecture at a glance
@@ -52,7 +54,14 @@ flowchart TB
         TS --> W
         SS --> S
         S ---|dns-soc-internal| AI
-        MS -.-> Future[Scenario 02 onward<br/>team-controlled resolver / victim / sinkhole]
+        R[dns-soc-resolver01<br/>10.50.30.10<br/>Unbound + RPZ]
+        V[dns-soc-victim01<br/>10.50.30.20]
+        H[dns-soc-sinkhole01<br/>10.50.30.30<br/>Nginx + UF]
+        NAT[SOC-MONITORING-NAT<br/>public NAT]
+        TS --> NAT
+        MS --> R
+        MS --> V
+        MS --> H
     end
 
     Registrar -. registrar nameservers .-> Parent
@@ -61,6 +70,13 @@ flowchart TB
     Child -->|A / CNAME| W
     A --> Internet
     W -->|UF TCP 9997| S
+    V -->|DNS UDP/TCP 53| R
+    R -->|forward DNS| AWSR[AWS VPC Resolver<br/>10.50.0.2]
+    R -->|UF TCP 9997| S
+    R -. RPZ local-data when deliberately enabled .-> H
+    H -->|UF TCP 9997| S
+    MS -. default egress .-> NAT
+    NAT --> Internet
 
     X{{No VPC peering / no private route between attacker and SOC VPCs}}
 ```
@@ -89,7 +105,10 @@ flowchart LR
     S3C --> SQSC[SQS]
     SQSC --> S
 
-    S --> IDX[index=dns_soc_aws / dns_soc_web]
+    U[Unbound resolver logs] -->|UF TCP 9997| S
+    SH[Sinkhole Nginx access] -->|UF TCP 9997| S
+
+    S --> IDX[index=dns_soc_aws / dns_soc_web / dns_soc_dns]
     S -->|internal webhook| AIB[Shared AI bridge]
     AIB --> OAI[OpenAI API]
     OAI --> AIB
@@ -105,6 +124,8 @@ The AWS collection layer uses the supported Splunk Add-on for AWS `8.2.1`. Real 
 | CloudTrail | `dns_soc_aws` | `aws:cloudtrail` |
 | Route 53 Resolver Query Logs | `dns_soc_aws` | `aws:s3` |
 | Nginx access telemetry | `dns_soc_web` | `dns_soc:nginx:access` |
+| Team-controlled Unbound resolver | `dns_soc_dns` | `unbound:dns` |
+| Private sinkhole Nginx access | `dns_soc_web` | `nginx:access` |
 
 ## Four scenarios
 
@@ -113,7 +134,7 @@ The common infrastructure in this repository supports four scenario repositories
 | Scenario | Focus | MITRE ATT&CK | Main learning goal | Additional infrastructure later |
 |---|---|---|---|---|
 | 01 | DNS Reconnaissance & Enumeration | T1590.002 | Detect abnormal DNS record enumeration and investigate follow-up activity | None; shared AI is complete and Scenario 01 reuses the existing platform |
-| 02 | DGA + High NXDOMAIN | T1568.002 | Identify generated-domain behavior and introduce the defender-controlled resolver/sinkhole path | Resolver + victim + reusable sinkhole path |
+| 02 | DGA + High NXDOMAIN | T1568.002 | Identify generated-domain behavior and use the defender-controlled resolver/sinkhole path | **Resolver + victim + reusable sinkhole path complete; scenario detection/ML not started** |
 | 03 | Fast Flux DNS | T1568.001 | Correlate changing DNS answers, TTL behavior and destination changes | Temporary controlled endpoints + short-TTL Fast Flux DNS changes |
 | 04 | DNS Tunneling | T1071.004 / T1572 where implemented behavior fits | Detect suspicious encoded DNS behavior and prove containment through the defender-controlled DNS path | Reuse resolver/victim; optional authoritative DNS endpoint only if the final design requires it |
 
@@ -128,7 +149,7 @@ COMMON INFRASTRUCTURE COMPLETE
         |
         +--> Scenario 01: reuse existing platform + shared AI bridge
         |
-        +--> Scenario 02: resolver + victim + reusable sinkhole
+        +--> Scenario 02: resolver + victim + reusable sinkhole COMPLETE
         |
         +--> Scenario 03: temporary controlled Fast Flux resources
         |
@@ -163,12 +184,14 @@ The team rotates through four roles so every member practices more than one part
 | Splunk Enterprise platform | **Complete** |
 | Five project indexes in Splunk + 30-day retention | **Complete** |
 | Web EC2 Instance Universal Forwarder + Nginx data quality in Splunk | **Complete** |
-| AWS Security Telemtry | **Complete** |
+| AWS Security Telemetry | **Complete** |
 | Combined AWS telemetry data quality in Splunk | **Complete** |
 | Shared AI foundation | **Complete** |
 | Common infrastructure | **Complete** |
 | Scenario 01 detection engineering | **Active in separate Scenario 01 repository** |
-| Scenario 02 defender DNS infrastructure | **Planned when Scenario 02 begins** |
+| Scenario 02 defender DNS infrastructure | **Complete** |
+| Scenario 02 resolver + sinkhole Splunk onboarding | **Complete** |
+| Scenario 02 detection engineering / ML / exercise | **Not started — separate Scenario 02 repository** |
 | Scenario 03 temporary Fast Flux infrastructure | **Planned when Scenario 03 begins** |
 | Scenario 04 tunneling-specific infrastructure | **Conditional / planned when Scenario 04 begins** |
 | Scenario-specific detections and exercises | Separate scenario [repositories](https://github.com/orgs/DNSentinel-Lab/repositories) |
@@ -177,8 +200,8 @@ The team rotates through four roles so every member practices more than one part
 
 - [`00-project-design/`](00-project-design/) - scope, roles, scenario model, scenario infrastructure roadmap, documentation standard, DNS plan and project roadmap
 - [`01-network-architecture/`](01-network-architecture/) - VPC blueprint, CIDRs, DNS authority design, controls and traffic flows
-- [`02-aws-build/`](02-aws-build/) - implemented AWS configuration, including security telemetry
-- [`03-splunk-build/`](03-splunk-build/) - Splunk platform, Web Forwarder onboarding, AWS Add-on inputs, validation and operations
+- [`02-aws-build/`](02-aws-build/) - implemented AWS configuration, including security telemetry and the completed Scenario 02 defender-DNS platform
+- [`03-splunk-build/`](03-splunk-build/) - Splunk platform, Web/AWS onboarding, Scenario 02 resolver/sinkhole onboarding, validation and operations
 - [`04-ai-integration/`](04-ai-integration/) - completed shared AI-assisted alert-triage bridge, schemas, validation and evidence
 
 ## Documentation rule

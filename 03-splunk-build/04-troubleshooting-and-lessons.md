@@ -290,3 +290,29 @@ supported host
 ```
 
 Only concise, useful engineering evidence is kept in the repository. Historical screenshots are clearly labelled when they no longer represent the current deployed state.
+
+## Scenario 02 — dedicated Unbound log handoff
+
+### Symptom
+
+Real Unbound query/reply events were visible in system logging, but the first rsyslog rule did not create `/var/log/dns-soc/unbound.log`.
+
+### Root cause
+
+The output file ownership did not let the `syslog` writer create/write the file while still allowing the Splunk forwarder to read it.
+
+### Final fix
+
+The file was pre-created with:
+
+```text
+owner = syslog
+group = splunkfwd
+mode  = 0640
+```
+
+and the final rsyslog `omfile` action uses the same ownership. This gives a narrow Unbound-only input instead of monitoring all of `/var/log/syslog`.
+
+### Data-quality lesson
+
+Do not declare a source onboarded after only seeing raw events. Scenario 02 validated index, host, source, sourcetype, time, core DNS fields and reply metrics before the resolver dataset was considered ready.

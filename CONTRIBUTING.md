@@ -22,4 +22,4 @@ Never commit passwords, MFA secrets, private keys, `.pem` files, API tokens, acc
 
 Scenario work follows the shared [`00-project-design/scenario-documentation-standard.md`](00-project-design/scenario-documentation-standard.md). Keep infrastructure changes in this repository and keep scenario-specific dashboards, SPL, attack ground truth, AI profiles, analyst findings, IR evidence and screenshots in the matching scenario repository.
 
-Future Scenario 02–04 AWS additions are planned in [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md) and should be documented under `02-aws-build/` only after the resources are actually created.
+Scenario infrastructure state is maintained in [`00-project-design/scenario-infrastructure-roadmap.md`](00-project-design/scenario-infrastructure-roadmap.md). Scenario 02 resources are now implemented and documented under `02-aws-build/`; Scenario 03–04 additions should still be documented there only after those resources actually exist.

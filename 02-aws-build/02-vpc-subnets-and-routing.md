@@ -71,23 +71,26 @@ The route table is associated with:
 
 ## SOC private routing
 
-`SOC-PRIVATE-RT` contains only the VPC-local route:
+The original baseline `SOC-PRIVATE-RT` contained only the VPC-local route. During the Scenario 02 defender-DNS build, the monitoring subnet received controlled outbound egress through a public NAT Gateway while remaining private:
 
 ```text
 10.50.0.0/16 -> local
+0.0.0.0/0    -> SOC-MONITORING-NAT
 ```
+
+`SOC-MONITORING-NAT` is deployed in `SOC-TARGET-SUBNET` in `us-east-1c`. It supports package/management egress for the private resolver/victim/sinkhole hosts; it does not turn them into public services.
+
+The historical baseline screenshot below records the route table before Scenario 02 activation:
 
 ![SOC private routes](screenshots/network-foundation/soc-private-routes.png)
 
-*The monitoring route table has no `0.0.0.0/0` Internet Gateway route.*
-
-It is associated with:
+It remains associated with:
 
 - `SOC-MONITORING-SUBNET`
 
 ![SOC private subnet association](screenshots/network-foundation/soc-private-associations.png)
 
-*The monitoring subnet is kept on the private route table instead of inheriting the public SOC routing path.*
+Current Scenario 02 route/NAT evidence is in [`08-scenario-02-defender-dns.md`](08-scenario-02-defender-dns.md).
 
 ## Attacker routing
 
@@ -116,7 +119,7 @@ No VPC peering, Transit Gateway or custom `10.60.0.0/16 <-> 10.50.0.0/16` route 
 
 ## Result
 
-The implemented network matches the locked design: two isolated VPCs, explicit subnet segmentation, separate Internet Gateways, public routing only where intended, and a private monitoring subnet reserved for later scenario requirements.
+The implemented network matches the locked design: two isolated VPCs, explicit subnet segmentation, separate Internet Gateways, public routing only where intended, and a private monitoring subnet now used by the Scenario 02 resolver/victim/sinkhole platform. `SOC-MONITORING-SUBNET` uses `SOC-PRIVATE-RT` with `0.0.0.0/0` through `SOC-MONITORING-NAT`; the three Scenario 02 EC2s remain private.
 
 ## Evidence index
 

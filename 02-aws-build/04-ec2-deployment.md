@@ -154,7 +154,7 @@ All three Scenario 01 instances reached the `Running` state and the captured EC2
 
 Scenario 01 now has its required compute foundation: a public-facing web target, a dedicated Splunk/SIEM host and a separate Kali attack host. The instances are running on the planned VPC/subnet layout, use the SSM administration path, and passed the network/DNS/time checks captured during deployment.
 
-Route 53 parent/child delegation, Nginx/HTTPS, Web telemetry and AWS telemetry have all been completed after this EC2 checkpoint. Future EC2 additions are scenario-specific and are planned in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
+Route 53 parent/child delegation, Nginx/HTTPS, Web telemetry and AWS telemetry were completed after this checkpoint. Scenario 02 later added three private EC2s — `dns-soc-resolver01`, `dns-soc-victim01` and `dns-soc-sinkhole01` — documented in [`08-scenario-02-defender-dns.md`](08-scenario-02-defender-dns.md). Scenario 03–04 additions remain just-in-time in [`../00-project-design/scenario-infrastructure-roadmap.md`](../00-project-design/scenario-infrastructure-roadmap.md).
 
 ## Evidence index
 

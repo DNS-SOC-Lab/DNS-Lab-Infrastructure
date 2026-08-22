@@ -8,17 +8,37 @@ Control service exposure with Security Groups and administer EC2 through AWS Sys
 
 ## Security group baseline
 
-The current build uses three project security groups:
-
-- `SG-WEB`
-- `SG-SPLUNK`
-- `SG-ATTACKER`
+The original shared build used three role groups: `SG-WEB`, `SG-SPLUNK` and `SG-ATTACKER`. Scenario 02 later added `SG-DNS`, `SG-VICTIM` and `SG-SINKHOLE`.
 
 ![Project security groups](screenshots/network-foundation/security-groups.png)
 
-*The security-group inventory confirms that separate controls exist for the public web target, Splunk/SIEM host and attacker environment.*
+*The original security-group inventory confirms the shared Web/Splunk/attacker role separation. Scenario 02 group evidence is kept with its own build record.*
 
 The rule design is documented in [`../01-network-architecture/security-groups.md`](../01-network-architecture/security-groups.md). The implementation keeps exposure service-specific: the web target is the intentionally public service, Splunk Web is restricted to approved team access, and the attacker host does not require a public inbound management port.
+
+## Scenario 02 security-group expansion
+
+The completed defender-DNS build added:
+
+```text
+SG-DNS
+  UDP/TCP 53 <- SG-VICTIM
+
+SG-VICTIM
+  no inbound application service
+
+SG-SINKHOLE
+  TCP 80 <- SG-VICTIM
+
+SG-SPLUNK
+  TCP 9997 <- SG-DNS
+  TCP 9997 <- SG-VICTIM
+  TCP 9997 <- SG-SINKHOLE
+```
+
+`SG-VICTIM -> SG-SPLUNK:9997` is reserved for a future victim forwarder; no victim UF was installed during the infrastructure build. DNS 53 was not exposed publicly.
+
+See [`08-scenario-02-defender-dns.md`](08-scenario-02-defender-dns.md).
 
 ## Systems Manager role
 
@@ -30,7 +50,7 @@ The rule design is documented in [`../01-network-architecture/security-groups.md
 
 ## Runtime validation
 
-The role is now attached to the Scenario 01 EC2 instances and Session Manager access has been successfully used during host validation. This confirms that normal administration can be performed without opening SSH as the default management path.
+The role is attached to the shared Scenario 01 EC2 instances and the three Scenario 02 private EC2 instances and Session Manager access has been successfully used during host validation. This confirms that normal administration can be performed without opening SSH as the default management path.
 
 Runtime screenshots for the three hosts are kept with the EC2 deployment record:
 
@@ -40,7 +60,7 @@ Runtime screenshots for the three hosts are kept with the EC2 deployment record:
 
 ## Result
 
-The security-group baseline and SSM management path are both active. Scenario 01 hosts can be administered through Systems Manager while public service exposure remains controlled by role-specific security groups.
+The security-group baseline, Scenario 02 role groups and SSM management path are active. Shared and private defender hosts can be administered through Systems Manager while public service exposure remains controlled by role-specific security groups.
 
 ## Evidence index
 

@@ -248,7 +248,7 @@ No other permanent Route 53 records are required now. Later scenario changes are
 
 - Scenario 02 generates nonexistent DGA-style names so NXDOMAIN behavior can be measured.
 - Scenario 03 later creates a temporary controlled `flux.soclab...` A RRset with short TTLs when team-controlled endpoints exist.
-- Scenario 04 uses the future controlled resolver/DNS path for tunneling telemetry instead of a fake static public record.
+- Scenario 04 reuses the implemented Scenario 02 controlled resolver/DNS path for tunneling telemetry instead of a fake static public record.
 - Sinkhole behavior remains an internal resolver/incident-response control.
 
 The shared design for those changes is documented in [`../00-project-design/scenario-dns-plan.md`](../00-project-design/scenario-dns-plan.md).

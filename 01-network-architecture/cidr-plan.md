@@ -13,27 +13,24 @@ The two VPC CIDRs do not overlap. Subnet ranges are intentionally simple so the 
 
 | VPC | Subnet | CIDR | Route type | Purpose |
 |---|---|---|---|---|
-| SOC | `SOC-TARGET-SUBNET` | `10.50.10.0/24` | Public | Public-facing lab target |
-| SOC | `SOC-SIEM-SUBNET` | `10.50.20.0/24` | Public | Splunk / AI services with restricted inbound access |
-| SOC | `SOC-MONITORING-SUBNET` | `10.50.30.0/24` | Private | Later DNS, victim and defense components |
+| SOC | `SOC-TARGET-SUBNET` | `10.50.10.0/24` | Public | Public Web target + public monitoring NAT placement |
+| SOC | `SOC-SIEM-SUBNET` | `10.50.20.0/24` | Public/restricted | Splunk / AI services with restricted inbound access |
+| SOC | `SOC-MONITORING-SUBNET` | `10.50.30.0/24` | Private + NAT egress | Defender resolver, victim and sinkhole |
 | Attack | `ATTACK-PUBLIC-SUBNET` | `10.60.10.0/24` | Public | Authorized attack host |
 
-## Reserved private addresses
+## Assigned private addresses
 
-These addresses are part of the architecture plan and are assigned only when the corresponding system is built.
+| Address | Deployed role | State |
+|---|---|---|
+| `10.50.10.10` | `dns-soc-web01` | Deployed |
+| `10.50.20.10` | `dns-soc-splunk01` | Deployed |
+| `10.50.30.10` | `dns-soc-resolver01` | **Deployed** |
+| `10.50.30.20` | `dns-soc-victim01` | **Deployed** |
+| `10.50.30.30` | `dns-soc-sinkhole01` | **Deployed** |
+| `10.60.10.10` | `dns-attack01` | Deployed |
 
-| Address | Planned role |
-|---|---|
-| `10.50.10.10` | Web target |
-| `10.50.20.10` | Splunk SOC |
-| `10.50.30.10` | DNS resolver / defender component |
-| `10.50.30.20` | Scenario victim endpoint |
-| `10.50.30.30` | Sinkhole endpoint / service if implemented separately |
-| `10.60.10.10` | Attack host |
+## Monitoring subnet egress
 
-The monitoring range is documented here because it is part of the locked network architecture, even though those later scenario systems are not part of the current AWS deployment yet.
+`SOC-MONITORING-SUBNET` remains private. Its route table uses `SOC-MONITORING-NAT` for `0.0.0.0/0`, while `10.50.0.0/16` stays local.
 
-
-## Scenario 02 activation note
-
-The reserved `10.50.30.10`, `.20` and `.30` addresses are intentionally not treated as deployed resources yet. When Scenario 02 begins, the resolver/victim/sinkhole design should reuse these addresses and the existing `SOC-MONITORING-SUBNET`. The team must also document how private-subnet hosts receive only the egress needed for administration, package updates and approved DNS behavior.
+This supports package updates/management without assigning public IPv4 addresses to the Scenario 02 hosts.
