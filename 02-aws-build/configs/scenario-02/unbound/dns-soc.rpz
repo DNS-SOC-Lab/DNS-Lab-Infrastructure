@@ -1,0 +1,11 @@
+$TTL 60
+@ IN SOA localhost. root.localhost. (
+    2
+    60
+    60
+    60
+    60
+)
+    IN NS localhost.
+
+rpz-test.soclab.abdul4rehman215.tech A 10.50.30.30
